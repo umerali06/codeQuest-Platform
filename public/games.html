@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Coding Games</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="games-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <i class="fas fa-code"></i>
+                    <span>CodeQuest</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="learn.html" class="nav-link">Learn</a>
+                <a href="editor.html" class="nav-link">Editor</a>
+                <a href="games.html" class="nav-link active">Games</a>
+                <a href="#" class="nav-link" id="loginBtn">Login</a>
+                <a href="#" class="nav-link" id="signupBtn">Sign Up</a>
+                <a href="#" class="nav-link hidden" id="profileBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="username">User</span>
+                </a>
+                <a href="#" class="nav-link hidden" id="logoutBtn">Logout</a>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="games-main">
+        <!-- Games Header -->
+        <div class="games-header">
+            <h1>Coding Games & Challenges</h1>
+            <p>Test your skills with fun coding games and compete with other developers!</p>
+        </div>
+
+        <!-- Game Categories -->
+        <div class="game-categories">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="speed">Speed Coding</button>
+                <button class="category-tab" data-category="puzzle">Code Puzzles</button>
+                <button class="category-tab" data-category="bugfix">Bug Hunt</button>
+                <button class="category-tab" data-category="algorithm">Algorithms</button>
+            </div>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="games-grid" id="gamesGrid">
+            <!-- Games will be loaded dynamically -->
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div class="leaderboard-section">
+            <div class="section-header">
+                <h2>Leaderboard</h2>
+                <div class="leaderboard-filters">
+                    <select id="leaderboardFilter">
+                        <option value="all">All Time</option>
+                        <option value="weekly">This Week</option>
+                        <option value="monthly">This Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="leaderboard-content" id="leaderboardContent">
+                <!-- Leaderboard will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- User Statistics -->
+        <div class="stats-section">
+            <div class="section-header">
+                <h2>Your Statistics</h2>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <!-- Statistics will be loaded dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Assistant Widget -->
+    <div class="ai-widget" id="aiWidget">
+        <div class="ai-header">
+            <div class="ai-title">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <div class="ai-controls">
+                <button class="btn-icon" id="minimizeAiBtn" title="Minimize">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="btn-icon" id="closeAiBtn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="ai-content" id="aiContent">
+            <div class="ai-message">
+                <p>Ready to help you with coding games! Need hints or want to discuss strategies?</p>
+            </div>
+            <div class="ai-input">
+                <textarea id="aiInput" placeholder="Ask me about coding games..."></textarea>
+                <button class="btn btn-primary" id="aiSendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Modal -->
+    <div class="modal" id="gameModal">
+        <div class="modal-content game-modal">
+            <div class="modal-header">
+                <h2 id="gameModalTitle">Game Title</h2>
+                <button class="modal-close" id="gameModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="game-info">
+                    <div class="game-description" id="gameDescription">
+                        <!-- Game description will be loaded here -->
+                    </div>
+                    <div class="game-rules" id="gameRules">
+                        <!-- Game rules will be loaded here -->
+                    </div>
+                </div>
+                <div class="game-actions">
+                    <button class="btn btn-primary" id="startGameBtn">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                    <button class="btn btn-secondary" id="viewLeaderboardBtn">
+                        <i class="fas fa-trophy"></i> View Leaderboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to CodeQuest</h2>
+                <button class="modal-close" id="loginModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <div class="social-login">
+                    <button class="btn btn-google btn-block" id="googleLoginBtn">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join CodeQuest</h2>
+                <button class="modal-close" id="signupModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                </form>
+                <div class="social-login">
+                    <button class="btn btn-google btn-block" id="googleSignupBtn">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+                <div class="form-footer">
+                    <p>Already have an account? <a href="#" id="showLoginLink">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CodeQuest</h3>
+                <p>Master coding through interactive challenges and AI-powered assistance.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="learn.html">Learn</a></li>
+                    <li><a href="editor.html">Editor</a></li>
+                    <li><a href="games.html">Games</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CodeQuest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="games.js"></script>
+</body>
+</html>

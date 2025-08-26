@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Code Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="editor-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <i class="fas fa-code"></i>
+                    <span>CodeQuest</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="learn.html" class="nav-link">Learn</a>
+                <a href="editor.html" class="nav-link active">Editor</a>
+                <a href="games.html" class="nav-link">Games</a>
+                <a href="#" class="nav-link" id="loginBtn">Login</a>
+                <a href="#" class="nav-link" id="signupBtn">Sign Up</a>
+                <a href="#" class="nav-link hidden" id="profileBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="username">User</span>
+                </a>
+                <a href="#" class="nav-link hidden" id="logoutBtn">Logout</a>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="editor-main">
+        <!-- Challenge Info Panel -->
+        <div class="challenge-panel">
+            <div class="challenge-header">
+                <h2 id="challengeTitle">Select a Challenge</h2>
+                <div class="challenge-meta">
+                    <span class="difficulty" id="challengeDifficulty">Beginner</span>
+                    <span class="xp-reward" id="challengeXP">+50 XP</span>
+                </div>
+            </div>
+            <div class="challenge-description" id="challengeDescription">
+                <p>Choose a challenge from the Learn section to start coding!</p>
+            </div>
+            <div class="challenge-actions">
+                <button class="btn btn-primary" id="runTestsBtn" disabled>
+                    <i class="fas fa-play"></i> Run Tests
+                </button>
+                <button class="btn btn-secondary" id="resetCodeBtn" disabled>
+                    <i class="fas fa-undo"></i> Reset Code
+                </button>
+                <button class="btn btn-success" id="submitBtn" disabled>
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </div>
+        </div>
+
+        <!-- Code Editor Section -->
+        <div class="editor-section">
+            <div class="editor-tabs">
+                <button class="tab-btn active" data-tab="html">
+                    <i class="fab fa-html5"></i> HTML
+                </button>
+                <button class="tab-btn" data-tab="css">
+                    <i class="fab fa-css3-alt"></i> CSS
+                </button>
+                <button class="tab-btn" data-tab="js">
+                    <i class="fab fa-js-square"></i> JavaScript
+                </button>
+                <button class="tab-btn" data-tab="preview">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+            </div>
+            
+            <div class="editor-container">
+                <!-- HTML Editor -->
+                <div class="editor-pane active" id="html-editor">
+                    <div class="editor-header">
+                        <span>HTML</span>
+                        <div class="editor-actions">
+                            <button class="btn-icon" id="formatHtmlBtn" title="Format HTML">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="html-monaco" class="monaco-editor"></div>
+                </div>
+
+                <!-- CSS Editor -->
+                <div class="editor-pane" id="css-editor">
+                    <div class="editor-header">
+                        <span>CSS</span>
+                        <div class="editor-actions">
+                            <button class="btn-icon" id="formatCssBtn" title="Format CSS">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="css-monaco" class="monaco-editor"></div>
+                </div>
+
+                <!-- JavaScript Editor -->
+                <div class="editor-pane" id="js-editor">
+                    <div class="editor-header">
+                        <span>JavaScript</span>
+                        <div class="editor-actions">
+                            <button class="btn-icon" id="formatJsBtn" title="Format JavaScript">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="js-monaco" class="monaco-editor"></div>
+                </div>
+
+                <!-- Preview Pane -->
+                <div class="editor-pane" id="preview-pane">
+                    <div class="editor-header">
+                        <span>Live Preview</span>
+                        <div class="preview-actions">
+                            <button class="btn-icon" id="refreshPreviewBtn" title="Refresh Preview">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="btn-icon" id="fullscreenPreviewBtn" title="Fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="preview-container">
+                        <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results Panel -->
+        <div class="test-panel">
+            <div class="test-header">
+                <h3>Test Results</h3>
+                <div class="test-status">
+                    <span class="status-indicator" id="testStatus">Waiting...</span>
+                </div>
+            </div>
+            <div class="test-content" id="testResults">
+                <div class="test-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Click "Run Tests" to see your results</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Assistant Widget -->
+    <div class="ai-widget" id="aiWidget">
+        <div class="ai-header">
+            <div class="ai-title">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <div class="ai-controls">
+                <button class="btn-icon" id="minimizeAiBtn" title="Minimize">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="btn-icon" id="closeAiBtn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="ai-content" id="aiContent">
+            <div class="ai-message">
+                <p>Hello! I'm here to help you with your coding challenges. What would you like to work on?</p>
+            </div>
+            <div class="ai-input">
+                <textarea id="aiInput" placeholder="Ask me anything about your code..."></textarea>
+                <button class="btn btn-primary" id="aiSendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to CodeQuest</h2>
+                <button class="modal-close" id="loginModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <div class="social-login">
+                    <button class="btn btn-google btn-block" id="googleLoginBtn">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join CodeQuest</h2>
+                <button class="modal-close" id="signupModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                </form>
+                <div class="social-login">
+                    <button class="btn btn-google btn-block" id="googleSignupBtn">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+                <div class="form-footer">
+                    <p>Already have an account? <a href="#" id="showLoginLink">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CodeQuest</h3>
+                <p>Master coding through interactive challenges and AI-powered assistance.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="learn.html">Learn</a></li>
+                    <li><a href="editor.html">Editor</a></li>
+                    <li><a href="games.html">Games</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CodeQuest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.7/chai.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="editor.js"></script>
+</body>
+</html>

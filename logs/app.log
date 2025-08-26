@@ -1,0 +1,18 @@
+[2025-08-26 05:43:48] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:43:48] [ERROR] API Error: Database connection failed
+[2025-08-26 05:44:11] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:44:11] [ERROR] API Error: Database connection failed
+[2025-08-26 05:45:21] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:45:21] [ERROR] API Error: Database connection failed
+[2025-08-26 05:47:00] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:47:00] [ERROR] API Error: Database connection failed
+[2025-08-26 05:48:13] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:48:13] [ERROR] Failed to get platform statistics: Database connection failed
+[2025-08-26 05:49:52] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:49:52] [WARNING] Database not available, using mock data: Database connection failed
+[2025-08-26 05:50:02] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:50:02] [WARNING] Database not available, using mock data: Database connection failed
+[2025-08-26 05:52:08] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 05:52:08] [ERROR] Get modules failed: Database connection failed
+[2025-08-26 06:31:56] [ERROR] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-08-26 06:31:56] [ERROR] Failed to get challenges: Database connection failed

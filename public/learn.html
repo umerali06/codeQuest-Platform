@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn - CodeQuest</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../learn-styles.css">
+    <link rel="stylesheet" href="../animations.css">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">⚡CodeQuest</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="learn.html" class="nav-link active">Learn</a>
+                <a href="../editor.html" class="nav-link">Code Editor</a>
+                <a href="../challenges.html" class="nav-link">Challenges</a>
+                <a href="../games.html" class="nav-link">Games</a>
+                <a href="../leaderboard.html" class="nav-link">Leaderboard</a>
+                <a href="../about.html" class="nav-link">About</a>
+                <span id="authButtons">
+                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
+                    <button class="btn btn-primary" onclick="showSignup()">Sign Up</button>
+                </span>
+                <span id="userMenu" style="display: none;">
+                    <span class="nav-link" id="userGreeting">Welcome!</span>
+                    <a href="../dashboard.html" class="btn btn-secondary">Dashboard</a>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="learn-main">
+        <!-- Header Section -->
+        <section class="learn-header">
+            <div class="container">
+                <h1>Choose Your Learning Path</h1>
+                <p>Master web development with our structured courses designed for your success</p>
+            </div>
+        </section>
+
+        <!-- Modules Grid -->
+        <section class="modules-section">
+            <div class="container">
+                <div class="modules-grid" id="modulesGrid">
+                    <!-- Modules will be loaded here -->
+                    <div class="loading-spinner">Loading modules...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Detail Modal -->
+        <div id="moduleModal" class="modal">
+            <div class="modal-content module-modal">
+                <button class="close" onclick="closeModal('moduleModal')">&times;</button>
+                <div id="moduleContent">
+                    <!-- Module content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson Detail Modal -->
+        <div id="lessonModal" class="modal">
+            <div class="modal-content lesson-modal">
+                <button class="close" onclick="closeModal('lessonModal')">&times;</button>
+                <div id="lessonContent">
+                    <!-- Lesson content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CodeQuest</h3>
+                <p>Learn. Play. Conquer the Web.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="GitHub">🐙</a>
+                    <a href="#" aria-label="Discord">💬</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Learn</h3>
+                <div class="footer-links">
+                    <a href="learn.html#html">HTML Course</a>
+                    <a href="learn.html#css">CSS Course</a>
+                    <a href="learn.html#javascript">JavaScript Course</a>
+                    <a href="../challenges.html">Challenges</a>
+                    <a href="../games.html">Coding Games</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Community</h3>
+                <div class="footer-links">
+                    <a href="../leaderboard.html">Leaderboard</a>
+                    <a href="#">Forums</a>
+                    <a href="#">Discord</a>
+                    <a href="#">Blog</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Support</h3>
+                <div class="footer-links">
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CodeQuest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Welcome Back!</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            <p class="switch-form">Don't have an account? <a onclick="switchToSignup()">Sign up</a></p>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('signupModal')">&times;</button>
+            <h2>Join CodeQuest!</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" minlength="8" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <p class="switch-form">Already have an account? <a onclick="switchToLogin()">Sign in</a></p>
+        </div>
+    </div>
+
+    <!-- AI Assistant Widget -->
+    <div id="ai-assistant-button">🤖 AI Helper</div>
+    <div id="ai-chat-window">
+        <div class="ai-header">
+            <h3>🤖 CodeQuest AI Assistant</h3>
+            <span id="close-ai-chat">&times;</span>
+        </div>
+        <div id="ai-messages">
+            <div class="ai-welcome">
+                <p>👋 Hi! I'm your AI coding assistant. I can help you with:</p>
+                <ul>
+                    <li>HTML, CSS, and JavaScript questions</li>
+                    <li>Code debugging and problem-solving</li>
+                    <li>Learning path recommendations</li>
+                    <li>Challenge hints and explanations</li>
+                </ul>
+                <p>How can I help you today?</p>
+            </div>
+        </div>
+        <div class="ai-input-section">
+            <div class="ai-input-row">
+                <input type="text" id="ai-input" placeholder="Ask me anything about coding...">
+                <button id="ai-send">Send</button>
+            </div>
+            <div id="quick-actions">
+                <button class="quick-action" data-prompt="Explain HTML basics">HTML Basics</button>
+                <button class="quick-action" data-prompt="Help with CSS flexbox">CSS Flexbox</button>
+                <button class="quick-action" data-prompt="JavaScript tips">JS Tips</button>
+                <button class="quick-action" data-prompt="Debug my code">Debug Help</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../auth.js"></script>
+    <script src="../main.js"></script>
+    <script src="learn.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CodeQuest</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-styles.css">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">⚡CodeQuest</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="learn.html" class="nav-link">Learn</a>
+                <a href="editor.html" class="nav-link">Code Editor</a>
+                <a href="challenges.html" class="nav-link">Challenges</a>
+                <a href="games.html" class="nav-link">Games</a>
+                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+                <a href="about.html" class="nav-link">About</a>
+                <span id="userMenu">
+                    <span class="nav-link" id="userGreeting">Welcome!</span>
+                    <a href="dashboard.html" class="btn btn-secondary active">Dashboard</a>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">
+                    <span id="avatarInitials">U</span>
+                </div>
+                <div class="user-info">
+                    <h1 id="userName">Welcome back!</h1>
+                    <div class="user-badges">
+                        <span class="level-badge" id="userLevel">Level 1 - Beginner</span>
+                        <span class="streak-badge" id="userStreak">🔥 0 Day Streak</span>
+                        <span class="xp-badge" id="userXP">0 XP</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Overview -->
+    <section class="progress-overview-section">
+        <div class="container">
+            <div class="progress-cards">
+                <div class="progress-card">
+                    <div class="progress-icon">📚</div>
+                    <div class="progress-value" id="completedLessons">0</div>
+                    <div class="progress-label">Lessons Completed</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-icon">🎯</div>
+                    <div class="progress-value" id="completedChallenges">0</div>
+                    <div class="progress-label">Challenges Solved</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-icon">🏆</div>
+                    <div class="progress-value" id="earnedBadges">0</div>
+                    <div class="progress-label">Badges Earned</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-icon">💻</div>
+                    <div class="progress-value" id="projectsCreated">0</div>
+                    <div class="progress-label">Projects Created</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Progress -->
+    <section class="learning-progress">
+        <div class="container">
+            <h2 class="section-title">Learning Progress</h2>
+
+            <div class="tracks-progress">
+                <!-- HTML Track -->
+                <div class="track-progress-card">
+                    <div class="track-header">
+                        <div class="track-info">
+                            <span class="track-icon">🌐</span>
+                            <div>
+                                <h3>HTML Fundamentals</h3>
+                                <p>Master the structure of web pages</p>
+                            </div>
+                        </div>
+                        <div class="track-xp">
+                            <span id="htmlXP">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill html-progress" id="htmlProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="htmlLessons">0/45 Lessons</span>
+                            <span id="htmlPercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="track-actions">
+                        <a href="learn.html#html" class="btn btn-primary">Continue Learning</a>
+                        <button class="btn btn-secondary" onclick="viewCertificate('html')">View Certificate</button>
+                    </div>
+                </div>
+
+                <!-- CSS Track -->
+                <div class="track-progress-card">
+                    <div class="track-header">
+                        <div class="track-info">
+                            <span class="track-icon">🎨</span>
+                            <div>
+                                <h3>CSS Styling</h3>
+                                <p>Design beautiful and responsive layouts</p>
+                            </div>
+                        </div>
+                        <div class="track-xp">
+                            <span id="cssXP">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill css-progress" id="cssProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="cssLessons">0/52 Lessons</span>
+                            <span id="cssPercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="track-actions">
+                        <a href="learn.html#css" class="btn btn-primary">Continue Learning</a>
+                        <button class="btn btn-secondary" onclick="viewCertificate('css')">View Certificate</button>
+                    </div>
+                </div>
+
+                <!-- JavaScript Track -->
+                <div class="track-progress-card">
+                    <div class="track-header">
+                        <div class="track-info">
+                            <span class="track-icon">⚡</span>
+                            <div>
+                                <h3>JavaScript Programming</h3>
+                                <p>Add interactivity and dynamic behavior</p>
+                            </div>
+                        </div>
+                        <div class="track-xp">
+                            <span id="jsXP">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill js-progress" id="jsProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="jsLessons">0/68 Lessons</span>
+                            <span id="jsPercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="track-actions">
+                        <a href="learn.html#javascript" class="btn btn-primary">Continue Learning</a>
+                        <button class="btn btn-secondary" onclick="viewCertificate('javascript')">View
+                            Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="recent-activity">
+        <div class="container">
+            <h2 class="section-title">Recent Activity</h2>
+
+            <div class="activity-timeline" id="activityTimeline">
+                <div class="activity-item">
+                    <div class="activity-icon">📚</div>
+                    <div class="activity-content">
+                        <h4>Started HTML Basics</h4>
+                        <p>Began your journey with HTML fundamentals</p>
+                        <span class="activity-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">🏆</div>
+                    <div class="activity-content">
+                        <h4>Earned First Steps Badge</h4>
+                        <p>Completed your first lesson successfully</p>
+                        <span class="activity-time">3 hours ago</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">👤</div>
+                    <div class="activity-content">
+                        <h4>Account Created</h4>
+                        <p>Welcome to CodeQuest!</p>
+                        <span class="activity-time">Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements -->
+    <section class="achievements-section">
+        <div class="container">
+            <h2 class="section-title">Achievements & Badges</h2>
+
+            <div class="achievements-grid" id="achievementsGrid">
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">🎯</div>
+                    <h4>First Steps</h4>
+                    <p>Complete your first lesson</p>
+                    <div class="achievement-progress">✅ Earned</div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">📚</div>
+                    <h4>Knowledge Seeker</h4>
+                    <p>Complete 10 lessons</p>
+                    <div class="achievement-progress">
+                        <div class="mini-progress">
+                            <div class="mini-progress-fill" style="width: 10%"></div>
+                        </div>
+                        <span>1/10</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔥</div>
+                    <h4>On Fire</h4>
+                    <p>Maintain a 7-day streak</p>
+                    <div class="achievement-progress">
+                        <div class="mini-progress">
+                            <div class="mini-progress-fill" style="width: 14%"></div>
+                        </div>
+                        <span>1/7</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🏆</div>
+                    <h4>Challenge Master</h4>
+                    <p>Complete 25 challenges</p>
+                    <div class="achievement-progress">🔒 Locked</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">⭐</div>
+                    <h4>Code Warrior</h4>
+                    <p>Reach Level 10</p>
+                    <div class="achievement-progress">🔒 Locked</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">💎</div>
+                    <h4>Expert Developer</h4>
+                    <p>Complete all courses</p>
+                    <div class="achievement-progress">🔒 Locked</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Showcase -->
+    <section class="projects-showcase">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Projects</h2>
+                <a href="editor.html" class="btn btn-primary">Create New Project</a>
+            </div>
+
+            <div class="projects-grid" id="userProjects">
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <span class="project-type">HTML/CSS</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>Portfolio Website</h3>
+                        <p>Personal portfolio with responsive design</p>
+                        <div class="project-meta">
+                            <span>📅 2 days ago</span>
+                            <span>⭐ Featured</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="btn btn-secondary" onclick="openProject('portfolio')">Edit</button>
+                            <button class="btn btn-primary" onclick="viewProject('portfolio')">View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <span class="project-type">JavaScript</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>Todo App</h3>
+                        <p>Interactive todo list with local storage</p>
+                        <div class="project-meta">
+                            <span>📅 5 days ago</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="btn btn-secondary" onclick="openProject('todo')">Edit</button>
+                            <button class="btn btn-primary" onclick="viewProject('todo')">View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-project-card">
+                    <a href="editor.html">
+                        <span class="add-icon">+</span>
+                        <p>Create New Project</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Study Plan -->
+    <section class="study-plan">
+        <div class="container">
+            <h2 class="section-title">Today's Study Plan</h2>
+
+            <div class="study-plan-grid">
+                <div class="study-task">
+                    <input type="checkbox" id="task1">
+                    <label for="task1">
+                        <span class="task-icon">📚</span>
+                        <div class="task-content">
+                            <h4>Complete HTML Forms Lesson</h4>
+                            <p>Learn about input types and validation</p>
+                        </div>
+                        <span class="task-xp">+30 XP</span>
+                    </label>
+                </div>
+
+                <div class="study-task">
+                    <input type="checkbox" id="task2">
+                    <label for="task2">
+                        <span class="task-icon">🎯</span>
+                        <div class="task-content">
+                            <h4>Solve Daily Challenge</h4>
+                            <p>CSS Grid Layout Challenge</p>
+                        </div>
+                        <span class="task-xp">+50 XP</span>
+                    </label>
+                </div>
+
+                <div class="study-task">
+                    <input type="checkbox" id="task3">
+                    <label for="task3">
+                        <span class="task-icon">🎮</span>
+                        <div class="task-content">
+                            <h4>Play Flexbox Froggy</h4>
+                            <p>Practice flexbox with fun games</p>
+                        </div>
+                        <span class="task-xp">+25 XP</span>
+                    </label>
+                </div>
+
+                <div class="study-task">
+                    <input type="checkbox" id="task4">
+                    <label for="task4">
+                        <span class="task-icon">💻</span>
+                        <div class="task-content">
+                            <h4>Code for 30 Minutes</h4>
+                            <p>Practice in the code editor</p>
+                        </div>
+                        <span class="task-xp">+20 XP</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CodeQuest</h3>
+                <p>Learn. Play. Conquer the Web.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="GitHub">🐙</a>
+                    <a href="#" aria-label="Discord">💬</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <div class="footer-links">
+                    <a href="learn.html">Continue Learning</a>
+                    <a href="challenges.html">Practice Challenges</a>
+                    <a href="editor.html">Code Editor</a>
+                    <a href="leaderboard.html">Leaderboard</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Account</h3>
+                <div class="footer-links">
+                    <a href="#" onclick="editProfile()">Profile Settings</a>
+                    <a href="#" onclick="viewCertificates()">My Certificates</a>
+                    <a href="#" onclick="downloadProgress()">Download Progress</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Support</h3>
+                <div class="footer-links">
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CodeQuest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Profile Edit Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('profileModal')">&times;</button>
+            <h2>Edit Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="profileUsername">Username</label>
+                    <input type="text" id="profileUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileEmail">Email</label>
+                    <input type="email" id="profileEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileBio">Bio</label>
+                    <textarea id="profileBio" rows="4" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profileGoals">Learning Goals</label>
+                    <textarea id="profileGoals" rows="3" placeholder="What do you want to achieve?"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Login to CodeQuest</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p class="form-footer">
+                Don't have an account? <a href="#" onclick="showSignup(); closeModal('loginModal')">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('signupModal')">&times;</button>
+            <h2>Join CodeQuest</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <p class="form-footer">
+                Already have an account? <a href="#" onclick="showLogin(); closeModal('signupModal')">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
