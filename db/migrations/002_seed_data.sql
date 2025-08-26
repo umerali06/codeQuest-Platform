@@ -1,33 +1,20 @@
--- CodeQuest Database Seeder
--- Migration: 002_seed_data.sql
+-- Seed data for CodeQuest platform
+INSERT INTO modules (id, title, description, icon, order_index, created_at, updated_at) VALUES
+('html-basics', 'HTML Basics', 'Learn the fundamentals of HTML markup language', '🌐', 1, NOW(), NOW()),
+('css-styling', 'CSS Styling', 'Master CSS styling and layout techniques', '🎨', 2, NOW(), NOW()),
+('javascript-fundamentals', 'JavaScript Fundamentals', 'Learn JavaScript programming basics', '⚡', 3, NOW(), NOW());
 
--- Seed sample modules data
-INSERT INTO modules (slug, title, description, icon, color, order_index, is_active) VALUES
-('html', 'HTML Fundamentals', 'Learn the basics of HTML markup language', 'code', '#e34c26', 1, TRUE),
-('css', 'CSS Styling', 'Master CSS for beautiful web design', 'palette', '#264de4', 2, TRUE),
-('javascript', 'JavaScript Programming', 'Learn JavaScript fundamentals and beyond', '⚡', '#f7df1e', 3, TRUE);
+-- Insert sample lessons
+INSERT INTO lessons (id, module_id, title, slug, content, order_index, created_at, updated_at) VALUES
+('html-intro', 'html-basics', 'Introduction to HTML', 'introduction-to-html', '# Introduction to HTML\n\nHTML is the standard markup language for creating web pages.', 1, NOW(), NOW()),
+('css-intro', 'css-styling', 'Introduction to CSS', 'introduction-to-css', '# Introduction to CSS\n\nCSS describes how HTML elements should be displayed.', 1, NOW(), NOW()),
+('js-intro', 'javascript-fundamentals', 'Introduction to JavaScript', 'introduction-to-javascript', '# Introduction to JavaScript\n\nJavaScript adds interactivity to web pages.', 1, NOW(), NOW());
 
--- Seed sample lessons data
-INSERT INTO lessons (module_id, slug, title, description, content_md, starter_code, test_spec_json, order_index, difficulty, estimated_duration, is_active) VALUES
-(1, 'html-basics', 'HTML Basics', 'Learn the fundamental structure of HTML documents', '# HTML Basics\n\nHTML (HyperText Markup Language) is the standard markup language for creating web pages.\n\n## Key Concepts\n\n- **Elements**: HTML documents are made up of elements\n- **Tags**: Elements are defined by tags\n- **Attributes**: Tags can have attributes that provide additional information\n\n## Example Structure\n```html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My Page</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>\n```', '<!DOCTYPE html>\n<html>\n<head>\n    <title>My Page</title>\n</head>\n<body>\n    <!-- Add your content here -->\n</body>\n</html>', '{"tests": [{"name": "Has DOCTYPE", "type": "contains", "value": "<!DOCTYPE html>"}, {"name": "Has HTML tag", "type": "contains", "value": "<html>"}, {"name": "Has head section", "type": "contains", "value": "<head>"}, {"name": "Has body section", "type": "contains", "value": "<body>"}]}', 1, 'beginner', 15, TRUE),
-(1, 'html-headings', 'HTML Headings', 'Learn about heading elements and their importance', '# HTML Headings\n\nHeadings are used to define the structure and hierarchy of your content.\n\n## Heading Levels\n\n- **H1**: Main heading (most important)\n- **H2**: Section heading\n- **H3**: Subsection heading\n- **H4-H6**: Lower level headings\n\n## Best Practices\n\n- Use only one H1 per page\n- Maintain logical hierarchy\n- Use headings for structure, not styling', '<!DOCTYPE html>\n<html>\n<head>\n    <title>Headings Example</title>\n</head>\n<body>\n    <!-- Add your headings here -->\n</body>\n</html>', '{"tests": [{"name": "Has H1 tag", "type": "contains", "value": "<h1>"}, {"name": "Has H2 tag", "type": "contains", "value": "<h2>"}, {"name": "Has H3 tag", "type": "contains", "value": "<h3>"}]}', 2, 'beginner', 10, TRUE),
-(2, 'css-selectors', 'CSS Selectors', 'Learn how to target HTML elements with CSS', '# CSS Selectors\n\nCSS selectors are patterns used to select and style HTML elements.\n\n## Basic Selectors\n\n- **Element**: `p` selects all paragraphs\n- **Class**: `.classname` selects elements with class\n- **ID**: `#idname` selects element with ID\n\n## Example\n```css\np { color: blue; }\n.highlight { background: yellow; }\n#header { font-size: 24px; }\n```', '<style>\n/* Add your CSS selectors here */\n</style>\n\n<div class="highlight">This should be highlighted</div>\n<p>This paragraph should be blue</p>\n<div id="header">This should be large</div>', '{"tests": [{"name": "Has element selector", "type": "contains", "value": "p {"}, {"name": "Has class selector", "type": "contains", "value": ".highlight"}, {"name": "Has ID selector", "type": "contains", "value": "#header"}]}', 1, 'beginner', 15, TRUE),
-(3, 'js-variables', 'JavaScript Variables', 'Learn about variables and data types in JavaScript', '# JavaScript Variables\n\nVariables are containers for storing data values.\n\n## Declaration\n\n- **var**: Function-scoped (older)\n- **let**: Block-scoped (modern)\n- **const**: Block-scoped, cannot be reassigned\n\n## Data Types\n\n- **String**: Text values\n- **Number**: Numeric values\n- **Boolean**: true/false\n- **Array**: Ordered collections\n- **Object**: Key-value pairs', '// Declare your variables here\n\n// Test your variables\nconsole.log(typeof myString);\nconsole.log(typeof myNumber);\nconsole.log(typeof myBoolean);', '{"tests": [{"name": "Has string variable", "type": "contains", "value": "let myString"}, {"name": "Has number variable", "type": "contains", "value": "let myNumber"}, {"name": "Has boolean variable", "type": "contains", "value": "let myBoolean"}]}', 1, 'beginner', 20, TRUE);
+-- Insert sample challenges
+INSERT INTO challenges (id, lesson_id, title, description, starter_code, test_cases, difficulty, points, created_at, updated_at) VALUES
+('challenge-1', 'html-intro', 'Create Your First HTML Page', 'Create a simple HTML page with a heading and paragraph.', '<!DOCTYPE html>\n<html>\n<head>\n    <title>My First Page</title>\n</head>\n<body>\n    <!-- Your code here -->\n</body>\n</html>', '[]', 'easy', 10, NOW(), NOW());
 
--- Seed sample challenges data
-INSERT INTO challenges (lesson_id, title, description, starter_code, test_spec_json, difficulty, points, time_limit, is_active) VALUES
-(1, 'Create HTML Structure', 'Create a basic HTML document with proper structure', '<!DOCTYPE html>\n<html>\n<!-- Add your code here -->\n</html>', '{"tests": [{"name": "Has DOCTYPE", "type": "contains", "value": "<!DOCTYPE html>"}, {"name": "Has HTML tag", "type": "contains", "value": "<html>"}, {"name": "Has head section", "type": "contains", "value": "<head>"}, {"name": "Has body section", "type": "contains", "value": "<body>"}]}', 'beginner', 10, 300, TRUE),
-(2, 'Add Headings', 'Add H1, H2, and H3 headings to your HTML', '<!DOCTYPE html>\n<html>\n<head>\n    <title>Headings Challenge</title>\n</head>\n<body>\n    <!-- Add your headings here -->\n</body>\n</html>', '{"tests": [{"name": "Has H1 tag", "type": "contains", "value": "<h1>"}, {"name": "Has H2 tag", "type": "contains", "value": "<h2>"}, {"name": "Has H3 tag", "type": "contains", "value": "<h3>"}]}', 'beginner', 15, 300, TRUE),
-(3, 'Style with CSS', 'Use CSS selectors to style the HTML elements', '<style>\n/* Add your CSS here */\n</style>\n\n<div class="box">Style this box</div>\n<p>Make this text red</p>\n<span id="highlight">Highlight this text</span>', '{"tests": [{"name": "Has element selector", "type": "contains", "value": "p {"}, {"name": "Has class selector", "type": "contains", "value": ".box"}, {"name": "Has ID selector", "type": "contains", "value": "#highlight"}]}', 'beginner', 20, 400, TRUE),
-(4, 'Declare Variables', 'Declare variables of different data types', '// Declare variables here\n\n// Test your variables\nconsole.log(typeof myString);\nconsole.log(typeof myNumber);\nconsole.log(typeof myBoolean);', '{"tests": [{"name": "Has string variable", "type": "contains", "value": "let myString"}, {"name": "Has number variable", "type": "contains", "value": "let myNumber"}, {"name": "Has boolean variable", "type": "contains", "value": "let myBoolean"}]}', 'beginner', 25, 500, TRUE);
-
--- Seed sample games data
-INSERT INTO games (id, title, description, category, difficulty, instructions, is_active) VALUES
-('game_001', 'Speed Typing Challenge', 'Test your typing speed and accuracy with code snippets', 'typing', 'beginner', 'Type the code as fast and accurately as possible', TRUE),
-('game_002', 'Code Memory Game', 'Remember and reproduce code patterns', 'memory', 'beginner', 'Memorize the code pattern and recreate it', TRUE),
-('game_003', 'Bug Hunter', 'Find and fix bugs in the given code', 'debugging', 'intermediate', 'Identify and correct the bugs in the code', TRUE),
-('game_004', 'Algorithm Race', 'Complete algorithms against the clock', 'algorithms', 'intermediate', 'Implement the algorithm within the time limit', TRUE),
-('game_005', 'Code Golf', 'Write the shortest possible code', 'optimization', 'advanced', 'Solve the problem with minimal code length', TRUE),
-('game_006', 'Syntax Master', 'Complete code with correct syntax', 'syntax', 'beginner', 'Fill in the missing syntax elements', TRUE),
-('game_007', 'Logic Puzzle', 'Solve coding logic problems', 'logic', 'intermediate', 'Use logical thinking to solve the puzzle', TRUE),
-('game_008', 'Performance Challenge', 'Optimize code for speed', 'performance', 'advanced', 'Make the code run as fast as possible', TRUE);
+-- Insert sample games
+INSERT INTO games (id, title, description, type, difficulty, rules, created_at, updated_at) VALUES
+('game-1', 'Code Typing Speed', 'Test your coding speed and accuracy', 'typing', 'medium', '{}', NOW(), NOW()),
+('game-2', 'Bug Hunter', 'Find and fix bugs in code snippets', 'debugging', 'hard', '{}', NOW(), NOW());
