@@ -185,11 +185,8 @@ class GamesPage {
             // Store game info in localStorage for the game page
             localStorage.setItem('codequest_current_game', JSON.stringify(game));
             
-            // For now, show an alert. In the future, this could redirect to the actual game
-            alert(`Starting ${game.title}!\n\nInstructions: ${game.instructions}\n\nTime Limit: ${Math.floor(game.time_limit / 60)} minutes\nMax Score: ${game.max_score}`);
-            
-            // TODO: Implement actual game launching
-            // window.location.href = game.game_url || 'game-player.html';
+            // Launch the actual game
+            window.location.href = 'game-player.html';
         }
     }
 

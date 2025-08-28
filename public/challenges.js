@@ -40,27 +40,53 @@ async function initializeChallenges() {
 // Load challenges from backend
 async function loadChallengesFromBackend() {
   try {
-    const response = await fetch('http://localhost:8000/api/challenges');
+    const response = await fetch("/api/challenges");
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     if (result.success) {
       challengesData = result.data;
       updateProgressStats();
       displayChallengesFromAPI();
     } else {
-      throw new Error(result.message || 'Failed to load challenges');
+      throw new Error(result.message || "Failed to load challenges");
     }
   } catch (error) {
-    console.error('Error loading challenges:', error);
-    // Show error message to user
-    const challengesGrid = document.getElementById('challengesGrid');
-    if (challengesGrid) {
-      challengesGrid.innerHTML = '<div class="error-message">Failed to load challenges. Please check your connection and try again.</div>';
-    }
+    console.error("Error loading challenges:", error);
+    // Fallback to mock data for development
+    loadMockChallenges();
   }
+}
+
+// Load mock challenges for development
+function loadMockChallenges() {
+  challengesData = [
+    {
+      id: "1",
+      slug: "contact-card",
+      title: "Contact Card Component",
+      description: "Create a responsive contact card with HTML and CSS",
+      difficulty: "easy",
+      category: "html",
+      xp_reward: 25,
+      tags: ["html", "css", "responsive"],
+    },
+    {
+      id: "2",
+      slug: "responsive-nav",
+      title: "Responsive Navigation",
+      description: "Build a mobile-friendly navigation menu",
+      difficulty: "medium",
+      category: "css",
+      xp_reward: 50,
+      tags: ["css", "responsive", "navigation"],
+    },
+  ];
+
+  displayChallengesFromAPI();
+  updateProgressStats();
 }
 
 // Setup Filters
@@ -100,15 +126,15 @@ function setupChallengeEventListeners() {
 
 // Start Challenge Function
 function startChallenge(challengeId) {
-  console.log('Starting challenge:', challengeId);
-  
+  console.log("Starting challenge:", challengeId);
+
   // Store the challenge ID in localStorage so the editor can load it
-  localStorage.setItem('codequest_current_challenge', challengeId);
-  
+  localStorage.setItem("codequest_current_challenge", challengeId);
+
   // Add a small delay for smooth transition effect
   setTimeout(() => {
     // Redirect to the editor page
-    window.location.href = 'editor.html';
+    window.location.href = "editor.html";
   }, 300);
 }
 
@@ -130,33 +156,47 @@ function loadChallenges() {
 function displayChallengesFromAPI() {
   const grid = document.getElementById("challengesGrid");
   if (!grid || !challengesData || challengesData.length === 0) {
-    grid.innerHTML = '<div class="no-challenges">No challenges available.</div>';
+    grid.innerHTML =
+      '<div class="no-challenges">No challenges available.</div>';
     return;
   }
 
-  const challengesHTML = challengesData.map((challenge, index) => `
-    <div class="challenge-card" data-difficulty="${challenge.difficulty || 'beginner'}" data-topic="${challenge.category || 'html'}">
+  const challengesHTML = challengesData
+    .map(
+      (challenge, index) => `
+    <div class="challenge-card" data-difficulty="${
+      challenge.difficulty || "beginner"
+    }" data-topic="${challenge.category || "html"}">
       <div class="challenge-header">
-        <span class="challenge-number">#${String(index + 1).padStart(3, '0')}</span>
-        <span class="difficulty ${challenge.difficulty || 'beginner'}">${challenge.difficulty || 'Beginner'}</span>
+        <span class="challenge-number">#${String(index + 1).padStart(
+          3,
+          "0"
+        )}</span>
+        <span class="difficulty ${challenge.difficulty || "beginner"}">${
+        challenge.difficulty || "Beginner"
+      }</span>
       </div>
       <h3>${challenge.title}</h3>
       <p>${challenge.description}</p>
       <div class="challenge-tags">
-        <span class="tag">${(challenge.category || 'HTML').toUpperCase()}</span>
-        <span class="tag">${challenge.difficulty || 'Beginner'}</span>
+        <span class="tag">${(challenge.category || "HTML").toUpperCase()}</span>
+        <span class="tag">${challenge.difficulty || "Beginner"}</span>
       </div>
       <div class="challenge-stats">
         <span>⏱️ ${challenge.time_limit_minutes || 30} min</span>
         <span>🏆 ${challenge.xp_reward || challenge.points || 50} XP</span>
         <span>✅ New</span>
       </div>
-      <button class="btn btn-primary" onclick="startChallenge('${challenge.title}')">Start</button>
+      <button class="btn btn-primary" onclick="startChallenge('${
+        challenge.slug || challenge.title
+      }')">Start</button>
     </div>
-  `).join('');
-  
+  `
+    )
+    .join("");
+
   grid.innerHTML = challengesHTML;
-  
+
   // Update progress stats
   updateProgressStats();
 }
@@ -197,25 +237,25 @@ function openChallengeEditor(challengeId, challengeData) {
 // Filter Challenges
 function filterChallenges(filterType, value) {
   if (!challengesData || challengesData.length === 0) return;
-  
+
   let filteredChallenges = [...challengesData];
-  
+
   // Apply difficulty filter
   const difficultyFilter = document.getElementById("difficultyFilter");
   if (difficultyFilter && difficultyFilter.value !== "all") {
-    filteredChallenges = filteredChallenges.filter(challenge => 
-      challenge.difficulty === difficultyFilter.value
+    filteredChallenges = filteredChallenges.filter(
+      (challenge) => challenge.difficulty === difficultyFilter.value
     );
   }
-  
+
   // Apply topic filter
   const topicFilter = document.getElementById("topicFilter");
   if (topicFilter && topicFilter.value !== "all") {
-    filteredChallenges = filteredChallenges.filter(challenge => 
-      challenge.category === topicFilter.value
+    filteredChallenges = filteredChallenges.filter(
+      (challenge) => challenge.category === topicFilter.value
     );
   }
-  
+
   // Display filtered challenges
   displayFilteredChallenges(filteredChallenges);
 }
@@ -224,7 +264,7 @@ function filterChallenges(filterType, value) {
 function displayFilteredChallenges(filteredChallenges) {
   const grid = document.getElementById("challengesGrid");
   if (!grid) return;
-  
+
   if (filteredChallenges.length === 0) {
     grid.innerHTML = `
       <div class="no-challenges">
@@ -234,51 +274,64 @@ function displayFilteredChallenges(filteredChallenges) {
     `;
     return;
   }
-  
-  const challengesHTML = filteredChallenges.map((challenge, index) => `
-    <div class="challenge-card" data-difficulty="${challenge.difficulty || 'beginner'}" data-topic="${challenge.category || 'html'}">
+
+  const challengesHTML = filteredChallenges
+    .map(
+      (challenge, index) => `
+    <div class="challenge-card" data-difficulty="${
+      challenge.difficulty || "beginner"
+    }" data-topic="${challenge.category || "html"}">
       <div class="challenge-header">
-        <span class="challenge-number">#${String(index + 1).padStart(3, '0')}</span>
-        <span class="difficulty ${challenge.difficulty || 'beginner'}">${challenge.difficulty || 'Beginner'}</span>
+        <span class="challenge-number">#${String(index + 1).padStart(
+          3,
+          "0"
+        )}</span>
+        <span class="difficulty ${challenge.difficulty || "beginner"}">${
+        challenge.difficulty || "Beginner"
+      }</span>
       </div>
       <h3>${challenge.title}</h3>
       <p>${challenge.description}</p>
       <div class="challenge-tags">
-        <span class="tag">${(challenge.category || 'HTML').toUpperCase()}</span>
-        <span class="tag">${challenge.difficulty || 'Beginner'}</span>
+        <span class="tag">${(challenge.category || "HTML").toUpperCase()}</span>
+        <span class="tag">${challenge.difficulty || "Beginner"}</span>
       </div>
       <div class="challenge-stats">
         <span>⏱️ ${challenge.time_limit_minutes || 30} min</span>
         <span>🏆 ${challenge.xp_reward || challenge.points || 50} XP</span>
         <span>✅ New</span>
       </div>
-      <button class="btn btn-primary" onclick="startChallenge('${challenge.title}')">Start</button>
+      <button class="btn btn-primary" onclick="startChallenge('${
+        challenge.title
+      }')">Start</button>
     </div>
-  `).join('');
-  
+  `
+    )
+    .join("");
+
   grid.innerHTML = challengesHTML;
 }
 
 // Filter by Category
 function filterByCategory(category) {
-  console.log('Filtering by category:', category);
-  
+  console.log("Filtering by category:", category);
+
   if (!challengesData || challengesData.length === 0) return;
-  
+
   // Set the topic filter dropdown
   const topicFilter = document.getElementById("topicFilter");
   if (topicFilter) {
     topicFilter.value = category;
   }
-  
+
   // Highlight the selected category card
   highlightSelectedCategory(category);
-  
+
   // Apply filters
   filterChallenges();
-  
+
   // Smooth scroll to challenges section
-  console.log('Attempting to scroll to challenges section...');
+  console.log("Attempting to scroll to challenges section...");
   smoothScrollToChallenges();
 }
 
@@ -291,24 +344,29 @@ function filterByDifficulty(difficulty) {
 // Sort Challenges
 function sortChallenges(sortBy) {
   if (!challengesData || challengesData.length === 0) return;
-  
+
   let sortedChallenges = [...challengesData];
-  
+
   switch (sortBy) {
     case "easiest":
-      sortedChallenges.sort((a, b) => 
-        getDifficultyValue(a.difficulty || 'beginner') - getDifficultyValue(b.difficulty || 'beginner')
+      sortedChallenges.sort(
+        (a, b) =>
+          getDifficultyValue(a.difficulty || "beginner") -
+          getDifficultyValue(b.difficulty || "beginner")
       );
       break;
     case "hardest":
-      sortedChallenges.sort((a, b) => 
-        getDifficultyValue(b.difficulty || 'beginner') - getDifficultyValue(a.difficulty || 'beginner')
+      sortedChallenges.sort(
+        (a, b) =>
+          getDifficultyValue(b.difficulty || "beginner") -
+          getDifficultyValue(a.difficulty || "beginner")
       );
       break;
     case "popular":
       // For now, sort by XP (higher XP = more popular)
-      sortedChallenges.sort((a, b) => 
-        (b.xp_reward || b.points || 0) - (a.xp_reward || a.points || 0)
+      sortedChallenges.sort(
+        (a, b) =>
+          (b.xp_reward || b.points || 0) - (a.xp_reward || a.points || 0)
       );
       break;
     case "newest":
@@ -316,7 +374,7 @@ function sortChallenges(sortBy) {
       // Already sorted by ID (newest first)
       break;
   }
-  
+
   // Display sorted challenges
   displayFilteredChallenges(sortedChallenges);
 }
@@ -326,78 +384,79 @@ function resetFilters() {
   const difficultyFilter = document.getElementById("difficultyFilter");
   const topicFilter = document.getElementById("topicFilter");
   const sortFilter = document.getElementById("sortFilter");
-  
+
   if (difficultyFilter) difficultyFilter.value = "all";
   if (topicFilter) topicFilter.value = "all";
   if (sortFilter) sortFilter.value = "newest";
-  
+
   // Display all challenges
   displayChallengesFromAPI();
 }
 
 // Smooth scroll to challenges section
 function smoothScrollToChallenges() {
-  console.log('smoothScrollToChallenges called');
-  
+  console.log("smoothScrollToChallenges called");
+
   // Use the ID to find the challenges section
-  const challengesSection = document.getElementById('challengesSection');
-  console.log('Found challenges section:', challengesSection);
-  
+  const challengesSection = document.getElementById("challengesSection");
+  console.log("Found challenges section:", challengesSection);
+
   if (challengesSection) {
-    console.log('Attempting to scroll to challenges section...');
-    
+    console.log("Attempting to scroll to challenges section...");
+
     // Try the native scrollIntoView method first with better options
     try {
       challengesSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
       });
-      console.log('scrollIntoView completed successfully');
-      
+      console.log("scrollIntoView completed successfully");
+
       // Add visual feedback to the section title
-      const sectionTitle = challengesSection.querySelector('.section-title');
+      const sectionTitle = challengesSection.querySelector(".section-title");
       if (sectionTitle) {
         setTimeout(() => {
-          sectionTitle.style.color = 'var(--primary)';
-          sectionTitle.style.transform = 'scale(1.05)';
+          sectionTitle.style.color = "var(--primary)";
+          sectionTitle.style.transform = "scale(1.05)";
           setTimeout(() => {
-            sectionTitle.style.color = '';
-            sectionTitle.style.transform = '';
+            sectionTitle.style.color = "";
+            sectionTitle.style.transform = "";
           }, 800);
         }, 300);
       }
     } catch (error) {
       // Fallback to manual scrolling if scrollIntoView fails
-      console.log('Using fallback scrolling method due to error:', error);
+      console.log("Using fallback scrolling method due to error:", error);
       const sectionRect = challengesSection.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       const targetPosition = scrollTop + sectionRect.top - 100;
-      
+
       window.scrollTo({
         top: targetPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   } else {
-    console.log('Challenges section not found!');
+    console.log("Challenges section not found!");
   }
 }
 
 // Highlight the selected category card
 function highlightSelectedCategory(category) {
   // Remove active class from all category cards
-  const allCategoryCards = document.querySelectorAll('.category-card');
-  allCategoryCards.forEach(card => card.classList.remove('active'));
-  
+  const allCategoryCards = document.querySelectorAll(".category-card");
+  allCategoryCards.forEach((card) => card.classList.remove("active"));
+
   // Add active class to the selected category card
   const selectedCard = document.querySelector(`.${category}-category`);
   if (selectedCard) {
-    selectedCard.classList.add('active');
-    
+    selectedCard.classList.add("active");
+
     // Remove active class after animation completes
     setTimeout(() => {
-      selectedCard.classList.remove('active');
+      selectedCard.classList.remove("active");
     }, 2000);
   }
 }
@@ -553,13 +612,13 @@ function loadMoreChallenges() {
   setTimeout(() => {
     showNotification("More challenges coming soon!", "success");
   }, 1000);
-  
+
   // Smooth scroll to show the new content
-  const loadMoreButton = document.querySelector('.load-more-container');
+  const loadMoreButton = document.querySelector(".load-more-container");
   if (loadMoreButton) {
     loadMoreButton.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center'
+      behavior: "smooth",
+      block: "center",
     });
   }
 }

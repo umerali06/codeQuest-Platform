@@ -1,451 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coding Challenges - CodeQuest</title>
-    <link rel="stylesheet" href="animations.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="challenges-styles.css">
-</head>
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="challenges-styles.css" />
+  </head>
 
-<body>
+  <body>
     <div class="bg-animation"></div>
 
     <!-- Navigation -->
     <nav id="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">⚡CodeQuest</a>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="learn.html" class="nav-link">Learn</a>
-                <a href="editor.html" class="nav-link">Code Editor</a>
-                <a href="challenges.html" class="nav-link active">Challenges</a>
-                <a href="games.html" class="nav-link">Games</a>
-                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-                <a href="about.html" class="nav-link">About</a>
-                <span id="authButtons">
-                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
-                    <button class="btn btn-primary" onclick="showSignup()">Sign Up</button>
-                </span>
-                <span id="userMenu" style="display: none;">
-                    <span class="nav-link" id="userGreeting">Welcome!</span>
-                    <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
-                </span>
-            </div>
+      <div class="nav-container">
+        <a href="index.html" class="logo">⚡CodeQuest</a>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
+        <div class="nav-links" id="navLinks">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="learn.html" class="nav-link">Learn</a>
+          <a href="editor.html" class="nav-link">Code Editor</a>
+          <a href="challenges.html" class="nav-link active">Challenges</a>
+          <a href="games.html" class="nav-link">Games</a>
+          <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+          <a href="about.html" class="nav-link">About</a>
+          <span id="authButtons">
+            <button class="btn btn-secondary" onclick="showLogin()">
+              Login
+            </button>
+            <button class="btn btn-primary" onclick="showSignup()">
+              Sign Up
+            </button>
+          </span>
+          <span id="userMenu" style="display: none">
+            <span class="nav-link" id="userGreeting">Welcome!</span>
+            <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+          </span>
+        </div>
+      </div>
     </nav>
 
     <!-- Challenges Hero -->
     <section class="challenges-hero">
-        <div class="container">
-            <h1 class="page-title">Code Challenges</h1>
-            <p class="page-subtitle">Test your skills with real-world coding problems</p>
+      <div class="container">
+        <h1 class="page-title">Code Challenges</h1>
+        <p class="page-subtitle">
+          Test your skills with real-world coding problems
+        </p>
 
-            <!-- Progress Overview -->
-            <div class="progress-overview">
-                <div class="progress-stat">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Completed</span>
-                </div>
-                <div class="progress-stat">
-                    <span class="stat-value" id="availableChallenges">Loading...</span>
-                    <span class="stat-label">Available</span>
-                </div>
-                <div class="progress-stat">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">XP Earned</span>
-                </div>
-                <div class="progress-stat">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Current Streak</span>
-                </div>
-            </div>
-
-            <!-- Filter Options -->
-            <div class="challenge-filters">
-                <select id="difficultyFilter" class="filter-select">
-                    <option value="all">All Difficulties</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="expert">Expert</option>
-                </select>
-
-                <select id="topicFilter" class="filter-select">
-                    <option value="all">All Topics</option>
-                    <option value="html">HTML</option>
-                    <option value="css">CSS</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="responsive">Responsive Design</option>
-                    <option value="accessibility">Accessibility</option>
-                </select>
-
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="easiest">Easiest First</option>
-                    <option value="hardest">Hardest First</option>
-                    <option value="popular">Most Popular</option>
-                </select>
-            </div>
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+          <div class="progress-stat">
+            <span class="stat-value">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+          <div class="progress-stat">
+            <span class="stat-value" id="availableChallenges">Loading...</span>
+            <span class="stat-label">Available</span>
+          </div>
+          <div class="progress-stat">
+            <span class="stat-value">0</span>
+            <span class="stat-label">XP Earned</span>
+          </div>
+          <div class="progress-stat">
+            <span class="stat-value">0</span>
+            <span class="stat-label">Current Streak</span>
+          </div>
         </div>
+
+        <!-- Filter Options -->
+        <div class="challenge-filters">
+          <select id="difficultyFilter" class="filter-select">
+            <option value="all">All Difficulties</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+            <option value="expert">Expert</option>
+          </select>
+
+          <select id="topicFilter" class="filter-select">
+            <option value="all">All Topics</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="javascript">JavaScript</option>
+            <option value="responsive">Responsive Design</option>
+            <option value="accessibility">Accessibility</option>
+          </select>
+
+          <select id="sortFilter" class="filter-select">
+            <option value="newest">Newest First</option>
+            <option value="easiest">Easiest First</option>
+            <option value="hardest">Hardest First</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+      </div>
     </section>
 
     <!-- Featured Challenge -->
     <section class="featured-challenge">
-        <div class="container">
-            <div class="featured-card">
-                <div class="featured-badge">⭐ Featured Challenge</div>
-                <div class="featured-content">
-                    <h2>Build a Responsive Navigation Menu</h2>
-                    <p>Create a fully responsive navigation menu that works on all devices. Include a hamburger menu for
-                        mobile, smooth transitions, and accessibility features.</p>
-                    <div class="challenge-requirements">
-                        <h4>Requirements:</h4>
-                        <ul>
-                            <li>✓ Mobile-first responsive design</li>
-                            <li>✓ Animated hamburger menu</li>
-                            <li>✓ Smooth transitions</li>
-                            <li>✓ Keyboard navigation support</li>
-                            <li>✓ ARIA labels for accessibility</li>
-                        </ul>
-                    </div>
-                    <div class="challenge-info">
-                        <span class="difficulty intermediate">Intermediate</span>
-                        <span class="time-estimate">⏱️ 45 min</span>
-                        <span class="xp-reward">🏆 100 XP</span>
-                        <span class="completion-rate">📊 68% success rate</span>
-                    </div>
-                    <button class="btn btn-primary btn-large" onclick="startChallenge('Style Your HTML')">Start
-                        Challenge</button>
-                </div>
+      <div class="container">
+        <div class="featured-card">
+          <div class="featured-badge">⭐ Featured Challenge</div>
+          <div class="featured-content">
+            <h2>Build a Responsive Navigation Menu</h2>
+            <p>
+              Create a fully responsive navigation menu that works on all
+              devices. Include a hamburger menu for mobile, smooth transitions,
+              and accessibility features.
+            </p>
+            <div class="challenge-requirements">
+              <h4>Requirements:</h4>
+              <ul>
+                <li>✓ Mobile-first responsive design</li>
+                <li>✓ Animated hamburger menu</li>
+                <li>✓ Smooth transitions</li>
+                <li>✓ Keyboard navigation support</li>
+                <li>✓ ARIA labels for accessibility</li>
+              </ul>
             </div>
+            <div class="challenge-info">
+              <span class="difficulty intermediate">Intermediate</span>
+              <span class="time-estimate">⏱️ 45 min</span>
+              <span class="xp-reward">🏆 100 XP</span>
+              <span class="completion-rate">📊 68% success rate</span>
+            </div>
+            <button
+              class="btn btn-primary btn-large"
+              onclick="startChallenge('Style Your HTML')"
+            >
+              Start Challenge
+            </button>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Challenge Categories -->
     <section class="challenge-categories">
-        <div class="container">
-            <h2 class="section-title">Challenge Paths</h2>
+      <div class="container">
+        <h2 class="section-title">Challenge Paths</h2>
 
-            <div class="category-cards">
-                <div class="category-card html-category">
-                    <div class="category-icon">🌐</div>
-                    <h3>HTML Challenges</h3>
-                    <p>Master semantic markup and document structure</p>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text">0/15 Completed</span>
-                    </div>
-                    <button class="btn btn-secondary" onclick="filterByCategory('html')">View Challenges</button>
-                </div>
-
-                <div class="category-card css-category">
-                    <div class="category-icon">🎨</div>
-                    <h3>CSS Challenges</h3>
-                    <p>Style beautiful and responsive layouts</p>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text">0/18 Completed</span>
-                    </div>
-                    <button class="btn btn-secondary" onclick="filterByCategory('css')">View Challenges</button>
-                </div>
-
-                <div class="category-card js-category">
-                    <div class="category-icon">⚡</div>
-                    <h3>JavaScript Challenges</h3>
-                    <p>Add interactivity and dynamic behavior</p>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text">0/22 Completed</span>
-                    </div>
-                    <button class="btn btn-secondary" onclick="filterByCategory('javascript')">View Challenges</button>
-                </div>
-
-                <div class="category-card fullstack-category">
-                    <div class="category-icon">🚀</div>
-                    <h3>Full Stack Projects</h3>
-                    <p>Combine all skills in complete projects</p>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text">0/10 Completed</span>
-                    </div>
-                    <button class="btn btn-secondary" onclick="filterByCategory('fullstack')">View Challenges</button>
-                </div>
+        <div class="category-cards">
+          <div class="category-card html-category">
+            <div class="category-icon">🌐</div>
+            <h3>HTML Challenges</h3>
+            <p>Master semantic markup and document structure</p>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+              <span class="progress-text">0/15 Completed</span>
             </div>
+            <button
+              class="btn btn-secondary"
+              onclick="filterByCategory('html')"
+            >
+              View Challenges
+            </button>
+          </div>
+
+          <div class="category-card css-category">
+            <div class="category-icon">🎨</div>
+            <h3>CSS Challenges</h3>
+            <p>Style beautiful and responsive layouts</p>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+              <span class="progress-text">0/18 Completed</span>
+            </div>
+            <button class="btn btn-secondary" onclick="filterByCategory('css')">
+              View Challenges
+            </button>
+          </div>
+
+          <div class="category-card js-category">
+            <div class="category-icon">⚡</div>
+            <h3>JavaScript Challenges</h3>
+            <p>Add interactivity and dynamic behavior</p>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+              <span class="progress-text">0/22 Completed</span>
+            </div>
+            <button
+              class="btn btn-secondary"
+              onclick="filterByCategory('javascript')"
+            >
+              View Challenges
+            </button>
+          </div>
+
+          <div class="category-card fullstack-category">
+            <div class="category-icon">🚀</div>
+            <h3>Full Stack Projects</h3>
+            <p>Combine all skills in complete projects</p>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+              <span class="progress-text">0/10 Completed</span>
+            </div>
+            <button
+              class="btn btn-secondary"
+              onclick="filterByCategory('fullstack')"
+            >
+              View Challenges
+            </button>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Challenges List -->
     <section class="challenges-list" id="challengesSection">
-        <div class="container">
-            <h2 class="section-title">All Challenges</h2>
+      <div class="container">
+        <h2 class="section-title">All Challenges</h2>
 
-            <div class="challenges-grid" id="challengesGrid">
-                <!-- Challenges will be loaded dynamically from the API -->
-                <div class="loading-challenges">
-                    <div class="spinner"></div>
-                    <p>Loading challenges...</p>
-                </div>
-            </div>
-
-            <!-- Load More Button -->
-            <div class="load-more-container">
-                <button class="btn btn-secondary" onclick="loadMoreChallenges()">Load More Challenges</button>
-            </div>
+        <div class="challenges-grid" id="challengesGrid">
+          <!-- Challenges will be loaded dynamically from the API -->
+          <div class="loading-challenges">
+            <div class="spinner"></div>
+            <p>Loading challenges...</p>
+          </div>
         </div>
+
+        <!-- Load More Button -->
+        <div class="load-more-container">
+          <button class="btn btn-secondary" onclick="loadMoreChallenges()">
+            Load More Challenges
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- Weekly Challenge -->
     <section class="weekly-challenge">
-        <div class="container">
-            <div class="weekly-card">
-                <div class="weekly-header">
-                    <h2>🔥 Weekly Challenge</h2>
-                    <div class="countdown">
-                        <span>Ends in: </span>
-                        <span id="weekly-countdown">3d 23h 1m</span>
-                    </div>
-                </div>
-                <div class="weekly-content">
-                    <h3>Build a Landing Page</h3>
-                    <p>Create a stunning landing page for a fictional product. Must include hero section, features, testimonials, and call-to-action.</p>
-                    <div class="weekly-prizes">
-                        <h4>Prizes:</h4>
-                        <div class="prize-list">
-                            <span>🥇 1st Place: 500 XP + Special Badge</span>
-                            <span>🥈 2nd Place: 300 XP</span>
-                            <span>🥉 3rd Place: 200 XP</span>
-                        </div>
-                    </div>
-                    <div class="participants">
-                        <span>👥 234 participants</span>
-                    </div>
-                    <button class="btn btn-warning btn-large">Join Weekly Challenge</button>
-                </div>
+      <div class="container">
+        <div class="weekly-card">
+          <div class="weekly-header">
+            <h2>🔥 Weekly Challenge</h2>
+            <div class="countdown">
+              <span>Ends in: </span>
+              <span id="weekly-countdown">3d 23h 1m</span>
             </div>
+          </div>
+          <div class="weekly-content">
+            <h3>Build a Landing Page</h3>
+            <p>
+              Create a stunning landing page for a fictional product. Must
+              include hero section, features, testimonials, and call-to-action.
+            </p>
+            <div class="weekly-prizes">
+              <h4>Prizes:</h4>
+              <div class="prize-list">
+                <span>🥇 1st Place: 500 XP + Special Badge</span>
+                <span>🥈 2nd Place: 300 XP</span>
+                <span>🥉 3rd Place: 200 XP</span>
+              </div>
+            </div>
+            <div class="participants">
+              <span>👥 234 participants</span>
+            </div>
+            <button class="btn btn-warning btn-large">
+              Join Weekly Challenge
+            </button>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <!-- Brand Column -->
-                <div class="footer-col footer-brand">
-                    <div class="footer-logo">
-                        <div class="logo-icon">⚡</div>
-                <h3>CodeQuest</h3>
-                    </div>
-                    <p class="footer-description">
-                        Master web development through interactive coding challenges and projects. 
-                        Build your portfolio while learning modern technologies.
-                    </p>
-                <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="YouTube">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                </div>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <!-- Brand Column -->
+          <div class="footer-col footer-brand">
+            <div class="footer-logo">
+              <div class="logo-icon">⚡</div>
+              <h3>CodeQuest</h3>
             </div>
+            <p class="footer-description">
+              Master web development through interactive coding challenges and
+              projects. Build your portfolio while learning modern technologies.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="Twitter">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="GitHub">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="LinkedIn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="YouTube">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
 
-                <!-- Learning Paths Column -->
-                <div class="footer-col">
-                    <h4>Learning Paths</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">JavaScript Mastery</a></li>
-                        <li><a href="#">React & Frontend</a></li>
-                        <li><a href="#">Node.js & Backend</a></li>
-                        <li><a href="#">Data Structures</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Resources Column -->
-                <div class="footer-col">
-                    <h4>Resources</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Code Challenges</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-            </div>
+          <!-- Learning Paths Column -->
+          <div class="footer-col">
+            <h4>Learning Paths</h4>
+            <ul class="footer-links">
+              <li><a href="#">Web Development</a></li>
+              <li><a href="#">JavaScript Mastery</a></li>
+              <li><a href="#">React & Frontend</a></li>
+              <li><a href="#">Node.js & Backend</a></li>
+              <li><a href="#">Data Structures</a></li>
+            </ul>
+          </div>
 
-                <!-- Company Column -->
-                <div class="footer-col">
-                    <h4>Company</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
+          <!-- Resources Column -->
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Tutorials</a></li>
+              <li><a href="#">Community</a></li>
+              <li><a href="#">Code Challenges</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2023 CodeQuest. All rights reserved.</p>
-                    <div class="footer-bottom-links">
-                        <a href="#">Privacy</a>
-                        <span class="separator">|</span>
-                        <a href="#">Terms</a>
-                        <span class="separator">|</span>
-                        <a href="#">Cookies</a>
-                </div>
-            </div>
+          <!-- Company Column -->
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2023 CodeQuest. All rights reserved.</p>
+            <div class="footer-bottom-links">
+              <a href="#">Privacy</a>
+              <span class="separator">|</span>
+              <a href="#">Terms</a>
+              <span class="separator">|</span>
+              <a href="#">Cookies</a>
+            </div>
+          </div>
         </div>
+      </div>
     </footer>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('loginModal')">&times;</button>
-            <h2>Login to CodeQuest</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-            <p class="form-footer">
-                Don't have an account? <a href="#" onclick="showSignup(); closeModal('loginModal')">Sign up</a>
-            </p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Login to CodeQuest</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p class="form-footer">
+          Don't have an account?
+          <a href="#" onclick="showSignup(); closeModal('loginModal')"
+            >Sign up</a
+          >
+        </p>
+      </div>
     </div>
 
     <!-- Signup Modal -->
     <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('signupModal')">&times;</button>
-            <h2>Join CodeQuest</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="signupUsername">Username</label>
-                    <input type="text" id="signupUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Account</button>
-            </form>
-            <p class="form-footer">
-                Already have an account? <a href="#" onclick="showLogin(); closeModal('signupModal')">Login</a>
-            </p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Join CodeQuest</h2>
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <input type="text" id="signupUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <p class="form-footer">
+          Already have an account?
+          <a href="#" onclick="showLogin(); closeModal('signupModal')">Login</a>
+        </p>
+      </div>
     </div>
 
     <script src="main.js"></script>
     <script src="auth.js"></script>
+    <script src="ai-assistant.js"></script>
     <script src="challenges.js"></script>
-    
+
     <script>
-        // Dynamic Challenge Loading
-        let allChallenges = [];
-        let filteredChallenges = [];
-        let currentPage = 1;
-        const challengesPerPage = 12;
+      // Dynamic Challenge Loading
+      let allChallenges = [];
+      let filteredChallenges = [];
+      let currentPage = 1;
+      const challengesPerPage = 12;
 
-        // Load challenges when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadChallengesFromAPI();
-        });
+      // Load challenges when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadChallengesFromAPI();
+      });
 
-        // Load challenges from the API
-        async function loadChallengesFromAPI() {
-            try {
-                const response = await fetch('http://localhost:8000/api/challenges');
-                const data = await response.json();
-                
-                if (data.success) {
-                    allChallenges = data.data;
-                    filteredChallenges = [...allChallenges];
-                    
-                    // Update available challenges count
-                    document.getElementById('availableChallenges').textContent = allChallenges.length;
-                    
-                    // Display challenges
-                    displayChallenges();
-                    
-                    // Update category progress
-                    updateCategoryProgress();
-                } else {
-                    showError('Failed to load challenges: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error loading challenges:', error);
-                showError('Failed to load challenges. Please check your connection.');
-            }
+      // Load challenges from the API
+      async function loadChallengesFromAPI() {
+        try {
+          const response = await fetch("http://localhost:8000/api/challenges");
+          const data = await response.json();
+
+          if (data.success) {
+            allChallenges = data.data;
+            filteredChallenges = [...allChallenges];
+
+            // Update available challenges count
+            document.getElementById("availableChallenges").textContent =
+              allChallenges.length;
+
+            // Display challenges
+            displayChallenges();
+
+            // Update category progress
+            updateCategoryProgress();
+          } else {
+            showError("Failed to load challenges: " + data.message);
+          }
+        } catch (error) {
+          console.error("Error loading challenges:", error);
+          showError("Failed to load challenges. Please check your connection.");
         }
+      }
 
-        // Display challenges in the grid
-        function displayChallenges() {
-            const challengesGrid = document.getElementById('challengesGrid');
-            const startIndex = (currentPage - 1) * challengesPerPage;
-            const endIndex = startIndex + challengesPerPage;
-            const challengesToShow = filteredChallenges.slice(startIndex, endIndex);
-            
-            if (challengesToShow.length === 0) {
-                challengesGrid.innerHTML = `
+      // Display challenges in the grid
+      function displayChallenges() {
+        const challengesGrid = document.getElementById("challengesGrid");
+        const startIndex = (currentPage - 1) * challengesPerPage;
+        const endIndex = startIndex + challengesPerPage;
+        const challengesToShow = filteredChallenges.slice(startIndex, endIndex);
+
+        if (challengesToShow.length === 0) {
+          challengesGrid.innerHTML = `
                     <div class="no-challenges">
                         <p>No challenges found matching your criteria.</p>
                         <button class="btn btn-primary" onclick="resetFilters()">Show All Challenges</button>
                     </div>
                 `;
-                return;
-            }
-            
-            const challengesHTML = challengesToShow.map((challenge, index) => `
-                <div class="challenge-card" data-difficulty="${challenge.difficulty}" data-topic="${challenge.category}">
+          return;
+        }
+
+        const challengesHTML = challengesToShow
+          .map(
+            (challenge, index) => `
+                <div class="challenge-card" data-difficulty="${
+                  challenge.difficulty
+                }" data-topic="${challenge.category}">
                     <div class="challenge-header">
-                        <span class="challenge-number">#${String(startIndex + index + 1).padStart(3, '0')}</span>
-                        <span class="difficulty ${challenge.difficulty}">${challenge.difficulty}</span>
+                        <span class="challenge-number">#${String(
+                          startIndex + index + 1
+                        ).padStart(3, "0")}</span>
+                        <span class="difficulty ${challenge.difficulty}">${
+              challenge.difficulty
+            }</span>
                     </div>
                     <h3>${challenge.title}</h3>
                     <p>${challenge.description}</p>
@@ -454,111 +544,139 @@
                         <span class="tag">${challenge.difficulty}</span>
                     </div>
                     <div class="challenge-stats">
-                        <span>⏱️ ${challenge.time_limit_minutes || 30} min</span>
-                        <span>🏆 ${challenge.xp_reward || challenge.points || 50} XP</span>
+                        <span>⏱️ ${
+                          challenge.time_limit_minutes || 30
+                        } min</span>
+                        <span>🏆 ${
+                          challenge.xp_reward || challenge.points || 50
+                        } XP</span>
                         <span>✅ New</span>
                     </div>
-                    <button class="btn btn-primary" onclick="startChallenge('${challenge.title}')">Start</button>
+                    <button class="btn btn-primary" onclick="startChallenge('${
+                      challenge.title
+                    }')">Start</button>
                 </div>
-            `).join('');
-            
-            challengesGrid.innerHTML = challengesHTML;
+            `
+          )
+          .join("");
+
+        challengesGrid.innerHTML = challengesHTML;
+      }
+
+      // Update category progress
+      function updateCategoryProgress() {
+        const categories = ["html", "css", "javascript", "fullstack"];
+        const categoryCards = document.querySelectorAll(".category-card");
+
+        categoryCards.forEach((card, index) => {
+          const category = categories[index];
+          const categoryChallenges = allChallenges.filter(
+            (c) => c.category === category
+          );
+          const completedCount = 0; // TODO: Get from user progress
+
+          const progressFill = card.querySelector(".progress-fill");
+          const progressText = card.querySelector(".progress-text");
+
+          if (progressFill && progressText) {
+            const percentage =
+              categoryChallenges.length > 0
+                ? (completedCount / categoryChallenges.length) * 100
+                : 0;
+            progressFill.style.width = percentage + "%";
+            progressText.textContent = `${completedCount}/${categoryChallenges.length} Completed`;
+          }
+        });
+      }
+
+      // Filter challenges
+      function filterChallenges() {
+        const difficultyFilter =
+          document.getElementById("difficultyFilter").value;
+        const topicFilter = document.getElementById("topicFilter").value;
+        const sortFilter = document.getElementById("sortFilter").value;
+
+        filteredChallenges = allChallenges.filter((challenge) => {
+          const difficultyMatch =
+            difficultyFilter === "all" ||
+            challenge.difficulty === difficultyFilter;
+          const topicMatch =
+            topicFilter === "all" || challenge.category === topicFilter;
+          return difficultyMatch && topicMatch;
+        });
+
+        // Sort challenges
+        switch (sortFilter) {
+          case "easiest":
+            filteredChallenges.sort(
+              (a, b) =>
+                (a.xp_reward || a.points || 0) - (b.xp_reward || b.points || 0)
+            );
+            break;
+          case "hardest":
+            filteredChallenges.sort(
+              (a, b) =>
+                (b.xp_reward || b.points || 0) - (a.xp_reward || a.points || 0)
+            );
+            break;
+          case "newest":
+            // Already sorted by ID (newest first)
+            break;
+          case "popular":
+            // TODO: Sort by completion rate
+            break;
         }
 
-        // Update category progress
-        function updateCategoryProgress() {
-            const categories = ['html', 'css', 'javascript', 'fullstack'];
-            const categoryCards = document.querySelectorAll('.category-card');
-            
-            categoryCards.forEach((card, index) => {
-                const category = categories[index];
-                const categoryChallenges = allChallenges.filter(c => c.category === category);
-                const completedCount = 0; // TODO: Get from user progress
-                
-                const progressFill = card.querySelector('.progress-fill');
-                const progressText = card.querySelector('.progress-text');
-                
-                if (progressFill && progressText) {
-                    const percentage = categoryChallenges.length > 0 ? (completedCount / categoryChallenges.length) * 100 : 0;
-                    progressFill.style.width = percentage + '%';
-                    progressText.textContent = `${completedCount}/${categoryChallenges.length} Completed`;
-                }
-            });
-        }
+        currentPage = 1;
+        displayChallenges();
+      }
 
-        // Filter challenges
-        function filterChallenges() {
-            const difficultyFilter = document.getElementById('difficultyFilter').value;
-            const topicFilter = document.getElementById('topicFilter').value;
-            const sortFilter = document.getElementById('sortFilter').value;
-            
-            filteredChallenges = allChallenges.filter(challenge => {
-                const difficultyMatch = difficultyFilter === 'all' || challenge.difficulty === difficultyFilter;
-                const topicMatch = topicFilter === 'all' || challenge.category === topicFilter;
-                return difficultyMatch && topicMatch;
-            });
-            
-            // Sort challenges
-            switch (sortFilter) {
-                case 'easiest':
-                    filteredChallenges.sort((a, b) => (a.xp_reward || a.points || 0) - (b.xp_reward || b.points || 0));
-                    break;
-                case 'hardest':
-                    filteredChallenges.sort((a, b) => (b.xp_reward || b.points || 0) - (a.xp_reward || a.points || 0));
-                    break;
-                case 'newest':
-                    // Already sorted by ID (newest first)
-                    break;
-                case 'popular':
-                    // TODO: Sort by completion rate
-                    break;
-            }
-            
-            currentPage = 1;
-            displayChallenges();
-        }
+      // Filter by category
+      function filterByCategory(category) {
+        document.getElementById("topicFilter").value = category;
+        filterChallenges();
 
-        // Filter by category
-        function filterByCategory(category) {
-            document.getElementById('topicFilter').value = category;
-            filterChallenges();
-            
-            // Smooth scroll to challenges section
-            smoothScrollToChallenges();
-        }
+        // Smooth scroll to challenges section
+        smoothScrollToChallenges();
+      }
 
-        // Load more challenges
-        function loadMoreChallenges() {
-            currentPage++;
-            displayChallenges();
-        }
+      // Load more challenges
+      function loadMoreChallenges() {
+        currentPage++;
+        displayChallenges();
+      }
 
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('difficultyFilter').value = 'all';
-            document.getElementById('topicFilter').value = 'all';
-            document.getElementById('sortFilter').value = 'newest';
-            filteredChallenges = [...allChallenges];
-            currentPage = 1;
-            displayChallenges();
-        }
+      // Reset filters
+      function resetFilters() {
+        document.getElementById("difficultyFilter").value = "all";
+        document.getElementById("topicFilter").value = "all";
+        document.getElementById("sortFilter").value = "newest";
+        filteredChallenges = [...allChallenges];
+        currentPage = 1;
+        displayChallenges();
+      }
 
-        // Add event listeners to filters
-        document.getElementById('difficultyFilter').addEventListener('change', filterChallenges);
-        document.getElementById('topicFilter').addEventListener('change', filterChallenges);
-        document.getElementById('sortFilter').addEventListener('change', filterChallenges);
+      // Add event listeners to filters
+      document
+        .getElementById("difficultyFilter")
+        .addEventListener("change", filterChallenges);
+      document
+        .getElementById("topicFilter")
+        .addEventListener("change", filterChallenges);
+      document
+        .getElementById("sortFilter")
+        .addEventListener("change", filterChallenges);
 
-        // Show error message
-        function showError(message) {
-            const challengesGrid = document.getElementById('challengesGrid');
-            challengesGrid.innerHTML = `
+      // Show error message
+      function showError(message) {
+        const challengesGrid = document.getElementById("challengesGrid");
+        challengesGrid.innerHTML = `
                 <div class="error-message">
                     <p>❌ ${message}</p>
                     <button class="btn btn-primary" onclick="loadChallengesFromAPI()">Retry</button>
                 </div>
             `;
-        }
+      }
     </script>
-</body>
-
+  </body>
 </html>

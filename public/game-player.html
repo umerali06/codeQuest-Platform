@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest Game Player</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="game-player-styles.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">⚡CodeQuest</a>
+            <div class="nav-links">
+                <a href="games.html" class="nav-link">← Back to Games</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Game Container -->
+    <main class="game-container">
+        <!-- Game Header -->
+        <div class="game-header">
+            <div class="game-info">
+                <h1 id="gameTitle">Loading Game...</h1>
+                <p id="gameDescription">Please wait while the game loads...</p>
+            </div>
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="stat-label">Time</span>
+                    <span class="stat-value" id="timeRemaining">--:--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="currentScore">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="currentLevel">1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <!-- Game Instructions -->
+            <div class="game-instructions" id="gameInstructions">
+                <h3>Game Instructions</h3>
+                <div id="instructionsContent">Loading instructions...</div>
+                <button class="btn btn-primary" id="startGameBtn">Start Game</button>
+            </div>
+
+            <!-- Game Canvas -->
+            <div class="game-canvas-container" id="gameCanvasContainer" style="display: none;">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="game-controls">
+                    <button class="btn btn-secondary" id="pauseBtn">Pause</button>
+                    <button class="btn btn-danger" id="restartBtn">Restart</button>
+                </div>
+            </div>
+
+            <!-- Code Editor for Coding Games -->
+            <div class="code-editor-container" id="codeEditorContainer" style="display: none;">
+                <div class="editor-header">
+                    <h3>Your Code</h3>
+                    <div class="editor-controls">
+                        <button class="btn btn-primary" id="runCodeBtn">Run Code</button>
+                        <button class="btn btn-secondary" id="resetCodeBtn">Reset</button>
+                    </div>
+                </div>
+                <div class="editor-tabs">
+                    <button class="tab-btn active" data-tab="html">HTML</button>
+                    <button class="tab-btn" data-tab="css">CSS</button>
+                    <button class="tab-btn" data-tab="js">JavaScript</button>
+                </div>
+                <div class="editor-content">
+                    <div class="tab-content active" id="htmlTab">
+                        <textarea id="htmlEditor" placeholder="Write your HTML code here..."></textarea>
+                    </div>
+                    <div class="tab-content" id="cssTab">
+                        <textarea id="cssEditor" placeholder="Write your CSS code here..."></textarea>
+                    </div>
+                    <div class="tab-content" id="jsTab">
+                        <textarea id="jsEditor" placeholder="Write your JavaScript code here..."></textarea>
+                    </div>
+                </div>
+                <div class="preview-area">
+                    <h4>Preview</h4>
+                    <iframe id="codePreview" sandbox="allow-scripts"></iframe>
+                </div>
+            </div>
+
+            <!-- Game Results -->
+            <div class="game-results" id="gameResults" style="display: none;">
+                <div class="results-content">
+                    <h2 id="resultTitle">Game Complete!</h2>
+                    <div class="results-stats">
+                        <div class="result-stat">
+                            <span class="stat-label">Final Score</span>
+                            <span class="stat-value" id="finalScore">0</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-label">Time Taken</span>
+                            <span class="stat-value" id="timeTaken">--:--</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-label">Accuracy</span>
+                            <span class="stat-value" id="accuracy">0%</span>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+                        <button class="btn btn-secondary" id="backToGamesBtn">Back to Games</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Sidebar -->
+        <div class="game-sidebar">
+            <div class="sidebar-section">
+                <h3>Leaderboard</h3>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <div class="loading">Loading leaderboard...</div>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <h3>Your Progress</h3>
+                <div class="progress-info">
+                    <div class="progress-item">
+                        <span>Games Played</span>
+                        <span id="gamesPlayed">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Best Score</span>
+                        <span id="bestScore">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Total XP</span>
+                        <span id="totalXP">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="game-engine.js"></script>
+    <script src="game-player.js"></script>
+</body>
+</html>

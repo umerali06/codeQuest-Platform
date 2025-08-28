@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication Success - CodeQuest</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .container {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+      .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        margin: 0 0 1rem 0;
+        font-size: 2rem;
+      }
+      p {
+        margin: 0 0 2rem 0;
+        opacity: 0.9;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="success-icon">✅</div>
+      <h1>Authentication Successful!</h1>
+      <p>
+        You have been successfully logged in. Redirecting you back to
+        CodeQuest...
+      </p>
+      <div class="spinner"></div>
+    </div>
+
+    <script>
+      // Handle OAuth success
+      window.addEventListener("load", function () {
+        // Give user time to see the success message
+        setTimeout(() => {
+          // Close this window and refresh the parent
+          if (window.opener) {
+            window.opener.location.reload();
+            window.close();
+          } else {
+            // If not opened in popup, redirect to dashboard
+            window.location.href = "/dashboard.html";
+          }
+        }, 2000);
+      });
+    </script>
+  </body>
+</html>

@@ -54,12 +54,13 @@ codeQuest/
 - MySQL 5.7 or higher
 - Composer
 - Web server (Apache/Nginx) or PHP built-in server
+- Appwrite account (for authentication) - [Sign up here](https://appwrite.io)
 
 ### 1. Clone and Setup
 
 ```bash
 git clone <repository-url>
-cd codeQuest
+cd codeQuest-Platform
 ```
 
 ### 2. Install Dependencies
@@ -68,7 +69,14 @@ cd codeQuest
 composer install
 ```
 
-### 3. Environment Configuration
+### 3. Appwrite Configuration
+
+1. Create an Appwrite project at [cloud.appwrite.io](https://cloud.appwrite.io)
+2. Enable **Email/Password** authentication
+3. Enable **Google OAuth** (optional but recommended)
+4. Note your **Project ID** and **Endpoint**
+
+### 4. Environment Configuration
 
 ```bash
 cp .env.sample .env
@@ -83,39 +91,46 @@ DB_NAME=codequest
 DB_USER=your_username
 DB_PASS=your_password
 
-# Appwrite
-APPWRITE_ENDPOINT=https://your-appwrite-endpoint
-APPWRITE_PROJECT_ID=your_project_id
+# Appwrite Configuration (REQUIRED for authentication)
+APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=your_actual_project_id
 APPWRITE_API_KEY=your_api_key
 
-# DeepSeek AI
-DEEPSEEK_API_KEY=your_deepseek_api_key
+# DeepSeek AI (REQUIRED - Get your key from https://platform.deepseek.com/)
+DEEPSEEK_API_KEY=your_actual_deepseek_api_key_here
 
 # Server
 PORT=8000
 NODE_ENV=development
 ```
 
-### 4. Database Setup
+### 5. Database Setup (Automated)
 
 ```bash
-# Create database
-mysql -u root -p -e "CREATE DATABASE codequest CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-# Run migrations
-mysql -u root -p codequest < db/migrations/001_create_tables.sql
-mysql -u root -p codequest < db/migrations/002_seed_data.sql
+# Run the setup script to create database and sample data
+php setup.php
 ```
 
-### 5. Start Development Server
+### 6. Start Development Server
 
 ```bash
 # Using PHP built-in server
 php -S localhost:8000 -t public
-
-# Or using Composer script
-composer start
 ```
+
+### 7. Verify Installation
+
+- **Platform**: http://localhost:8000
+- **API Health**: http://localhost:8000/api/health
+- **Appwrite Test**: http://localhost:8000/test-appwrite.html
+- **AI Assistant**: Available on all pages (click the 🤖 button)
+
+### 8. Test Authentication
+
+1. Visit the Appwrite test page: http://localhost:8000/test-appwrite.html
+2. Run all tests to verify Appwrite integration
+3. Test Google OAuth (if configured)
+4. Try creating an account on the main platform
 
 ## 🔐 Authentication Setup
 
@@ -131,11 +146,11 @@ composer start
 The platform uses the Appwrite SDK for client-side authentication:
 
 ```javascript
-import { Client, Account } from 'appwrite';
+import { Client, Account } from "appwrite";
 
 const client = new Client()
-    .setEndpoint('YOUR_APPWRITE_ENDPOINT')
-    .setProject('YOUR_PROJECT_ID');
+  .setEndpoint("YOUR_APPWRITE_ENDPOINT")
+  .setProject("YOUR_PROJECT_ID");
 
 const account = new Account(client);
 ```
@@ -143,25 +158,30 @@ const account = new Account(client);
 ## 🎯 API Endpoints
 
 ### Authentication
+
 - `GET /api/me` - Get current user profile
 - `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/logout` - User logout
 
 ### Learning Content
+
 - `GET /api/modules` - List all learning modules
 - `GET /api/modules/:slug` - Get specific module details
 - `GET /api/lessons/:slug` - Get lesson content and challenges
 
 ### Challenges & Progress
+
 - `GET /api/challenges/:id` - Get challenge details
 - `POST /api/attempts` - Submit challenge attempt
 - `GET /api/attempts` - Get user's challenge attempts
 
 ### AI Integration
+
 - `POST /api/ai/generate` - Generate AI-powered code assistance
 
 ### Games & Statistics
+
 - `POST /api/games/result` - Save game results
 - `GET /api/games/leaderboard` - Get leaderboard
 - `GET /api/games/stats` - Get user game statistics

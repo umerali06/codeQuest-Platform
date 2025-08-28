@@ -1,261 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Learn - CodeQuest</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="learn-styles.css">
-    <link rel="stylesheet" href="animations.css">
-</head>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="learn-styles.css" />
+    <link rel="stylesheet" href="animations.css" />
+  </head>
 
-<body>
+  <body>
     <div class="bg-animation"></div>
 
     <!-- Navigation -->
     <nav id="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">⚡CodeQuest</a>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="learn.html" class="nav-link active">Learn</a>
-                <a href="editor.html" class="nav-link">Code Editor</a>
-                <a href="challenges.html" class="nav-link">Challenges</a>
-                <a href="games.html" class="nav-link">Games</a>
-                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-                <a href="about.html" class="nav-link">About</a>
-                <span id="authButtons">
-                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
-                    <button class="btn btn-primary" onclick="showSignup()">Sign Up</button>
-                </span>
-                <span id="userMenu" style="display: none;">
-                    <span class="nav-link" id="userGreeting">Welcome!</span>
-                    <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
-                </span>
-            </div>
+      <div class="nav-container">
+        <a href="index.html" class="logo">⚡CodeQuest</a>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
+        <div class="nav-links" id="navLinks">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="learn.html" class="nav-link active">Learn</a>
+          <a href="editor.html" class="nav-link">Code Editor</a>
+          <a href="challenges.html" class="nav-link">Challenges</a>
+          <a href="games.html" class="nav-link">Games</a>
+          <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+          <a href="about.html" class="nav-link">About</a>
+          <span id="authButtons">
+            <button class="btn btn-secondary" onclick="showLogin()">
+              Login
+            </button>
+            <button class="btn btn-primary" onclick="showSignup()">
+              Sign Up
+            </button>
+          </span>
+          <span id="userMenu" style="display: none">
+            <span class="nav-link" id="userGreeting">Welcome!</span>
+            <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+          </span>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <main class="learn-main">
-        <!-- Header Section -->
-        <section class="learn-header">
-            <div class="container">
-                <h1>Choose Your Learning Path</h1>
-                <p>Master web development with our structured courses designed for your success</p>
-            </div>
-        </section>
-
-        <!-- Modules Grid -->
-        <section class="modules-section">
-            <div class="container">
-                <div class="modules-grid" id="modulesGrid">
-                    <!-- Modules will be loaded here -->
-                    <div class="loading-spinner">Loading modules...</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Module Detail Modal -->
-        <div id="moduleModal" class="modal">
-            <div class="modal-content module-modal">
-                <button class="close" onclick="closeModal('moduleModal')">&times;</button>
-                <div id="moduleContent">
-                    <!-- Module content will be loaded here -->
-                </div>
-            </div>
+      <!-- Header Section -->
+      <section class="learn-header">
+        <div class="container">
+          <h1>Choose Your Learning Path</h1>
+          <p>
+            Master web development with our structured courses designed for your
+            success
+          </p>
         </div>
+      </section>
 
-        <!-- Lesson Detail Modal -->
-        <div id="lessonModal" class="modal">
-            <div class="modal-content lesson-modal">
-                <button class="close" onclick="closeModal('lessonModal')">&times;</button>
-                <div id="lessonContent">
-                    <!-- Lesson content will be loaded here -->
-                </div>
-            </div>
+      <!-- Modules Grid -->
+      <section class="modules-section">
+        <div class="container">
+          <div class="modules-grid" id="modulesGrid">
+            <!-- Modules will be loaded here -->
+            <div class="loading-spinner">Loading modules...</div>
+          </div>
         </div>
+      </section>
+
+      <!-- Module Detail Modal -->
+      <div id="moduleModal" class="modal">
+        <div class="modal-content module-modal">
+          <button class="close" onclick="closeModal('moduleModal')">
+            &times;
+          </button>
+          <div id="moduleContent">
+            <!-- Module content will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Lesson Detail Modal -->
+      <div id="lessonModal" class="modal">
+        <div class="modal-content lesson-modal">
+          <button class="close" onclick="closeModal('lessonModal')">
+            &times;
+          </button>
+          <div id="lessonContent">
+            <!-- Lesson content will be loaded here -->
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <!-- Brand Column -->
-                <div class="footer-col footer-brand">
-                    <div class="footer-logo">
-                        <div class="logo-icon">⚡</div>
-                <h3>CodeQuest</h3>
-                    </div>
-                    <p class="footer-description">
-                        Master web development through interactive coding challenges and projects. 
-                        Build your portfolio while learning modern technologies.
-                    </p>
-                <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="YouTube">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                </div>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <!-- Brand Column -->
+          <div class="footer-col footer-brand">
+            <div class="footer-logo">
+              <div class="logo-icon">⚡</div>
+              <h3>CodeQuest</h3>
             </div>
+            <p class="footer-description">
+              Master web development through interactive coding challenges and
+              projects. Build your portfolio while learning modern technologies.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="Twitter">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="GitHub">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="LinkedIn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="YouTube">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
 
-                <!-- Learning Paths Column -->
-                <div class="footer-col">
-                    <h4>Learning Paths</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">JavaScript Mastery</a></li>
-                        <li><a href="#">React & Frontend</a></li>
-                        <li><a href="#">Node.js & Backend</a></li>
-                        <li><a href="#">Data Structures</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Resources Column -->
-                <div class="footer-col">
-                    <h4>Resources</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Code Challenges</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-            </div>
+          <!-- Learning Paths Column -->
+          <div class="footer-col">
+            <h4>Learning Paths</h4>
+            <ul class="footer-links">
+              <li><a href="#">Web Development</a></li>
+              <li><a href="#">JavaScript Mastery</a></li>
+              <li><a href="#">React & Frontend</a></li>
+              <li><a href="#">Node.js & Backend</a></li>
+              <li><a href="#">Data Structures</a></li>
+            </ul>
+          </div>
 
-                <!-- Company Column -->
-                <div class="footer-col">
-                    <h4>Company</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
+          <!-- Resources Column -->
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Tutorials</a></li>
+              <li><a href="#">Community</a></li>
+              <li><a href="#">Code Challenges</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2023 CodeQuest. All rights reserved.</p>
-                    <div class="footer-bottom-links">
-                        <a href="#">Privacy</a>
-                        <span class="separator">|</span>
-                        <a href="#">Terms</a>
-                        <span class="separator">|</span>
-                        <a href="#">Cookies</a>
-                </div>
-            </div>
+          <!-- Company Column -->
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2023 CodeQuest. All rights reserved.</p>
+            <div class="footer-bottom-links">
+              <a href="#">Privacy</a>
+              <span class="separator">|</span>
+              <a href="#">Terms</a>
+              <span class="separator">|</span>
+              <a href="#">Cookies</a>
+            </div>
+          </div>
         </div>
+      </div>
     </footer>
 
     <!-- Footer -->
 
     <!-- Auth Modals -->
     <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('loginModal')">&times;</button>
-            <h2>Welcome Back!</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Sign In</button>
-            </form>
-            <p class="switch-form">Don't have an account? <a onclick="switchToSignup()">Sign up</a></p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Welcome Back!</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+        <p class="switch-form">
+          Don't have an account? <a onclick="switchToSignup()">Sign up</a>
+        </p>
+      </div>
     </div>
 
     <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('signupModal')">&times;</button>
-            <h2>Join CodeQuest!</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="signupUsername">Username</label>
-                    <input type="text" id="signupUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" minlength="8" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Account</button>
-            </form>
-            <p class="switch-form">Already have an account? <a onclick="switchToLogin()">Sign in</a></p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Join CodeQuest!</h2>
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <input type="text" id="signupUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" minlength="8" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <p class="switch-form">
+          Already have an account? <a onclick="switchToLogin()">Sign in</a>
+        </p>
+      </div>
     </div>
 
-    <!-- AI Assistant Widget -->
-    <div id="ai-assistant-button">🤖 AI Helper</div>
-    <div id="ai-chat-window">
-        <div class="ai-header">
-            <h3>🤖 CodeQuest AI Assistant</h3>
-            <span id="close-ai-chat">&times;</span>
-        </div>
-        <div id="ai-messages">
-            <div class="ai-welcome">
-                <p>👋 Hi! I'm your AI coding assistant. I can help you with:</p>
-                <ul>
-                    <li>HTML, CSS, and JavaScript questions</li>
-                    <li>Code debugging and problem-solving</li>
-                    <li>Learning path recommendations</li>
-                    <li>Challenge hints and explanations</li>
-                </ul>
-                <p>How can I help you today?</p>
-            </div>
-        </div>
-        <div class="ai-input-section">
-            <div class="ai-input-row">
-                <input type="text" id="ai-input" placeholder="Ask me anything about coding...">
-                <button id="ai-send">Send</button>
-            </div>
-            <div id="quick-actions">
-                <button class="quick-action" data-prompt="Explain HTML basics">HTML Basics</button>
-                <button class="quick-action" data-prompt="Help with CSS flexbox">CSS Flexbox</button>
-                <button class="quick-action" data-prompt="JavaScript tips">JS Tips</button>
-                <button class="quick-action" data-prompt="Debug my code">Debug Help</button>
-            </div>
-        </div>
-    </div>
+    <!-- AI Assistant will be automatically injected by ai-assistant.js -->
 
     <script src="auth.js"></script>
     <script src="main.js"></script>
-    <script src="learn.js"></script>
-</body>
-
+    <script src="learn-enhanced.js"></script>
+  </body>
 </html>

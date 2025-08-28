@@ -1,568 +1,675 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - CodeQuest</title>
-    <link rel="stylesheet" href="animations.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard-styles.css">
-</head>
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="dashboard-styles.css" />
+  </head>
 
-<body>
+  <body>
     <div class="bg-animation"></div>
 
     <!-- Navigation -->
     <nav id="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">⚡CodeQuest</a>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="learn.html" class="nav-link">Learn</a>
-                <a href="editor.html" class="nav-link">Code Editor</a>
-                <a href="challenges.html" class="nav-link">Challenges</a>
-                <a href="games.html" class="nav-link">Games</a>
-                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-                <a href="about.html" class="nav-link">About</a>
-                <span id="authButtons" style="display: none;">
-                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
-                    <button class="btn btn-primary" onclick="showSignup()">Sign Up</button>
-                </span>
-                <span id="userMenu">
-                    <span class="nav-link" id="userGreeting">Welcome!</span>
-                    <a href="dashboard.html" class="btn btn-secondary active">Dashboard</a>
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
-                </span>
-            </div>
+      <div class="nav-container">
+        <a href="index.html" class="logo">⚡CodeQuest</a>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
+        <div class="nav-links" id="navLinks">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="learn.html" class="nav-link">Learn</a>
+          <a href="editor.html" class="nav-link">Code Editor</a>
+          <a href="challenges.html" class="nav-link">Challenges</a>
+          <a href="games.html" class="nav-link">Games</a>
+          <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+          <a href="about.html" class="nav-link">About</a>
+          <span id="authButtons" style="display: none">
+            <button class="btn btn-secondary" onclick="showLogin()">
+              Login
+            </button>
+            <button class="btn btn-primary" onclick="showSignup()">
+              Sign Up
+            </button>
+          </span>
+          <span id="userMenu">
+            <span class="nav-link" id="userGreeting">Welcome!</span>
+            <a href="dashboard.html" class="btn btn-secondary active"
+              >Dashboard</a
+            >
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+          </span>
+        </div>
+      </div>
     </nav>
 
     <!-- Dashboard Header -->
     <section class="dashboard-header">
-        <div class="container">
-            <div class="user-profile">
-                <div class="user-avatar" id="userAvatar">
-                    <span id="avatarInitials">U</span>
-                </div>
-                <div class="user-info">
-                    <h1 id="userName">Welcome back!</h1>
-                    <div class="user-badges">
-                        <span class="level-badge" id="userLevel">Level 1 - Beginner</span>
-                        <span class="streak-badge" id="userStreak">🔥 0 Day Streak</span>
-                        <span class="xp-badge" id="userXP">0 XP</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
+      <div class="container">
+        <div class="user-profile">
+          <div class="user-avatar" id="userAvatar">
+            <span id="avatarInitials">U</span>
+          </div>
+          <div class="user-info">
+            <h1 id="userName">Welcome back!</h1>
+            <div class="user-badges">
+              <span class="level-badge" id="userLevel">Level 1 - Beginner</span>
+              <span class="streak-badge" id="userStreak">🔥 0 Day Streak</span>
+              <span class="xp-badge" id="userXP">0 XP</span>
             </div>
+          </div>
+          <button class="btn btn-primary" onclick="editProfile()">
+            Edit Profile
+          </button>
         </div>
+      </div>
     </section>
 
     <!-- Progress Overview -->
     <section class="progress-overview-section">
-        <div class="container">
-            <div class="progress-cards">
-                <div class="progress-card">
-                    <div class="progress-icon">📚</div>
-                    <div class="progress-value" id="completedLessons">0</div>
-                    <div class="progress-label">Lessons Completed</div>
-                </div>
-                <div class="progress-card">
-                    <div class="progress-icon">🎯</div>
-                    <div class="progress-value" id="completedChallenges">0</div>
-                    <div class="progress-label">Challenges Solved</div>
-                </div>
-                <div class="progress-card">
-                    <div class="progress-icon">🏆</div>
-                    <div class="progress-value" id="earnedBadges">0</div>
-                    <div class="progress-label">Badges Earned</div>
-                </div>
-                <div class="progress-card">
-                    <div class="progress-icon">💻</div>
-                    <div class="progress-value" id="projectsCreated">0</div>
-                    <div class="progress-label">Projects Created</div>
-                </div>
-            </div>
+      <div class="container">
+        <div class="progress-cards">
+          <div class="progress-card">
+            <div class="progress-icon">📚</div>
+            <div class="progress-value" id="completedLessons">0</div>
+            <div class="progress-label">Lessons Completed</div>
+          </div>
+          <div class="progress-card">
+            <div class="progress-icon">🎯</div>
+            <div class="progress-value" id="completedChallenges">0</div>
+            <div class="progress-label">Challenges Solved</div>
+          </div>
+          <div class="progress-card">
+            <div class="progress-icon">🏆</div>
+            <div class="progress-value" id="earnedBadges">0</div>
+            <div class="progress-label">Badges Earned</div>
+          </div>
+          <div class="progress-card">
+            <div class="progress-icon">💻</div>
+            <div class="progress-value" id="projectsCreated">0</div>
+            <div class="progress-label">Projects Created</div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Learning Progress -->
     <section class="learning-progress">
-        <div class="container">
-            <h2 class="section-title">Learning Progress</h2>
+      <div class="container">
+        <h2 class="section-title">Learning Progress</h2>
 
-            <div class="tracks-progress">
-                <!-- HTML Track -->
-                <div class="track-progress-card">
-                    <div class="track-header">
-                        <div class="track-info">
-                            <span class="track-icon">🌐</span>
-                            <div>
-                                <h3>HTML Fundamentals</h3>
-                                <p>Master the structure of web pages</p>
-                            </div>
-                        </div>
-                        <div class="track-xp">
-                            <span id="htmlXP">0 XP</span>
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill html-progress" id="htmlProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="htmlLessons">0/45 Lessons</span>
-                            <span id="htmlPercent">0%</span>
-                        </div>
-                    </div>
-                    <div class="track-actions">
-                        <a href="learn.html#html" class="btn btn-primary">Continue Learning</a>
-                        <button class="btn btn-secondary" onclick="viewCertificate('html')">View Certificate</button>
-                    </div>
+        <div class="tracks-progress">
+          <!-- HTML Track -->
+          <div class="track-progress-card">
+            <div class="track-header">
+              <div class="track-info">
+                <span class="track-icon">🌐</span>
+                <div>
+                  <h3>HTML Fundamentals</h3>
+                  <p>Master the structure of web pages</p>
                 </div>
-
-                <!-- CSS Track -->
-                <div class="track-progress-card">
-                    <div class="track-header">
-                        <div class="track-info">
-                            <span class="track-icon">🎨</span>
-                            <div>
-                                <h3>CSS Styling</h3>
-                                <p>Design beautiful and responsive layouts</p>
-                            </div>
-                        </div>
-                        <div class="track-xp">
-                            <span id="cssXP">0 XP</span>
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill css-progress" id="cssProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="cssLessons">0/52 Lessons</span>
-                            <span id="cssPercent">0%</span>
-                        </div>
-                    </div>
-                    <div class="track-actions">
-                        <a href="learn.html#css" class="btn btn-primary">Continue Learning</a>
-                        <button class="btn btn-secondary" onclick="viewCertificate('css')">View Certificate</button>
-                    </div>
-                </div>
-
-                <!-- JavaScript Track -->
-                <div class="track-progress-card">
-                    <div class="track-header">
-                        <div class="track-info">
-                            <span class="track-icon">⚡</span>
-                            <div>
-                                <h3>JavaScript Programming</h3>
-                                <p>Add interactivity and dynamic behavior</p>
-                            </div>
-                        </div>
-                        <div class="track-xp">
-                            <span id="jsXP">0 XP</span>
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill js-progress" id="jsProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="jsLessons">0/68 Lessons</span>
-                            <span id="jsPercent">0%</span>
-                        </div>
-                    </div>
-                    <div class="track-actions">
-                        <a href="learn.html#javascript" class="btn btn-primary">Continue Learning</a>
-                        <button class="btn btn-secondary" onclick="viewCertificate('javascript')">View
-                            Certificate</button>
-                    </div>
-                </div>
+              </div>
+              <div class="track-xp">
+                <span id="htmlXP">0 XP</span>
+              </div>
             </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div
+                  class="progress-fill html-progress"
+                  id="htmlProgress"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="progress-text">
+                <span id="htmlLessons">0/45 Lessons</span>
+                <span id="htmlPercent">0%</span>
+              </div>
+            </div>
+            <div class="track-actions">
+              <a href="learn.html#html" class="btn btn-primary"
+                >Continue Learning</a
+              >
+              <button
+                class="btn btn-secondary"
+                onclick="viewCertificate('html')"
+              >
+                View Certificate
+              </button>
+            </div>
+          </div>
+
+          <!-- CSS Track -->
+          <div class="track-progress-card">
+            <div class="track-header">
+              <div class="track-info">
+                <span class="track-icon">🎨</span>
+                <div>
+                  <h3>CSS Styling</h3>
+                  <p>Design beautiful and responsive layouts</p>
+                </div>
+              </div>
+              <div class="track-xp">
+                <span id="cssXP">0 XP</span>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div
+                  class="progress-fill css-progress"
+                  id="cssProgress"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="progress-text">
+                <span id="cssLessons">0/52 Lessons</span>
+                <span id="cssPercent">0%</span>
+              </div>
+            </div>
+            <div class="track-actions">
+              <a href="learn.html#css" class="btn btn-primary"
+                >Continue Learning</a
+              >
+              <button
+                class="btn btn-secondary"
+                onclick="viewCertificate('css')"
+              >
+                View Certificate
+              </button>
+            </div>
+          </div>
+
+          <!-- JavaScript Track -->
+          <div class="track-progress-card">
+            <div class="track-header">
+              <div class="track-info">
+                <span class="track-icon">⚡</span>
+                <div>
+                  <h3>JavaScript Programming</h3>
+                  <p>Add interactivity and dynamic behavior</p>
+                </div>
+              </div>
+              <div class="track-xp">
+                <span id="jsXP">0 XP</span>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div
+                  class="progress-fill js-progress"
+                  id="jsProgress"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="progress-text">
+                <span id="jsLessons">0/68 Lessons</span>
+                <span id="jsPercent">0%</span>
+              </div>
+            </div>
+            <div class="track-actions">
+              <a href="learn.html#javascript" class="btn btn-primary"
+                >Continue Learning</a
+              >
+              <button
+                class="btn btn-secondary"
+                onclick="viewCertificate('javascript')"
+              >
+                View Certificate
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Recent Activity -->
     <section class="recent-activity">
-        <div class="container">
-            <h2 class="section-title">Recent Activity</h2>
+      <div class="container">
+        <h2 class="section-title">Recent Activity</h2>
 
-            <div class="activity-timeline" id="activityTimeline">
-                <div class="activity-item">
-                    <div class="activity-icon">📚</div>
-                    <div class="activity-content">
-                        <h4>Started HTML Basics</h4>
-                        <p>Began your journey with HTML fundamentals</p>
-                        <span class="activity-time">2 hours ago</span>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon">🏆</div>
-                    <div class="activity-content">
-                        <h4>Earned First Steps Badge</h4>
-                        <p>Completed your first lesson successfully</p>
-                        <span class="activity-time">3 hours ago</span>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon">👤</div>
-                    <div class="activity-content">
-                        <h4>Account Created</h4>
-                        <p>Welcome to CodeQuest!</p>
-                        <span class="activity-time">Today</span>
-                    </div>
-                </div>
+        <div class="activity-timeline" id="activityTimeline">
+          <div class="activity-item">
+            <div class="activity-icon">📚</div>
+            <div class="activity-content">
+              <h4>Started HTML Basics</h4>
+              <p>Began your journey with HTML fundamentals</p>
+              <span class="activity-time">2 hours ago</span>
             </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🏆</div>
+            <div class="activity-content">
+              <h4>Earned First Steps Badge</h4>
+              <p>Completed your first lesson successfully</p>
+              <span class="activity-time">3 hours ago</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">👤</div>
+            <div class="activity-content">
+              <h4>Account Created</h4>
+              <p>Welcome to CodeQuest!</p>
+              <span class="activity-time">Today</span>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Achievements -->
     <section class="achievements-section">
-        <div class="container">
-            <h2 class="section-title">Achievements & Badges</h2>
+      <div class="container">
+        <h2 class="section-title">Achievements & Badges</h2>
 
-            <div class="achievements-grid" id="achievementsGrid">
-                <div class="achievement-card earned">
-                    <div class="achievement-icon">🎯</div>
-                    <h4>First Steps</h4>
-                    <p>Complete your first lesson</p>
-                    <div class="achievement-progress">✅ Earned</div>
-                </div>
+        <div class="achievements-grid" id="achievementsGrid">
+          <div class="achievement-card earned">
+            <div class="achievement-icon">🎯</div>
+            <h4>First Steps</h4>
+            <p>Complete your first lesson</p>
+            <div class="achievement-progress">✅ Earned</div>
+          </div>
 
-                <div class="achievement-card">
-                    <div class="achievement-icon">📚</div>
-                    <h4>Knowledge Seeker</h4>
-                    <p>Complete 10 lessons</p>
-                    <div class="achievement-progress">
-                        <div class="mini-progress">
-                            <div class="mini-progress-fill" style="width: 10%"></div>
-                        </div>
-                        <span>1/10</span>
-                    </div>
-                </div>
-
-                <div class="achievement-card">
-                    <div class="achievement-icon">🔥</div>
-                    <h4>On Fire</h4>
-                    <p>Maintain a 7-day streak</p>
-                    <div class="achievement-progress">
-                        <div class="mini-progress">
-                            <div class="mini-progress-fill" style="width: 14%"></div>
-                        </div>
-                        <span>1/7</span>
-                    </div>
-                </div>
-
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🏆</div>
-                    <h4>Challenge Master</h4>
-                    <p>Complete 25 challenges</p>
-                    <div class="achievement-progress">🔒 Locked</div>
-                </div>
-
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">⭐</div>
-                    <h4>Code Warrior</h4>
-                    <p>Reach Level 10</p>
-                    <div class="achievement-progress">🔒 Locked</div>
-                </div>
-
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">💎</div>
-                    <h4>Expert Developer</h4>
-                    <p>Complete all courses</p>
-                    <div class="achievement-progress">🔒 Locked</div>
-                </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">📚</div>
+            <h4>Knowledge Seeker</h4>
+            <p>Complete 10 lessons</p>
+            <div class="achievement-progress">
+              <div class="mini-progress">
+                <div class="mini-progress-fill" style="width: 10%"></div>
+              </div>
+              <span>1/10</span>
             </div>
+          </div>
+
+          <div class="achievement-card">
+            <div class="achievement-icon">🔥</div>
+            <h4>On Fire</h4>
+            <p>Maintain a 7-day streak</p>
+            <div class="achievement-progress">
+              <div class="mini-progress">
+                <div class="mini-progress-fill" style="width: 14%"></div>
+              </div>
+              <span>1/7</span>
+            </div>
+          </div>
+
+          <div class="achievement-card locked">
+            <div class="achievement-icon">🏆</div>
+            <h4>Challenge Master</h4>
+            <p>Complete 25 challenges</p>
+            <div class="achievement-progress">🔒 Locked</div>
+          </div>
+
+          <div class="achievement-card locked">
+            <div class="achievement-icon">⭐</div>
+            <h4>Code Warrior</h4>
+            <p>Reach Level 10</p>
+            <div class="achievement-progress">🔒 Locked</div>
+          </div>
+
+          <div class="achievement-card locked">
+            <div class="achievement-icon">💎</div>
+            <h4>Expert Developer</h4>
+            <p>Complete all courses</p>
+            <div class="achievement-progress">🔒 Locked</div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Projects Showcase -->
     <section class="projects-showcase">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">My Projects</h2>
-                <a href="editor.html" class="btn btn-primary">Create New Project</a>
-            </div>
-
-            <div class="projects-grid" id="userProjects">
-                <div class="project-card">
-                    <div class="project-thumbnail">
-                        <span class="project-type">HTML/CSS</span>
-                    </div>
-                    <div class="project-info">
-                        <h3>Portfolio Website</h3>
-                        <p>Personal portfolio with responsive design</p>
-                        <div class="project-meta">
-                            <span>📅 2 days ago</span>
-                            <span>⭐ Featured</span>
-                        </div>
-                        <div class="project-actions">
-                            <button class="btn btn-secondary" onclick="openProject('portfolio')">Edit</button>
-                            <button class="btn btn-primary" onclick="viewProject('portfolio')">View</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-thumbnail">
-                        <span class="project-type">JavaScript</span>
-                    </div>
-                    <div class="project-info">
-                        <h3>Todo App</h3>
-                        <p>Interactive todo list with local storage</p>
-                        <div class="project-meta">
-                            <span>📅 5 days ago</span>
-                        </div>
-                        <div class="project-actions">
-                            <button class="btn btn-secondary" onclick="openProject('todo')">Edit</button>
-                            <button class="btn btn-primary" onclick="viewProject('todo')">View</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="empty-project-card">
-                    <a href="editor.html">
-                        <span class="add-icon">+</span>
-                        <p>Create New Project</p>
-                    </a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">My Projects</h2>
+          <a href="editor.html" class="btn btn-primary">Create New Project</a>
         </div>
+
+        <div class="projects-grid" id="userProjects">
+          <div class="project-card">
+            <div class="project-thumbnail">
+              <span class="project-type">HTML/CSS</span>
+            </div>
+            <div class="project-info">
+              <h3>Portfolio Website</h3>
+              <p>Personal portfolio with responsive design</p>
+              <div class="project-meta">
+                <span>📅 2 days ago</span>
+                <span>⭐ Featured</span>
+              </div>
+              <div class="project-actions">
+                <button
+                  class="btn btn-secondary"
+                  onclick="openProject('portfolio')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn btn-primary"
+                  onclick="viewProject('portfolio')"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-thumbnail">
+              <span class="project-type">JavaScript</span>
+            </div>
+            <div class="project-info">
+              <h3>Todo App</h3>
+              <p>Interactive todo list with local storage</p>
+              <div class="project-meta">
+                <span>📅 5 days ago</span>
+              </div>
+              <div class="project-actions">
+                <button class="btn btn-secondary" onclick="openProject('todo')">
+                  Edit
+                </button>
+                <button class="btn btn-primary" onclick="viewProject('todo')">
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-project-card">
+            <a href="editor.html">
+              <span class="add-icon">+</span>
+              <p>Create New Project</p>
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Study Plan -->
     <section class="study-plan">
-        <div class="container">
-            <h2 class="section-title">Today's Study Plan</h2>
+      <div class="container">
+        <h2 class="section-title">Today's Study Plan</h2>
 
-            <div class="study-plan-grid">
-                <div class="study-task">
-                    <input type="checkbox" id="task1">
-                    <label for="task1">
-                        <span class="task-icon">📚</span>
-                        <div class="task-content">
-                            <h4>Complete HTML Forms Lesson</h4>
-                            <p>Learn about input types and validation</p>
-                        </div>
-                        <span class="task-xp">+30 XP</span>
-                    </label>
-                </div>
+        <div class="study-plan-grid">
+          <div class="study-task">
+            <input type="checkbox" id="task1" />
+            <label for="task1">
+              <span class="task-icon">📚</span>
+              <div class="task-content">
+                <h4>Complete HTML Forms Lesson</h4>
+                <p>Learn about input types and validation</p>
+              </div>
+              <span class="task-xp">+30 XP</span>
+            </label>
+          </div>
 
-                <div class="study-task">
-                    <input type="checkbox" id="task2">
-                    <label for="task2">
-                        <span class="task-icon">🎯</span>
-                        <div class="task-content">
-                            <h4>Solve Daily Challenge</h4>
-                            <p>CSS Grid Layout Challenge</p>
-                        </div>
-                        <span class="task-xp">+50 XP</span>
-                    </label>
-                </div>
+          <div class="study-task">
+            <input type="checkbox" id="task2" />
+            <label for="task2">
+              <span class="task-icon">🎯</span>
+              <div class="task-content">
+                <h4>Solve Daily Challenge</h4>
+                <p>CSS Grid Layout Challenge</p>
+              </div>
+              <span class="task-xp">+50 XP</span>
+            </label>
+          </div>
 
-                <div class="study-task">
-                    <input type="checkbox" id="task3">
-                    <label for="task3">
-                        <span class="task-icon">🎮</span>
-                        <div class="task-content">
-                            <h4>Play Flexbox Froggy</h4>
-                            <p>Practice flexbox with fun games</p>
-                        </div>
-                        <span class="task-xp">+25 XP</span>
-                    </label>
-                </div>
+          <div class="study-task">
+            <input type="checkbox" id="task3" />
+            <label for="task3">
+              <span class="task-icon">🎮</span>
+              <div class="task-content">
+                <h4>Play Flexbox Froggy</h4>
+                <p>Practice flexbox with fun games</p>
+              </div>
+              <span class="task-xp">+25 XP</span>
+            </label>
+          </div>
 
-                <div class="study-task">
-                    <input type="checkbox" id="task4">
-                    <label for="task4">
-                        <span class="task-icon">💻</span>
-                        <div class="task-content">
-                            <h4>Code for 30 Minutes</h4>
-                            <p>Practice in the code editor</p>
-                        </div>
-                        <span class="task-xp">+20 XP</span>
-                    </label>
-                </div>
-            </div>
+          <div class="study-task">
+            <input type="checkbox" id="task4" />
+            <label for="task4">
+              <span class="task-icon">💻</span>
+              <div class="task-content">
+                <h4>Code for 30 Minutes</h4>
+                <p>Practice in the code editor</p>
+              </div>
+              <span class="task-xp">+20 XP</span>
+            </label>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <!-- Brand Column -->
-                <div class="footer-col footer-brand">
-                    <div class="footer-logo">
-                        <div class="logo-icon">⚡</div>
-                <h3>CodeQuest</h3>
-                    </div>
-                    <p class="footer-description">
-                        Master web development through interactive coding challenges and projects. 
-                        Build your portfolio while learning modern technologies.
-                    </p>
-                <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="YouTube">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z" fill="currentColor"/>
-                            </svg>
-                        </a>
-                </div>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <!-- Brand Column -->
+          <div class="footer-col footer-brand">
+            <div class="footer-logo">
+              <div class="logo-icon">⚡</div>
+              <h3>CodeQuest</h3>
             </div>
+            <p class="footer-description">
+              Master web development through interactive coding challenges and
+              projects. Build your portfolio while learning modern technologies.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="Twitter">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="GitHub">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="LinkedIn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="YouTube">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
 
-                <!-- Learning Paths Column -->
-                <div class="footer-col">
-                    <h4>Learning Paths</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">JavaScript Mastery</a></li>
-                        <li><a href="#">React & Frontend</a></li>
-                        <li><a href="#">Node.js & Backend</a></li>
-                        <li><a href="#">Data Structures</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Resources Column -->
-                <div class="footer-col">
-                    <h4>Resources</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Code Challenges</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-            </div>
+          <!-- Learning Paths Column -->
+          <div class="footer-col">
+            <h4>Learning Paths</h4>
+            <ul class="footer-links">
+              <li><a href="#">Web Development</a></li>
+              <li><a href="#">JavaScript Mastery</a></li>
+              <li><a href="#">React & Frontend</a></li>
+              <li><a href="#">Node.js & Backend</a></li>
+              <li><a href="#">Data Structures</a></li>
+            </ul>
+          </div>
 
-                <!-- Company Column -->
-                <div class="footer-col">
-                    <h4>Company</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
+          <!-- Resources Column -->
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Tutorials</a></li>
+              <li><a href="#">Community</a></li>
+              <li><a href="#">Code Challenges</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2023 CodeQuest. All rights reserved.</p>
-                    <div class="footer-bottom-links">
-                        <a href="#">Privacy</a>
-                        <span class="separator">|</span>
-                        <a href="#">Terms</a>
-                        <span class="separator">|</span>
-                        <a href="#">Cookies</a>
-                </div>
-            </div>
+          <!-- Company Column -->
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2023 CodeQuest. All rights reserved.</p>
+            <div class="footer-bottom-links">
+              <a href="#">Privacy</a>
+              <span class="separator">|</span>
+              <a href="#">Terms</a>
+              <span class="separator">|</span>
+              <a href="#">Cookies</a>
+            </div>
+          </div>
         </div>
+      </div>
     </footer>
 
     <!-- Profile Edit Modal -->
     <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('profileModal')">&times;</button>
-            <h2>Edit Profile</h2>
-            <form id="profileForm">
-                <div class="form-group">
-                    <label for="profileUsername">Username</label>
-                    <input type="text" id="profileUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="profileEmail">Email</label>
-                    <input type="email" id="profileEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="profileBio">Bio</label>
-                    <textarea id="profileBio" rows="4" placeholder="Tell us about yourself..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="profileGoals">Learning Goals</label>
-                    <textarea id="profileGoals" rows="3" placeholder="What do you want to achieve?"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </form>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('profileModal')">
+          &times;
+        </button>
+        <h2>Edit Profile</h2>
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="profileUsername">Username</label>
+            <input type="text" id="profileUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="profileEmail">Email</label>
+            <input type="email" id="profileEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="profileBio">Bio</label>
+            <textarea
+              id="profileBio"
+              rows="4"
+              placeholder="Tell us about yourself..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="profileGoals">Learning Goals</label>
+            <textarea
+              id="profileGoals"
+              rows="3"
+              placeholder="What do you want to achieve?"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
     </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('loginModal')">&times;</button>
-            <h2>Login to CodeQuest</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-            <p class="form-footer">
-                Don't have an account? <a href="#" onclick="showSignup(); closeModal('loginModal')">Sign up</a>
-            </p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Login to CodeQuest</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p class="form-footer">
+          Don't have an account?
+          <a href="#" onclick="showSignup(); closeModal('loginModal')"
+            >Sign up</a
+          >
+        </p>
+      </div>
     </div>
 
     <!-- Signup Modal -->
     <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('signupModal')">&times;</button>
-            <h2>Join CodeQuest</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="signupUsername">Username</label>
-                    <input type="text" id="signupUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Account</button>
-            </form>
-            <p class="form-footer">
-                Already have an account? <a href="#" onclick="showLogin(); closeModal('signupModal')">Login</a>
-            </p>
-        </div>
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Join CodeQuest</h2>
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <input type="text" id="signupUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <p class="form-footer">
+          Already have an account?
+          <a href="#" onclick="showLogin(); closeModal('signupModal')">Login</a>
+        </p>
+      </div>
     </div>
 
     <script src="main.js"></script>
     <script src="auth.js"></script>
+    <script src="ai-assistant.js"></script>
     <script src="dashboard.js"></script>
-</body>
-
+  </body>
 </html>
