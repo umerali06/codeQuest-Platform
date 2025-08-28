@@ -15,13 +15,16 @@ class Auth
     private $users;
     private $teams;
     private $logger;
-    private $database;
 
     public function __construct()
     {
-        $this->logger = new Logger();
-        $this->database = Database::getInstance();
-        $this->initializeAppwrite();
+        try {
+            $this->logger = new Logger();
+            $this->initializeAppwrite();
+        } catch (Exception $e) {
+            $this->logger->error('Failed to initialize Auth: ' . $e->getMessage());
+            // Don't throw here, let the methods handle it gracefully
+        }
     }
 
     private function initializeAppwrite()
@@ -69,9 +72,6 @@ class Auth
             $userId = $session['userId'];
             $user = $this->users->get($userId);
 
-            // Mirror user in local database if not exists
-            $this->mirrorUser($user);
-
             return [
                 'user_id' => $userId,
                 'email' => $user['email'],
@@ -88,107 +88,9 @@ class Auth
         }
     }
 
-    private function mirrorUser($appwriteUser)
-    {
-        try {
-            $userId = $appwriteUser['$id'];
-            
-            // Check if user already exists
-            $existingUser = $this->database->fetch(
-                'SELECT id FROM users WHERE appwrite_id = ?',
-                [$userId]
-            );
 
-            if (!$existingUser) {
-                // Create new user
-                $this->database->execute(
-                    'INSERT INTO users (id, appwrite_id, username, email, full_name, avatar_url, created_at) 
-                     VALUES (UUID(), ?, ?, ?, ?, ?, NOW())',
-                    [
-                        $userId,
-                        $appwriteUser['username'] ?? $appwriteUser['email'],
-                        $appwriteUser['email'],
-                        $appwriteUser['name'] ?? null,
-                        $appwriteUser['avatar'] ?? null
-                    ]
-                );
-                
-                $this->logger->info('New user mirrored from Appwrite: ' . $userId);
-            } else {
-                // Update existing user
-                $this->database->execute(
-                    'UPDATE users SET username = ?, email = ?, full_name = ?, avatar_url = ?, updated_at = NOW() 
-                     WHERE appwrite_id = ?',
-                    [
-                        $appwriteUser['username'] ?? $appwriteUser['email'],
-                        $appwriteUser['email'],
-                        $appwriteUser['name'] ?? null,
-                        $appwriteUser['avatar'] ?? null,
-                        $userId
-                    ]
-                );
-            }
 
-        } catch (Exception $e) {
-            $this->logger->error('Failed to mirror user: ' . $e->getMessage());
-            // Don't throw - this shouldn't break authentication
-        }
-    }
 
-    public function getUserById($userId)
-    {
-        try {
-            return $this->database->fetch(
-                'SELECT * FROM users WHERE id = ?',
-                [$userId]
-            );
-        } catch (Exception $e) {
-            $this->logger->error('Failed to get user by ID: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    public function getUserByAppwriteId($appwriteId)
-    {
-        try {
-            return $this->database->fetch(
-                'SELECT * FROM users WHERE appwrite_id = ?',
-                [$appwriteId]
-            );
-        } catch (Exception $e) {
-            $this->logger->error('Failed to get user by Appwrite ID: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    public function updateUserProfile($userId, $data)
-    {
-        try {
-            $allowedFields = ['username', 'full_name', 'country', 'timezone'];
-            $updates = [];
-            $params = [];
-
-            foreach ($data as $field => $value) {
-                if (in_array($field, $allowedFields) && !empty($value)) {
-                    $updates[] = "{$field} = ?";
-                    $params[] = $value;
-                }
-            }
-
-            if (empty($updates)) {
-                return false;
-            }
-
-            $params[] = $userId;
-            $sql = 'UPDATE users SET ' . implode(', ', $updates) . ', updated_at = NOW() WHERE id = ?';
-            
-            return $this->database->execute($sql, $params) > 0;
-
-        } catch (Exception $e) {
-            $this->logger->error('Failed to update user profile: ' . $e->getMessage());
-            return false;
-        }
-    }
 
     public function isAuthenticated($jwt)
     {
@@ -207,5 +109,38 @@ class Auth
         } catch (Exception $e) {
             return null;
         }
+    }
+
+    // Getter methods for Appwrite services
+    public function getAccountService()
+    {
+        if (!$this->client) {
+            throw new Exception('Appwrite client not initialized');
+        }
+        return $this->account;
+    }
+
+    public function getUsersService()
+    {
+        if (!$this->client) {
+            throw new Exception('Appwrite client not initialized');
+        }
+        return $this->users;
+    }
+
+    public function getTeamsService()
+    {
+        if (!$this->client) {
+            throw new Exception('Appwrite client not initialized');
+        }
+        return $this->teams;
+    }
+
+    public function getDatabasesService()
+    {
+        if (!$this->client) {
+            throw new Exception('Appwrite client not initialized');
+        }
+        return new \Appwrite\Services\Databases($this->client);
     }
 }

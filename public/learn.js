@@ -6,36 +6,35 @@ class LearnPage {
         this.modules = [];
         this.currentModule = null;
         this.currentLesson = null;
-        this.apiBase = '/api';
-        
         this.init();
     }
 
     async init() {
         try {
             await this.loadModules();
-            this.setupEventListeners();
             this.setupAI();
         } catch (error) {
-            console.error('Failed to initialize learn page:', error);
-            this.showError('Failed to load learning content. Please try again later.');
+            console.error('Error initializing learn page:', error);
+            this.showError('Failed to initialize learn page');
         }
     }
 
     async loadModules() {
         try {
-            const response = await fetch(`${this.apiBase}/modules`);
+            const response = await fetch('/api/modules');
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error('Failed to load modules');
             }
             
             const result = await response.json();
-            if (result.success) {
-                this.modules = result.data;
-                this.renderModules();
-            } else {
-                throw new Error(result.message || 'Failed to load modules');
+            this.modules = result.modules || [];
+            
+            if (this.modules.length === 0) {
+                this.showError('No learning modules available');
+                return;
             }
+            
+            this.renderModules();
         } catch (error) {
             console.error('Error loading modules:', error);
             this.showError('Failed to load learning modules. Please check your connection and try again.');
@@ -46,345 +45,269 @@ class LearnPage {
         const modulesGrid = document.getElementById('modulesGrid');
         if (!modulesGrid) return;
 
-        if (this.modules.length === 0) {
-            modulesGrid.innerHTML = '<div class="no-modules">No learning modules available at the moment.</div>';
-            return;
-        }
-
-        const modulesHTML = this.modules.map(module => this.createModuleCard(module)).join('');
-        modulesGrid.innerHTML = modulesHTML;
-    }
-
-    createModuleCard(module) {
-        const totalLessons = module.lesson_count || 0;
-        const estimatedHours = Math.ceil((module.estimated_duration || 0) / 60);
-        
-        return `
-            <div class="module-card" data-module-slug="${module.slug}">
-                <div class="module-header" style="background: linear-gradient(135deg, ${module.color}20, ${module.color}40)">
-                    <div class="module-icon">${module.icon}</div>
-                    <div class="module-info">
-                        <h3>${module.title}</h3>
-                        <p>${module.description}</p>
-                    </div>
+        modulesGrid.innerHTML = this.modules.map(module => `
+            <div class="module-card" onclick="learnPage.viewModule('${module.id}')">
+                <div class="module-icon" style="background-color: ${module.color}">
+                    ${module.icon}
                 </div>
-                <div class="module-stats">
-                    <div class="stat">
-                        <span class="stat-number">${totalLessons}</span>
-                        <span class="stat-label">Lessons</span>
+                <div class="module-info">
+                    <h3>${this.escapeHtml(module.title)}</h3>
+                    <p>${this.escapeHtml(module.description)}</p>
+                    <div class="module-stats">
+                        <span class="stat">
+                            <i class="icon">📚</i>
+                            ${module.lesson_count || 0} lessons
+                        </span>
+                        <span class="stat">
+                            <i class="icon">🎯</i>
+                            ${module.challenge_count || 0} challenges
+                        </span>
+                        <span class="stat">
+                            <i class="icon">⏱️</i>
+                            ${module.estimated_hours || 0}h
+                        </span>
                     </div>
-                    <div class="stat">
-                        <span class="stat-number">${estimatedHours}h</span>
-                        <span class="stat-label">Duration</span>
+                    <div class="module-difficulty ${module.difficulty}">
+                        ${module.difficulty.charAt(0).toUpperCase() + module.difficulty.slice(1)}
                     </div>
-                    <div class="stat">
-                        <span class="stat-number">${module.beginner_lessons || 0}</span>
-                        <span class="stat-label">Beginner</span>
-                    </div>
-                </div>
-                <div class="module-actions">
-                    <button class="btn btn-primary" onclick="learnPage.viewModule('${module.slug}')">
-                        Start Learning
-                    </button>
-                    <button class="btn btn-secondary" onclick="learnPage.viewModuleDetails('${module.slug}')">
-                        View Details
-                    </button>
                 </div>
             </div>
-        `;
+        `).join('');
     }
 
-    async viewModule(moduleSlug) {
+    async viewModule(moduleId) {
         try {
-            const response = await fetch(`${this.apiBase}/modules/${moduleSlug}`);
+            const module = this.modules.find(m => m.id === moduleId);
+            if (!module) {
+                throw new Error('Module not found');
+            }
+
+            this.currentModule = module;
+            await this.loadLessons(moduleId);
+            this.showModuleView();
+        } catch (error) {
+            console.error('Error viewing module:', error);
+            this.showError('Failed to load module details');
+        }
+    }
+
+    async loadLessons(moduleId) {
+        try {
+            const response = await fetch(`/api/lessons?module_id=${moduleId}`);
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error('Failed to load lessons');
             }
             
             const result = await response.json();
-            if (result.success) {
-                this.currentModule = result.data;
-                this.showModuleModal();
-            } else {
-                throw new Error(result.message || 'Failed to load module');
-            }
+            this.currentModule.lessons = result.lessons || [];
         } catch (error) {
-            console.error('Error loading module:', error);
-            this.showError('Failed to load module details. Please try again.');
+            console.error('Error loading lessons:', error);
+            this.currentModule.lessons = [];
         }
     }
 
-    async viewModuleDetails(moduleSlug) {
-        await this.viewModule(moduleSlug);
-    }
+    showModuleView() {
+        const modulesSection = document.querySelector('.modules-section');
+        if (!modulesSection) return;
 
-    showModuleModal() {
-        if (!this.currentModule) return;
-
-        const modal = document.getElementById('moduleModal');
-        const content = document.getElementById('moduleContent');
-        
-        if (!modal || !content) return;
-
-        const lessonsHTML = this.currentModule.lessons.map(lesson => this.createLessonCard(lesson)).join('');
-        
-        content.innerHTML = `
-            <div class="module-detail-header">
-                <h2>${this.currentModule.title}</h2>
-                <p>${this.currentModule.description}</p>
-                <div class="module-meta">
-                    <span class="meta-item">
-                        <strong>${this.currentModule.lesson_count || 0}</strong> Lessons
-                    </span>
-                    <span class="meta-item">
-                        <strong>${Math.ceil((this.currentModule.estimated_duration || 0) / 60)}h</strong> Duration
-                    </span>
-                    <span class="meta-item">
-                        <strong>${this.currentModule.difficulty || 'Mixed'}</strong> Level
-                    </span>
-                </div>
-            </div>
-            <div class="lessons-list">
-                <h3>Lessons in this Module</h3>
-                ${lessonsHTML}
-            </div>
-        `;
-
-        modal.style.display = 'block';
-    }
-
-    createLessonCard(lesson) {
-        const difficultyClass = `difficulty-${lesson.difficulty}`;
-        const duration = lesson.estimated_duration || 15;
-        
-        return `
-            <div class="lesson-card ${difficultyClass}" data-lesson-slug="${lesson.slug}">
-                <div class="lesson-header">
-                    <div class="lesson-number">${lesson.order_index}</div>
-                    <div class="lesson-info">
-                        <h4>${lesson.title}</h4>
-                        <p>${lesson.description}</p>
-                    </div>
-                    <div class="lesson-meta">
-                        <span class="difficulty-badge ${difficultyClass}">${lesson.difficulty}</span>
-                        <span class="duration">${duration} min</span>
-                    </div>
-                </div>
-                <div class="lesson-actions">
-                    <button class="btn btn-primary" onclick="learnPage.startLesson('${lesson.slug}')">
-                        Start Lesson
+        modulesSection.innerHTML = `
+            <div class="container">
+                <div class="module-header">
+                    <button class="btn btn-secondary back-btn" onclick="learnPage.showModulesList()">
+                        ← Back to Modules
                     </button>
-                    <button class="btn btn-secondary" onclick="learnPage.viewLesson('${lesson.slug}')">
-                        Preview
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-    async startLesson(lessonSlug) {
-        try {
-            const response = await fetch(`${this.apiBase}/lessons/${lessonSlug}`);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const result = await response.json();
-            if (result.success) {
-                this.currentLesson = result.data;
-                this.showLessonModal();
-            } else {
-                throw new Error(result.message || 'Failed to load lesson');
-            }
-        } catch (error) {
-            console.error('Error loading lesson:', error);
-            this.showError('Failed to load lesson. Please try again.');
-        }
-    }
-
-    async viewLesson(lessonSlug) {
-        await this.startLesson(lessonSlug);
-    }
-
-    showLessonModal() {
-        if (!this.currentLesson) return;
-
-        const modal = document.getElementById('lessonModal');
-        const content = document.getElementById('lessonContent');
-        
-        if (!modal || !content) return;
-
-        const challengesHTML = this.currentLesson.challenges.map(challenge => this.createChallengeCard(challenge)).join('');
-        const navigationHTML = this.createNavigationHTML();
-        
-        content.innerHTML = `
-            <div class="lesson-detail-header">
-                <div class="breadcrumb">
-                    <a href="#" onclick="learnPage.showModuleModal()">${this.currentLesson.module.title}</a>
-                    <span class="separator">/</span>
-                    <span>${this.currentLesson.title}</span>
-                </div>
-                <h2>${this.currentLesson.title}</h2>
-                <p>${this.currentLesson.description}</p>
-                <div class="lesson-meta">
-                    <span class="meta-item">
-                        <strong>${this.currentLesson.difficulty}</strong> Level
-                    </span>
-                    <span class="meta-item">
-                        <strong>${this.currentLesson.estimated_duration}</strong> min
-                    </span>
-                    <span class="meta-item">
-                        <strong>${this.currentLesson.challenges.length}</strong> Challenges
-                    </span>
-                </div>
-            </div>
-            
-            <div class="lesson-content">
-                <div class="content-section">
-                    <h3>What You'll Learn</h3>
-                    <div class="markdown-content">
-                        ${this.renderMarkdown(this.currentLesson.content_md)}
+                    <div class="course-header">
+                        <div class="course-icon" style="background-color: ${this.currentModule.color}">
+                            ${this.currentModule.icon}
+                        </div>
+                        <div class="course-info">
+                            <h1>${this.escapeHtml(this.currentModule.title)}</h1>
+                            <p>${this.escapeHtml(this.currentModule.description)}</p>
+                            <div class="course-stats">
+                                <span class="stat">
+                                    <i class="icon">📚</i>
+                                    ${this.currentModule.lessons?.length || 0} lessons
+                                </span>
+                                <span class="stat">
+                                    <i class="icon">🎯</i>
+                                    ${this.currentModule.challenge_count || 0} challenges
+                                </span>
+                                <span class="stat">
+                                    <i class="icon">⏱️</i>
+                                    ${this.currentModule.estimated_hours || 0} hours
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="content-section">
-                    <h3>Starter Code</h3>
-                    <div class="code-preview">
-                        <pre><code class="language-html">${this.escapeHtml(this.currentLesson.starter_code)}</code></pre>
-                        <button class="btn btn-primary" onclick="learnPage.openInEditor('${this.currentLesson.slug}')">
-                            Open in Code Editor
+                <div class="lessons-grid">
+                    ${this.renderLessons()}
+                </div>
+            </div>
+        `;
+    }
+
+    renderLessons() {
+        if (!this.currentModule.lessons || this.currentModule.lessons.length === 0) {
+            return `
+                <div class="no-lessons">
+                    <p>No lessons available for this module yet.</p>
+                </div>
+            `;
+        }
+
+        return this.currentModule.lessons.map(lesson => `
+            <div class="lesson-card" onclick="learnPage.startLesson('${lesson.id}')">
+                <div class="lesson-header">
+                    <h3>${this.escapeHtml(lesson.title)}</h3>
+                    <span class="lesson-duration">${lesson.duration_minutes || 0} min</span>
+                </div>
+                <p>${this.escapeHtml(lesson.description || '')}</p>
+                <div class="lesson-difficulty ${lesson.difficulty}">
+                    ${lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    showModulesList() {
+        const modulesSection = document.querySelector('.modules-section');
+        if (!modulesSection) return;
+
+        modulesSection.innerHTML = `
+            <div class="container">
+                <div class="learn-header">
+                    <h1>Choose Your Learning Path</h1>
+                    <p>Master web development with our structured courses designed for your success.</p>
+                </div>
+                <div id="modulesGrid" class="modules-grid">
+                    <!-- Modules will be loaded here -->
+                </div>
+            </div>
+        `;
+        
+        this.renderModules();
+    }
+
+    async startLesson(lessonId) {
+        try {
+            const response = await fetch(`/api/lessons/${lessonId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load lesson');
+            }
+            
+            const result = await response.json();
+            this.currentLesson = result;
+            this.showLessonView();
+        } catch (error) {
+            console.error('Error starting lesson:', error);
+            this.showError('Failed to load lesson');
+        }
+    }
+
+    showLessonView() {
+        const modulesSection = document.querySelector('.modules-section');
+        if (!modulesSection) return;
+
+        modulesSection.innerHTML = `
+            <div class="container">
+                <div class="lesson-header">
+                    <button class="btn btn-secondary back-btn" onclick="learnPage.viewModule('${this.currentModule.id}')">
+                        ← Back to ${this.currentModule.title}
+                    </button>
+                    <h1>${this.escapeHtml(this.currentLesson.title)}</h1>
+                    <p>${this.escapeHtml(this.currentLesson.description || '')}</p>
+                </div>
+                
+                <div class="lesson-content">
+                    <div class="content-section">
+                        <h2>Lesson Content</h2>
+                        <div class="markdown-content">
+                            ${this.renderMarkdown(this.currentLesson.content_md)}
+                        </div>
+                    </div>
+                    
+                    ${this.renderChallenges()}
+                    
+                    <div class="lesson-actions">
+                        <button class="btn btn-primary" onclick="learnPage.startChallenge('practice')">
+                            Practice Exercise
+                        </button>
+                        <button class="btn btn-secondary" onclick="learnPage.completeLesson()">
+                            Mark Complete
                         </button>
                     </div>
                 </div>
-                
-                <div class="content-section">
-                    <h3>Practice Challenges</h3>
-                    <div class="challenges-grid">
-                        ${challengesHTML}
-                    </div>
-                </div>
-            </div>
-            
-            ${navigationHTML}
-        `;
-
-        modal.style.display = 'block';
-    }
-
-    createChallengeCard(challenge) {
-        return `
-            <div class="challenge-card">
-                <div class="challenge-header">
-                    <h4>${challenge.title}</h4>
-                    <span class="points">${challenge.points} pts</span>
-                </div>
-                <p>${challenge.description}</p>
-                <div class="challenge-actions">
-                    <button class="btn btn-primary" onclick="learnPage.startChallenge(${challenge.id})">
-                        Start Challenge
-                    </button>
-                    <button class="btn btn-secondary" onclick="learnPage.previewChallenge(${challenge.id})">
-                        Preview
-                    </button>
-                </div>
             </div>
         `;
     }
 
-    createNavigationHTML() {
-        const nav = this.currentLesson.navigation;
-        if (!nav.previous && !nav.next) return '';
+    renderChallenges() {
+        if (!this.currentLesson.challenges || this.currentLesson.challenges.length === 0) {
+            return '';
+        }
 
         return `
-            <div class="lesson-navigation">
-                ${nav.previous ? `
-                    <a href="#" class="nav-link prev" onclick="learnPage.viewLesson('${nav.previous.slug}')">
-                        <span class="nav-arrow">←</span>
-                        <span class="nav-text">
-                            <span class="nav-label">Previous</span>
-                            <span class="nav-title">${nav.previous.title}</span>
-                        </span>
-                    </a>
-                ` : '<div class="nav-placeholder"></div>'}
-                
-                ${nav.next ? `
-                    <a href="#" class="nav-link next" onclick="learnPage.viewLesson('${nav.next.slug}')">
-                        <span class="nav-text">
-                            <span class="nav-label">Next</span>
-                            <span class="nav-title">${nav.next.title}</span>
-                        </span>
-                        <span class="nav-arrow">→</span>
-                    </a>
-                ` : '<div class="nav-placeholder"></div>'}
+            <div class="content-section">
+                <h2>Challenges</h2>
+                <div class="challenges-grid">
+                    ${this.currentLesson.challenges.map(challenge => `
+                        <div class="challenge-card">
+                            <h3>${this.escapeHtml(challenge.title)}</h3>
+                            <p>${this.escapeHtml(challenge.description)}</p>
+                            <div class="challenge-stats">
+                                <span class="difficulty ${challenge.difficulty}">
+                                    ${challenge.difficulty.charAt(0).toUpperCase() + challenge.difficulty.slice(1)}
+                                </span>
+                                <span class="xp">${challenge.xp_reward || 0} XP</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="learnPage.startChallenge('${challenge.id}')">
+                                Start Challenge
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         `;
     }
 
-    openInEditor(lessonSlug) {
-        // Store lesson data in localStorage for editor
-        if (this.currentLesson) {
+    startChallenge(challengeId) {
+        if (challengeId === 'practice') {
+            // Store lesson data for practice
             localStorage.setItem('codequest_lesson', JSON.stringify({
-                slug: lessonSlug,
+                id: this.currentLesson.id,
+                slug: this.currentLesson.slug,
                 title: this.currentLesson.title,
                 starter_code: this.currentLesson.starter_code,
                 test_spec: this.currentLesson.test_spec_json
             }));
+        } else {
+            // Store challenge data
+            const challenge = this.currentLesson.challenges.find(c => c.id == challengeId);
+            if (challenge) {
+                localStorage.setItem('codequest_challenge', JSON.stringify({
+                    id: challengeId,
+                    title: challenge.title,
+                    description: challenge.description,
+                    starter_code: challenge.starter_code,
+                    test_spec: challenge.test_spec_json
+                }));
+            }
         }
         
         // Redirect to editor
         window.location.href = '../editor.html';
     }
 
-    startChallenge(challengeId) {
-        // Store challenge data and redirect to editor
-        const challenge = this.currentLesson.challenges.find(c => c.id == challengeId);
-        if (challenge) {
-            localStorage.setItem('codequest_challenge', JSON.stringify({
-                id: challengeId,
-                title: challenge.title,
-                description: challenge.description,
-                starter_code: challenge.starter_code,
-                test_spec: challenge.test_spec_json
-            }));
-            window.location.href = '../editor.html';
-        }
-    }
-
-    previewChallenge(challengeId) {
-        // Show challenge preview modal
-        const challenge = this.currentLesson.challenges.find(c => c.id == challengeId);
-        if (challenge) {
-            this.showChallengePreview(challenge);
-        }
-    }
-
-    showChallengePreview(challenge) {
-        // Create and show challenge preview modal
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content challenge-preview-modal">
-                <button class="close" onclick="this.closest('.modal').remove()">&times;</button>
-                <h2>${challenge.title}</h2>
-                <p>${challenge.description}</p>
-                <div class="challenge-stats">
-                    <span class="stat">Difficulty: <strong>${challenge.difficulty}</strong></span>
-                    <span class="stat">Points: <strong>${challenge.points}</strong></span>
-                    <span class="stat">Time Limit: <strong>${Math.floor(challenge.time_limit / 60)}m ${challenge.time_limit % 60}s</strong></span>
-                </div>
-                <div class="challenge-actions">
-                    <button class="btn btn-primary" onclick="learnPage.startChallenge(${challenge.id})">
-                        Start Challenge
-                    </button>
-                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
-                        Close
-                    </button>
-                </div>
-            </div>
-        `;
+    completeLesson() {
+        // Mark lesson as complete
+        this.showNotification('Lesson completed! Great job!', 'success');
         
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
+        // In a real app, you'd save progress to the database
+        setTimeout(() => {
+            this.viewModule(this.currentModule.id);
+        }, 2000);
     }
 
     renderMarkdown(markdown) {
@@ -424,25 +347,22 @@ class LearnPage {
         }
     }
 
-    setupEventListeners() {
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
             }
-        });
-
-        // Close modals with escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => {
-                    if (modal.style.display === 'block') {
-                        modal.style.display = 'none';
-                    }
-                });
-            }
-        });
+        }, 5000);
     }
 
     setupAI() {
@@ -515,7 +435,7 @@ class LearnPage {
         aiMessages.scrollTop = aiMessages.scrollHeight;
 
         try {
-            const response = await fetch('/api/ai/generate', {
+            const response = await fetch('/api/ai', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -539,38 +459,13 @@ class LearnPage {
             // Remove loading message
             loadingMessage.remove();
 
-            if (result.success) {
+            if (result.response) {
                 const aiMessage = document.createElement('div');
                 aiMessage.className = 'ai-message ai-message';
-                
-                let messageContent = `<p>${this.renderMarkdown(result.data.message)}</p>`;
-                
-                if (result.data.code) {
-                    messageContent += `
-                        <div class="ai-code-block">
-                            <pre><code class="language-${result.data.language || 'html'}">${this.escapeHtml(result.data.code)}</code></pre>
-                            <button class="btn btn-sm btn-primary" onclick="learnPage.insertAICode('${this.escapeHtml(result.data.code)}')">
-                                Insert into Editor
-                            </button>
-                        </div>
-                    `;
-                }
-
-                if (result.data.suggestions && result.data.suggestions.length > 0) {
-                    messageContent += `
-                        <div class="ai-suggestions">
-                            <h4>Suggestions:</h4>
-                            <ul>
-                                ${result.data.suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                }
-
-                aiMessage.innerHTML = messageContent;
+                aiMessage.innerHTML = `<p>${this.renderMarkdown(result.response)}</p>`;
                 aiMessages.appendChild(aiMessage);
             } else {
-                throw new Error(result.message || 'Failed to get AI response');
+                throw new Error('Invalid response format from API');
             }
 
         } catch (error) {
@@ -588,32 +483,6 @@ class LearnPage {
 
         // Scroll to bottom
         aiMessages.scrollTop = aiMessages.scrollHeight;
-    }
-
-    insertAICode(code) {
-        // Store code in localStorage for editor
-        localStorage.setItem('codequest_ai_code', code);
-        
-        // Show notification
-        this.showNotification('Code copied! Open the editor to use it.', 'success');
-    }
-
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <span class="notification-message">${message}</span>
-            <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
     }
 }
 
@@ -647,3 +516,4 @@ function showSignup() {
 document.addEventListener('DOMContentLoaded', () => {
     window.learnPage = new LearnPage();
 });
+

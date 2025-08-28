@@ -98,12 +98,6 @@ function updateAuthUI() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-  // Hamburger menu
-  const hamburger = document.getElementById("hamburger");
-  if (hamburger) {
-    hamburger.addEventListener("click", toggleMobileMenu);
-  }
-
   // Close modals on outside click
   window.addEventListener("click", function (event) {
     if (event.target.classList.contains("modal")) {
@@ -111,39 +105,11 @@ function setupEventListeners() {
     }
   });
 
-  // Form submissions
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
-
-  const signupForm = document.getElementById("signupForm");
-  if (signupForm) {
-    signupForm.addEventListener("submit", handleSignup);
-  }
+  // Note: Authentication form handling is now done by individual page scripts
+  // (e.g., games.js, editor.js, etc.) to avoid conflicts
 
   // Keyboard shortcuts
   document.addEventListener("keydown", handleKeyboardShortcuts);
-}
-
-// Toggle Mobile Menu
-function toggleMobileMenu() {
-  const hamburger = document.getElementById("hamburger");
-  const navLinks = document.getElementById("navLinks");
-
-  hamburger.classList.toggle("active");
-  navLinks.classList.toggle("active");
-}
-
-// Close Mobile Menu
-function closeMobileMenu() {
-  const hamburger = document.getElementById("hamburger");
-  const navLinks = document.getElementById("navLinks");
-
-  if (hamburger && navLinks) {
-    hamburger.classList.remove("active");
-    navLinks.classList.remove("active");
-  }
 }
 
 // Smooth Scrolling
@@ -151,13 +117,19 @@ function setupSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       e.preventDefault();
-      const target = document.querySelector(this.getAttribute("href"));
+      const href = this.getAttribute("href");
+      
+      // Skip if href is just "#" or empty
+      if (!href || href === "#") {
+        return;
+      }
+      
+      const target = document.querySelector(href);
       if (target) {
         target.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
-        closeMobileMenu();
       }
     });
   });
@@ -223,14 +195,72 @@ function initializePageSpecific(page) {
 // Home Page Initialization
 function initHomePage() {
   // Add any home page specific initialization
-  animateStats();
+  // Delay stats animation to ensure content is loaded
+  setTimeout(() => {
+    animateStats();
+  }, 1000);
+}
+
+// Learn Page Initialization
+function initLearnPage() {
+  // Learn page specific initialization
+  console.log('Learn page initialized');
+}
+
+// Editor Page Initialization
+function initEditorPage() {
+  // Editor page specific initialization
+  console.log('Editor page initialized');
+}
+
+// Challenges Page Initialization
+function initChallengesPage() {
+  // Challenges page specific initialization
+  console.log('Challenges page initialized');
+}
+
+// Games Page Initialization
+function initGamesPage() {
+  // Games page specific initialization
+  console.log('Games page initialized');
+}
+
+// Leaderboard Page Initialization
+function initLeaderboard() {
+  // Leaderboard page specific initialization
+  console.log('Leaderboard page initialized');
+}
+
+// Dashboard Page Initialization
+function initDashboard() {
+  // Dashboard page specific initialization
+  console.log('Dashboard page initialized');
 }
 
 // Animate Statistics
 function animateStats() {
   const stats = document.querySelectorAll(".stat-number");
   stats.forEach((stat) => {
-    const target = parseInt(stat.textContent.replace(/\D/g, ""));
+    // Skip if the stat contains "Loading..." or is not a valid number
+    if (stat.textContent.includes("Loading...") || stat.textContent.trim() === "") {
+      return;
+    }
+    
+    // Extract the numeric part and any suffix (like "K+", "M+")
+    const text = stat.textContent;
+    const numericMatch = text.match(/(\d+(?:,\d+)*)/);
+    
+    if (!numericMatch) {
+      return; // Skip if no valid number found
+    }
+    
+    const target = parseInt(numericMatch[1].replace(/,/g, ""));
+    const suffix = text.replace(numericMatch[1], ""); // Keep the suffix (K+, M+, etc.)
+    
+    if (isNaN(target) || target <= 0) {
+      return; // Skip invalid numbers
+    }
+    
     const duration = 2000;
     const increment = target / (duration / 16);
     let current = 0;
@@ -240,12 +270,9 @@ function animateStats() {
       if (current >= target) {
         current = target;
         clearInterval(timer);
-        stat.textContent =
-          formatNumber(current) + stat.textContent.replace(/[\d,]/g, "");
+        stat.textContent = formatNumber(current) + suffix;
       } else {
-        stat.textContent =
-          formatNumber(Math.floor(current)) +
-          stat.textContent.replace(/[\d,]/g, "");
+        stat.textContent = formatNumber(Math.floor(current)) + suffix;
       }
     }, 16);
   });

@@ -1,5 +1,15 @@
 /* Global Animations and Effects */
 
+/* CSS Variables */
+:root {
+  --primary: #6366f1;
+  --secondary: #8b5cf6;
+  --accent: #ec4899;
+  --dark: #0f172a;
+  --darker: #020617;
+  --light: #f8fafc;
+}
+
 /* Background Animation */
 .bg-animation {
   position: fixed;
@@ -7,21 +17,23 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
-  background: radial-gradient(
+  z-index: -9999;
+  background: 
+    linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%),
+    radial-gradient(
       circle at 20% 50%,
-      rgba(99, 102, 241, 0.15) 0%,
-      transparent 50%
+      rgba(99, 102, 241, 0.8) 0%,
+      transparent 80%
     ),
     radial-gradient(
       circle at 80% 80%,
-      rgba(139, 92, 246, 0.15) 0%,
-      transparent 50%
+      rgba(139, 92, 246, 0.8) 0%,
+      transparent 80%
     ),
     radial-gradient(
       circle at 40% 20%,
-      rgba(236, 72, 153, 0.1) 0%,
-      transparent 50%
+      rgba(236, 72, 153, 0.7) 0%,
+      transparent 80%
     );
   animation: bgShift 20s ease-in-out infinite;
 }
@@ -30,15 +42,19 @@
   0%,
   100% {
     transform: scale(1) rotate(0deg);
-    filter: hue-rotate(0deg);
+    filter: hue-rotate(0deg) brightness(1) saturate(1);
   }
-  33% {
-    transform: scale(1.1) rotate(120deg);
-    filter: hue-rotate(30deg);
+  25% {
+    transform: scale(1.08) rotate(90deg);
+    filter: hue-rotate(25deg) brightness(1.15) saturate(1.2);
   }
-  66% {
-    transform: scale(0.9) rotate(240deg);
-    filter: hue-rotate(-30deg);
+  50% {
+    transform: scale(1.15) rotate(180deg);
+    filter: hue-rotate(50deg) brightness(1.1) saturate(1.1);
+  }
+  75% {
+    transform: scale(1.08) rotate(270deg);
+    filter: hue-rotate(25deg) brightness(1.15) saturate(1.2);
   }
 }
 
@@ -46,10 +62,81 @@
 .particle {
   position: fixed;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.6;
   animation: float 20s infinite;
   color: var(--primary);
-  z-index: -1;
+  z-index: -100;
+  text-shadow: 0 0 10px currentColor;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* Enhanced Particle Effects */
+.particle:nth-child(odd) {
+  animation-duration: 25s;
+  animation-delay: -5s;
+}
+
+.particle:nth-child(even) {
+  animation-duration: 30s;
+  animation-delay: -10s;
+}
+
+.particle:nth-child(3n) {
+  animation-duration: 35s;
+  animation-delay: -15s;
+}
+
+/* Floating Geometric Shapes */
+.floating-shape {
+  position: fixed;
+  pointer-events: none;
+  opacity: 0.1;
+  z-index: -200;
+  animation: floatShape 40s linear infinite;
+}
+
+.floating-shape:nth-child(1) {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floating-shape:nth-child(2) {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--secondary);
+  transform: rotate(45deg);
+  top: 60%;
+  right: 15%;
+  animation-delay: -20s;
+}
+
+.floating-shape:nth-child(3) {
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  top: 40%;
+  left: 80%;
+  animation-delay: -10s;
+}
+
+@keyframes floatShape {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 @keyframes float {
@@ -59,10 +146,10 @@
     opacity: 0;
   }
   10% {
-    opacity: 0.3;
+    opacity: 0.8;
   }
   90% {
-    opacity: 0.3;
+    opacity: 0.8;
   }
   100% {
     transform: translateY(-100vh) translateX(100px) rotate(720deg);

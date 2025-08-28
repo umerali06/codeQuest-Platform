@@ -28,10 +28,11 @@ class IndexPage {
             }
             
             const result = await response.json();
-            if (result.success) {
-                this.updateStatistics(result.data);
+            // API returns statistics directly, not wrapped in success/data
+            if (result && typeof result === 'object') {
+                this.updateStatistics(result);
             } else {
-                throw new Error(result.message || 'Failed to load statistics');
+                throw new Error('Invalid statistics data received');
             }
         } catch (error) {
             console.error('Error loading statistics:', error);
@@ -46,7 +47,8 @@ class IndexPage {
         const lessons = document.getElementById('totalLessons');
         const challenges = document.getElementById('totalChallenges');
 
-        if (activeLearners) activeLearners.textContent = this.formatNumber(stats.active_learners || 0);
+        // Map API fields to frontend elements
+        if (activeLearners) activeLearners.textContent = this.formatNumber(stats.total_users || 0);
         if (lessons) lessons.textContent = this.formatNumber(stats.total_lessons || 0);
         if (challenges) challenges.textContent = this.formatNumber(stats.total_challenges || 0);
 
@@ -81,17 +83,16 @@ class IndexPage {
     }
 
     showDefaultStatistics() {
-        // Default statistics if API fails
-        const defaultStats = {
-            active_learners: 10000,
-            total_lessons: 500,
-            total_challenges: 100,
-            html_lessons: 45,
-            css_lessons: 52,
-            js_lessons: 68
-        };
+        // Show loading state instead of hardcoded data
+        const activeLearners = document.getElementById('activeLearners');
+        const lessons = document.getElementById('totalLessons');
+        const challenges = document.getElementById('totalChallenges');
+
+        if (activeLearners) activeLearners.textContent = 'Loading...';
+        if (lessons) lessons.textContent = 'Loading...';
+        if (challenges) challenges.textContent = 'Loading...';
         
-        this.updateStatistics(defaultStats);
+        console.warn('Statistics API failed - showing loading state instead of hardcoded data');
     }
 
     formatNumber(num) {
@@ -109,9 +110,48 @@ class IndexPage {
         const navLinks = document.getElementById('navLinks');
         
         if (hamburger && navLinks) {
-            hamburger.addEventListener('click', () => {
+            // Toggle mobile menu
+            hamburger.addEventListener('click', (e) => {
+                e.stopPropagation();
                 navLinks.classList.toggle('active');
                 hamburger.classList.toggle('active');
+                document.body.classList.toggle('nav-open');
+            });
+
+            // Close menu when clicking on a nav link
+            navLinks.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    document.body.classList.remove('nav-open');
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    document.body.classList.remove('nav-open');
+                }
+            });
+
+            // Close menu on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    document.body.classList.remove('nav-open');
+                }
+            });
+
+            // Close menu on window resize (if switching to desktop)
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1000) {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    document.body.classList.remove('nav-open');
+                }
             });
         }
 
@@ -144,20 +184,48 @@ class IndexPage {
         aiWidget.id = 'ai-assistant';
         aiWidget.className = 'ai-assistant';
         aiWidget.innerHTML = `
+            <div class="ai-toggle-btn" id="ai-toggle-btn" onclick="indexPage.toggleAI()">
+                <span class="ai-icon">🤖</span>
+                <span class="ai-label">AI Assistant</span>
+            </div>
+            
+            <div class="ai-panel" id="ai-panel">
             <div class="ai-header">
-                <span class="ai-title">🤖 AI Assistant</span>
+                    <div class="ai-header-content">
+                        <span class="ai-title">🤖 AI Coding Assistant</span>
+                        <span class="ai-subtitle">Ask me anything about web development!</span>
+                    </div>
                 <div class="ai-controls">
-                    <button class="ai-minimize" onclick="indexPage.toggleAI()">−</button>
-                    <button class="ai-close" onclick="indexPage.closeAI()">×</button>
+                        <button class="ai-minimize" onclick="indexPage.toggleAI()" title="Minimize">−</button>
+                        <button class="ai-close" onclick="indexPage.closeAI()" title="Close">×</button>
                 </div>
             </div>
+                
             <div class="ai-content" id="ai-content">
-                <div class="ai-message">
-                    <p>Hi! I'm your AI coding assistant. Ask me anything about web development!</p>
+                    <div class="ai-messages" id="ai-messages">
+                        <div class="ai-message ai-bot-message">
+                            <div class="ai-avatar">🤖</div>
+                            <div class="ai-text">
+                                <p>Hello! I'm your AI coding assistant. I can help you with:</p>
+                                <ul>
+                                    <li>HTML, CSS & JavaScript questions</li>
+                                    <li>Code debugging and optimization</li>
+                                    <li>Web development best practices</li>
+                                    <li>Project structure advice</li>
+                                </ul>
+                                <p>What would you like to learn today?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input-container">
+                        <div class="ai-input-wrapper">
+                            <textarea id="ai-input" placeholder="Ask me about HTML, CSS, JavaScript..." rows="3"></textarea>
+                            <button id="ai-send" onclick="indexPage.sendAIRequest()" title="Send message">
+                                <span class="send-icon">📤</span>
+                            </button>
+                        </div>
                 </div>
-                <div class="ai-input">
-                    <textarea id="ai-input" placeholder="Ask me about HTML, CSS, JavaScript..."></textarea>
-                    <button id="ai-send" onclick="indexPage.sendAIRequest()">Send</button>
                 </div>
             </div>
         `;
@@ -166,6 +234,9 @@ class IndexPage {
 
         // Add styles
         this.addAIStyles();
+        
+        // Setup input handling
+        this.setupAIInput();
     }
 
     addAIStyles() {
@@ -175,122 +246,435 @@ class IndexPage {
                 position: fixed;
                 bottom: 20px;
                 right: 20px;
-                width: 350px;
-                background: #2d2d2d;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
                 z-index: 1000;
-                border: 1px solid #404040;
-                color: #ffffff;
-                font-family: inherit;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             }
 
-            .ai-header {
+            /* Floating Toggle Button */
+            .ai-toggle-btn {
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
-                padding: 15px 20px;
-                background: #4ecdc4;
-                color: #000;
-                border-radius: 12px 12px 0 0;
+                gap: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 50px;
+                cursor: pointer;
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: none;
                 font-weight: 600;
+                font-size: 14px;
+                backdrop-filter: blur(10px);
+            }
+
+            .ai-toggle-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            }
+
+            .ai-toggle-btn-active {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                transform: scale(1.05);
+            }
+
+            .ai-icon {
+                font-size: 20px;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            }
+
+            .ai-label {
+                white-space: nowrap;
+            }
+
+            /* AI Panel */
+            .ai-panel {
+                position: absolute;
+                bottom: 80px;
+                right: 0;
+                width: 380px;
+                background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(20px);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(20px) scale(0.95);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+
+            .ai-panel-open {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0) scale(1);
+            }
+
+            /* Panel Header */
+            .ai-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                color: white;
+                position: relative;
+            }
+
+            .ai-header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+                animation: shimmer 3s infinite;
+            }
+
+            @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+
+            .ai-header-content {
+                position: relative;
+                z-index: 1;
+            }
+
+            .ai-title {
+                font-size: 18px;
+                font-weight: 700;
+                margin-bottom: 4px;
+                display: block;
+            }
+
+            .ai-subtitle {
+                font-size: 13px;
+                opacity: 0.9;
+                font-weight: 400;
             }
 
             .ai-controls {
+                position: absolute;
+                top: 20px;
+                right: 20px;
                 display: flex;
                 gap: 8px;
+                z-index: 2;
             }
 
             .ai-controls button {
-                background: none;
+                background: rgba(255, 255, 255, 0.2);
                 border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
                 cursor: pointer;
-                font-size: 18px;
-                padding: 2px 6px;
-                border-radius: 4px;
-                transition: background 0.2s;
+                font-size: 16px;
+                font-weight: bold;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .ai-controls button:hover {
-                background: rgba(0, 0, 0, 0.1);
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.1);
             }
 
+            /* Messages Container */
             .ai-content {
-                padding: 20px;
-            }
-
-            .ai-message {
-                margin-bottom: 15px;
-                line-height: 1.5;
-            }
-
-            .ai-input {
+                padding: 0;
+                height: 400px;
                 display: flex;
-                gap: 10px;
+                flex-direction: column;
             }
 
-            .ai-input textarea {
+            .ai-messages {
                 flex: 1;
-                background: #404040;
-                border: 1px solid #555;
+                padding: 20px;
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+            }
+
+            .ai-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .ai-messages::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .ai-messages::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 3px;
+            }
+
+            /* Message Styles */
+            .ai-message {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 20px;
+                animation: messageSlideIn 0.3s ease-out;
+            }
+
+            @keyframes messageSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .ai-avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+            .ai-bot-message .ai-avatar {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .ai-user-message .ai-avatar {
+                background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+                color: white;
+            }
+
+            .ai-error-message .ai-avatar {
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+                color: white;
+            }
+
+            .ai-text {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 16px;
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+            }
+
+            .ai-text p {
+                margin: 0 0 12px 0;
+                line-height: 1.6;
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            .ai-text p:last-child {
+                margin-bottom: 0;
+            }
+
+            .ai-text ul {
+                margin: 8px 0;
+                padding-left: 20px;
+            }
+
+            .ai-text li {
+                margin-bottom: 6px;
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            /* Markdown formatting styles */
+            .ai-text strong {
+                font-weight: 700;
+                color: rgba(255, 255, 255, 1);
+            }
+
+            .ai-text em {
+                font-style: italic;
+                color: rgba(255, 255, 255, 0.95);
+            }
+
+            .ai-text code {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                font-size: 0.9em;
+                color: #4ecdc4;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .ai-text pre {
+                background: rgba(0, 0, 0, 0.3);
                 border-radius: 8px;
-                padding: 10px;
-                color: #ffffff;
-                resize: none;
-                height: 60px;
-                font-family: inherit;
-            }
-
-            .ai-input textarea:focus {
-                outline: none;
-                border-color: #4ecdc4;
-            }
-
-            .ai-input button {
-                background: #4ecdc4;
-                color: #000;
-                border: none;
-                padding: 10px 15px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: 600;
-                transition: background 0.2s;
-            }
-
-            .ai-input button:hover {
-                background: #45b7a8;
-            }
-
-            .ai-response {
-                background: #404040;
-                border-radius: 8px;
-                padding: 15px;
-                margin: 15px 0;
-            }
-
-            .ai-code {
-                background: #1e1e1e;
-                border-radius: 6px;
                 padding: 12px;
-                margin: 10px 0;
-                border: 1px solid #555;
+                margin: 8px 0;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                overflow-x: auto;
+            }
+
+            .ai-text pre code {
+                background: none;
+                padding: 0;
+                border: none;
+                color: #e6e6e6;
+                font-size: 0.85em;
+            }
+
+            /* Code Blocks */
+            .ai-code {
+                background: rgba(0, 0, 0, 0.3);
+                border-radius: 12px;
+                padding: 16px;
+                margin: 12px 0;
+                border: 1px solid rgba(255, 255, 255, 0.1);
                 overflow-x: auto;
             }
 
             .ai-code pre {
                 margin: 0;
-                color: #cccccc;
-                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-                font-size: 0.85rem;
-                line-height: 1.4;
+                color: #e6e6e6;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                font-size: 13px;
+                line-height: 1.5;
+                white-space: pre-wrap;
             }
 
+            /* Input Container */
+            .ai-input-container {
+                padding: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            .ai-input-wrapper {
+                display: flex;
+                gap: 12px;
+                align-items: flex-end;
+            }
+
+            .ai-input-wrapper textarea {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 16px;
+                padding: 14px 16px;
+                color: white;
+                resize: none;
+                min-height: 48px;
+                max-height: 120px;
+                font-family: inherit;
+                font-size: 14px;
+                line-height: 1.4;
+                transition: all 0.2s;
+            }
+
+            .ai-input-wrapper textarea:focus {
+                outline: none;
+                border-color: #667eea;
+                background: rgba(255, 255, 255, 0.12);
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            }
+
+            .ai-input-wrapper textarea::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+            #ai-send {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                color: white;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            #ai-send:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            }
+
+            .send-icon {
+                font-size: 18px;
+            }
+
+            /* Typing Indicator */
+            .ai-typing-indicator {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 20px;
+                animation: messageSlideIn 0.3s ease-out;
+            }
+
+            .typing-dots {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+                padding: 16px;
+                justify-content: center;
+            }
+
+            .typing-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #667eea;
+                animation: typing 1.4s infinite ease-in-out;
+            }
+
+            .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+            .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+            @keyframes typing {
+                0%, 80%, 100% {
+                    transform: scale(0.8);
+                    opacity: 0.5;
+                }
+                40% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            /* Responsive Design */
             @media (max-width: 768px) {
                 .ai-assistant {
-                    width: calc(100vw - 40px);
-                    right: 20px;
-                    left: 20px;
                     bottom: 10px;
+                    right: 10px;
+                    left: 10px;
+                }
+
+                .ai-toggle-btn {
+                    width: 100%;
+                    justify-content: center;
+                    border-radius: 25px;
+                }
+
+                .ai-panel {
+                    width: 100%;
+                    right: 0;
+                    bottom: 70px;
+                    border-radius: 20px 20px 0 0;
+                }
+
+                .ai-content {
+                    height: 350px;
+                }
+            }
+
+            /* Dark mode adjustments */
+            @media (prefers-color-scheme: dark) {
+                .ai-panel {
+                    background: linear-gradient(145deg, #0f0f23 0%, #1a1a2e 100%);
                 }
             }
         `;
@@ -299,22 +683,38 @@ class IndexPage {
     }
 
     toggleAI() {
-        const aiContent = document.getElementById('ai-content');
-        const toggleBtn = document.querySelector('.ai-minimize');
+        const aiPanel = document.getElementById('ai-panel');
+        const toggleBtn = document.getElementById('ai-toggle-btn');
+        const minimizeBtn = document.querySelector('.ai-minimize');
         
-        if (aiContent.style.display === 'none') {
-            aiContent.style.display = 'block';
-            toggleBtn.textContent = '−';
+        if (aiPanel.classList.contains('ai-panel-open')) {
+            // Close panel
+            aiPanel.classList.remove('ai-panel-open');
+            toggleBtn.classList.remove('ai-toggle-btn-active');
+            minimizeBtn.textContent = '+';
+            minimizeBtn.title = 'Maximize';
         } else {
-            aiContent.style.display = 'none';
-            toggleBtn.textContent = '+';
+            // Open panel
+            aiPanel.classList.add('ai-panel-open');
+            toggleBtn.classList.add('ai-toggle-btn-active');
+            minimizeBtn.textContent = '−';
+            minimizeBtn.title = 'Minimize';
+            
+            // Focus on input
+            setTimeout(() => {
+                const input = document.getElementById('ai-input');
+                if (input) input.focus();
+            }, 300);
         }
     }
 
     closeAI() {
-        const aiAssistant = document.getElementById('ai-assistant');
-        if (aiAssistant) {
-            aiAssistant.remove();
+        const aiPanel = document.getElementById('ai-panel');
+        const toggleBtn = document.getElementById('ai-toggle-btn');
+        
+        if (aiPanel) {
+            aiPanel.classList.remove('ai-panel-open');
+            toggleBtn.classList.remove('ai-toggle-btn-active');
         }
     }
 
@@ -324,65 +724,214 @@ class IndexPage {
         
         if (!message) return;
 
+        // Add user message to chat
+        this.addUserMessage(message);
+        input.value = '';
+
+        // Show typing indicator
+        this.showTypingIndicator();
+
         try {
+            console.log('Sending AI request for:', message);
+            console.log('API endpoint:', `${this.apiBase}/ai`);
+            
             const context = {
                 page: 'index',
                 availableTopics: ['HTML', 'CSS', 'JavaScript', 'Web Development', 'Coding']
             };
 
-            const response = await fetch(`${this.apiBase}/ai/generate`, {
+            const response = await fetch(`${this.apiBase}/ai`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.getAuthToken()}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    prompt: message,
-                    context: context
+                    prompt: message
                 })
             });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const result = await response.json();
-            if (result.success) {
-                this.displayAIResponse(result.data);
+            console.log('Parsed response:', result);
+            
+            if (result.response) {
+                console.log('Displaying AI response:', result.response);
+                this.displayAIResponse({ message: result.response });
             } else {
-                throw new Error(result.message || 'Failed to get AI response');
+                console.error('No response field in result:', result);
+                throw new Error('Invalid AI response format');
             }
         } catch (error) {
             console.error('Error getting AI response:', error);
             this.showAIError('Failed to get AI response. Please try again.');
+        } finally {
+            this.hideTypingIndicator();
         }
+    }
 
-        input.value = '';
+
+
+    addUserMessage(message) {
+        const messagesContainer = document.getElementById('ai-messages');
+        const userMessage = document.createElement('div');
+        userMessage.className = 'ai-message ai-user-message';
+        userMessage.innerHTML = `
+            <div class="ai-avatar">👤</div>
+            <div class="ai-text">
+                <p>${this.escapeHtml(message)}</p>
+            </div>
+        `;
+        messagesContainer.appendChild(userMessage);
+        this.scrollToBottom();
     }
 
     displayAIResponse(response) {
-        const aiMessage = document.querySelector('.ai-message');
+        const messagesContainer = document.getElementById('ai-messages');
+        const aiMessage = document.createElement('div');
+        aiMessage.className = 'ai-message ai-bot-message';
         
-        aiMessage.innerHTML = `
-            <div class="ai-response">
-                <p>${response.message}</p>
-                ${response.code ? `
+        let content = '';
+        if (response.message) {
+            console.log('Raw message before escapeHtml:', response.message);
+            // The escapeHtml function now returns formatted HTML, so we don't wrap it in <p> tags
+            const formattedContent = this.escapeHtml(response.message);
+            console.log('Formatted content after escapeHtml:', formattedContent);
+            content += formattedContent;
+        }
+        if (response.code) {
+            content += `
                     <div class="ai-code">
-                        <pre><code>${response.code}</code></pre>
-                    </div>
-                ` : ''}
+                    <pre><code>${this.escapeHtml(response.code)}</code></pre>
             </div>
         `;
+        }
+        
+        aiMessage.innerHTML = `
+            <div class="ai-avatar">🤖</div>
+            <div class="ai-text">
+                ${content}
+            </div>
+        `;
+        
+        messagesContainer.appendChild(aiMessage);
+        this.scrollToBottom();
     }
 
     showAIError(message) {
-        const aiMessage = document.querySelector('.ai-message');
-        
-        aiMessage.innerHTML = `
-            <div class="ai-response" style="background: #3a1e1e; border-left: 4px solid #dc3545;">
-                <p style="color: #ff6b6b;">⚠️ ${message}</p>
+        const messagesContainer = document.getElementById('ai-messages');
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'ai-message ai-error-message';
+        errorMessage.innerHTML = `
+            <div class="ai-avatar">⚠️</div>
+            <div class="ai-text">
+                <p>${this.escapeHtml(message)}</p>
             </div>
         `;
+        messagesContainer.appendChild(errorMessage);
+        this.scrollToBottom();
+    }
+
+    showTypingIndicator() {
+        const messagesContainer = document.getElementById('ai-messages');
+        if (!messagesContainer) return;
+        
+        // Remove any existing typing indicator
+        const existingTyping = document.getElementById('ai-typing');
+        if (existingTyping) {
+            existingTyping.remove();
+        }
+        
+        // Create new typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.id = 'ai-typing';
+        typingIndicator.className = 'ai-typing-indicator';
+        typingIndicator.innerHTML = `
+            <div class="ai-avatar">🤖</div>
+            <div class="ai-text">
+                <div class="typing-dots">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+            </div>
+        `;
+        
+        // Insert after the last message but before the input container
+        const lastMessage = messagesContainer.lastElementChild;
+        if (lastMessage) {
+            lastMessage.after(typingIndicator);
+        } else {
+            messagesContainer.appendChild(typingIndicator);
+        }
+        
+        this.scrollToBottom();
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('ai-typing');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    scrollToBottom() {
+        const messagesContainer = document.getElementById('ai-messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        
+        // Convert markdown to HTML while escaping dangerous HTML
+        let html = text
+            // Escape dangerous HTML first
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            
+            // Convert markdown to HTML
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **bold**
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')              // *italic*
+            .replace(/`(.*?)`/g, '<code>$1</code>')            // `code`
+            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')  // ```code blocks```
+            .replace(/\n\n/g, '</p><p>')                       // Double newlines become paragraphs
+            .replace(/\n/g, '<br>');                           // Single newlines become line breaks
+        
+        // Wrap in paragraph tags if not already wrapped
+        if (!html.startsWith('<p>') && !html.startsWith('<pre>')) {
+            html = '<p>' + html + '</p>';
+        }
+        
+        return html;
+    }
+
+    setupAIInput() {
+        const input = document.getElementById('ai-input');
+        if (input) {
+            // Handle Enter key (Shift+Enter for new line)
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendAIRequest();
+                }
+            });
+
+            // Auto-resize textarea
+            input.addEventListener('input', () => {
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+            });
+        }
     }
 
     enhanceWithAI() {
@@ -437,3 +986,29 @@ document.addEventListener('DOMContentLoaded', () => {
 window.toggleAI = () => indexPage.toggleAI();
 window.closeAI = () => indexPage.closeAI();
 window.sendAIRequest = () => indexPage.sendAIRequest();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

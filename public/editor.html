@@ -3,217 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeQuest - Code Editor</title>
+    <title>CodeQuest Editor - Professional Code Editor</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="animations.css">
     <link rel="stylesheet" href="editor-styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="bg-animation"></div>
+
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav id="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">
-                    <i class="fas fa-code"></i>
-                    <span>CodeQuest</span>
-                </a>
+            <a href="index.html" class="logo">⚡CodeQuest</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-            <div class="nav-menu">
+            <div class="nav-links" id="navLinks">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="learn.html" class="nav-link">Learn</a>
-                <a href="editor.html" class="nav-link active">Editor</a>
+                <a href="editor.html" class="nav-link active">Code Editor</a>
+                <a href="challenges.html" class="nav-link">Challenges</a>
                 <a href="games.html" class="nav-link">Games</a>
-                <a href="#" class="nav-link" id="loginBtn">Login</a>
-                <a href="#" class="nav-link" id="signupBtn">Sign Up</a>
-                <a href="#" class="nav-link hidden" id="profileBtn">
-                    <i class="fas fa-user"></i>
-                    <span id="username">User</span>
-                </a>
-                <a href="#" class="nav-link hidden" id="logoutBtn">Logout</a>
-            </div>
-            <div class="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+                <a href="about.html" class="nav-link ">About</a>
+                <span id="authButtons">
+                    <button class="btn btn-secondary" onclick="showLogin()">Login</button>
+                    <button class="btn btn-primary" onclick="showSignup()">Sign Up</button>
+                </span>
+                <span id="userMenu" style="display: none;">
+                    <span class="nav-link" id="userGreeting">Welcome!</span>
+                    <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </span>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="editor-main">
-        <!-- Challenge Info Panel -->
-        <div class="challenge-panel">
-            <div class="challenge-header">
-                <h2 id="challengeTitle">Select a Challenge</h2>
+    <!-- Enhanced Editor Container -->
+    <div class="editor-container">
+        <!-- Enhanced Header Section -->
+        <header class="editor-header">
+            <div class="challenge-info">
+                <div class="challenge-main">
+                    <h1 class="challenge-title" id="challengeTitle">Code Editor</h1>
+                    <div class="challenge-meta-display">
+                        <span class="challenge-badge difficulty" id="challengeDifficulty">Free Play</span>
+                        <span class="challenge-badge xp" id="challengeXP">+0 XP</span>
+                    </div>
+                    <div class="challenge-description" id="challengeDescription">
+                        <div id="defaultDescription">
+                            <p>Welcome to the CodeQuest Editor! Use this space to practice coding, experiment with ideas, or work on your own projects.</p>
+                            <p>You can switch between HTML, CSS, and JavaScript tabs to build complete web pages.</p>
+                            <div class="challenge-actions">
+                                <button class="btn btn-primary" onclick="editor.loadChallengeList()">
+                                    <i class="fas fa-list"></i>
+                                    Browse Challenges
+                                </button>
+                                <button class="btn btn-secondary" onclick="editor.loadRandomChallenge()">
+                                    <i class="fas fa-random"></i>
+                                    Random Challenge
+                                </button>
+                            </div>
+                        </div>
+                        <div id="challengeDescriptionContent" style="display: none;">
+                            <!-- Challenge description will be populated here -->
+                        </div>
+                    </div>
+                </div>
                 <div class="challenge-meta">
-                    <span class="difficulty" id="challengeDifficulty">Beginner</span>
-                    <span class="xp-reward" id="challengeXP">+50 XP</span>
+                    <button class="challenge-badge difficulty mode-btn active" id="freePlayBtn" data-mode="free-play">
+                        <i class="fas fa-play"></i>
+                        Free Play
+                    </button>
+                    <button class="btn btn-secondary" onclick="editor.loadRandomChallenge()">
+                        <i class="fas fa-graduation-cap"></i>
+                        Practice Mode
+                    </button>
                 </div>
             </div>
-            <div class="challenge-description" id="challengeDescription">
-                <p>Choose a challenge from the Learn section to start coding!</p>
+        </header>
+
+        <!-- Enhanced Action Buttons -->
+        <div class="action-buttons">
+            <button id="runTestsBtn" class="btn btn-primary">
+                <i class="fas fa-play"></i>
+                Run Tests
+            </button>
+            <button id="resetCodeBtn" class="btn btn-secondary">
+                <i class="fas fa-undo"></i>
+                Reset Code
+            </button>
+            <button id="submitBtn" class="btn btn-success">
+                <i class="fas fa-check"></i>
+                Submit
+            </button>
+        </div>
+
+        <!-- Challenge Test Statements -->
+        <div id="challengeTests" class="challenge-tests" style="display: none;">
+            <div class="tests-header">
+                <h3><i class="fas fa-list-check"></i> Challenge Requirements</h3>
             </div>
-            <div class="challenge-actions">
-                <button class="btn btn-primary" id="runTestsBtn" disabled>
-                    <i class="fas fa-play"></i> Run Tests
-                </button>
-                <button class="btn btn-secondary" id="resetCodeBtn" disabled>
-                    <i class="fas fa-undo"></i> Reset Code
-                </button>
-                <button class="btn btn-success" id="submitBtn" disabled>
-                    <i class="fas fa-check"></i> Submit
-                </button>
+            <div id="testStatements" class="test-statements">
+                <!-- Test statements will be populated here -->
             </div>
         </div>
 
-        <!-- Code Editor Section -->
-        <div class="editor-section">
-            <div class="editor-tabs">
+        <!-- Enhanced Tab Container -->
+        <div class="tab-container">
+            <div class="tab-header">
                 <button class="tab-btn active" data-tab="html">
-                    <i class="fab fa-html5"></i> HTML
+                    <i class="tab-icon fas fa-globe"></i>
+                    HTML
                 </button>
                 <button class="tab-btn" data-tab="css">
-                    <i class="fab fa-css3-alt"></i> CSS
+                    <i class="tab-icon fas fa-palette"></i>
+                    CSS
                 </button>
                 <button class="tab-btn" data-tab="js">
-                    <i class="fab fa-js-square"></i> JavaScript
+                    <i class="tab-icon fas fa-bolt"></i>
+                    JavaScript
                 </button>
                 <button class="tab-btn" data-tab="preview">
-                    <i class="fas fa-eye"></i> Preview
+                    <i class="tab-icon fas fa-eye"></i>
+                    Preview
                 </button>
             </div>
-            
-            <div class="editor-container">
-                <!-- HTML Editor -->
-                <div class="editor-pane active" id="html-editor">
-                    <div class="editor-header">
-                        <span>HTML</span>
-                        <div class="editor-actions">
-                            <button class="btn-icon" id="formatHtmlBtn" title="Format HTML">
-                                <i class="fas fa-magic"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="html-monaco" class="monaco-editor"></div>
-                </div>
 
-                <!-- CSS Editor -->
-                <div class="editor-pane" id="css-editor">
-                    <div class="editor-header">
-                        <span>CSS</span>
-                        <div class="editor-actions">
-                            <button class="btn-icon" id="formatCssBtn" title="Format CSS">
-                                <i class="fas fa-magic"></i>
-                            </button>
-                        </div>
+            <!-- Enhanced HTML Editor Pane -->
+            <div id="html-editor" class="editor-pane active">
+                <div class="editor-header">
+                    <span>HTML Editor</span>
+                    <div class="editor-actions">
+                        <button class="btn-icon" onclick="editor.formatCode('html')" title="Format HTML">
+                            <i class="fas fa-magic"></i>
+                        </button>
                     </div>
-                    <div id="css-monaco" class="monaco-editor"></div>
                 </div>
-
-                <!-- JavaScript Editor -->
-                <div class="editor-pane" id="js-editor">
-                    <div class="editor-header">
-                        <span>JavaScript</span>
-                        <div class="editor-actions">
-                            <button class="btn-icon" id="formatJsBtn" title="Format JavaScript">
-                                <i class="fas fa-magic"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="js-monaco" class="monaco-editor"></div>
+                <div id="html-monaco" class="monaco-editor">
+                    <!-- Will be replaced with textarea -->
                 </div>
+            </div>
 
-                <!-- Preview Pane -->
-                <div class="editor-pane" id="preview-pane">
-                    <div class="editor-header">
-                        <span>Live Preview</span>
-                        <div class="preview-actions">
-                            <button class="btn-icon" id="refreshPreviewBtn" title="Refresh Preview">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                            <button class="btn-icon" id="fullscreenPreviewBtn" title="Fullscreen">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                        </div>
+            <!-- Enhanced CSS Editor Pane -->
+            <div id="css-editor" class="editor-pane">
+                <div class="editor-header">
+                    <span>CSS Editor</span>
+                    <div class="editor-actions">
+                        <button class="btn-icon" onclick="editor.formatCode('css')" title="Format CSS">
+                            <i class="fas fa-magic"></i>
+                        </button>
                     </div>
-                    <div class="preview-container">
-                        <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+                </div>
+                <div id="css-monaco" class="monaco-editor">
+                    <!-- Will be replaced with textarea -->
+                </div>
+            </div>
+
+            <!-- Enhanced JavaScript Editor Pane -->
+            <div id="js-editor" class="editor-pane">
+                <div class="editor-header">
+                    <span>JavaScript Editor</span>
+                    <div class="editor-actions">
+                        <button class="btn-icon" onclick="editor.formatCode('js')" title="Format JavaScript">
+                            <i class="fas fa-magic"></i>
+                        </button>
                     </div>
+                </div>
+                <div id="js-monaco" class="monaco-editor">
+                    <!-- Will be replaced with textarea -->
+                </div>
+            </div>
+
+            <!-- Enhanced Preview Pane -->
+            <div id="preview-editor" class="editor-pane">
+                <div class="editor-header">
+                    <span>Live Preview</span>
+                    <div class="preview-actions">
+                        <button class="btn-icon" onclick="editor.refreshPreview()" title="Refresh Preview">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editor.toggleFullscreen()" title="Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <iframe id="preview-frame" sandbox="allow-scripts"></iframe>
                 </div>
             </div>
         </div>
 
-        <!-- Test Results Panel -->
-        <div class="test-panel">
+        <!-- Enhanced Test Results -->
+        <div class="test-results">
             <div class="test-header">
-                <h3>Test Results</h3>
-                <div class="test-status">
-                    <span class="status-indicator" id="testStatus">Waiting...</span>
-                </div>
+                <h3 class="test-title">Test Results</h3>
+                <span class="status-indicator waiting" id="testStatus">WAITING...</span>
             </div>
             <div class="test-content" id="testResults">
                 <div class="test-placeholder">
-                    <i class="fas fa-play-circle"></i>
                     <p>Click "Run Tests" to see your results</p>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- AI Assistant Widget -->
-    <div class="ai-widget" id="aiWidget">
-        <div class="ai-header">
-            <div class="ai-title">
-                <i class="fas fa-robot"></i>
-                <span>AI Assistant</span>
-            </div>
-            <div class="ai-controls">
-                <button class="btn-icon" id="minimizeAiBtn" title="Minimize">
-                    <i class="fas fa-minus"></i>
-                </button>
-                <button class="btn-icon" id="closeAiBtn" title="Close">
+    <!-- Enhanced AI Assistant -->
+    <div class="ai-assistant">
+        <button id="ai-assistant-button" class="ai-assistant-button" title="AI Coding Assistant">
+            <i class="fas fa-robot"></i>
+        </button>
+        
+        <div id="ai-chat-window" class="ai-chat-window">
+            <div class="ai-chat-header">
+                <h3 class="ai-chat-title">
+                    <i class="fas fa-robot"></i>
+                    AI Coding Assistant
+                </h3>
+                <button id="close-ai-chat" class="close-ai-chat">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-        </div>
-        <div class="ai-content" id="aiContent">
-            <div class="ai-message">
-                <p>Hello! I'm here to help you with your coding challenges. What would you like to work on?</p>
+            
+            <div id="ai-messages" class="ai-messages">
+                <div class="ai-welcome">
+                    <p><strong>Welcome to your AI coding assistant!</strong></p>
+                    <p>I can help you with:</p>
+                    <ul>
+                        <li>Code explanations and debugging</li>
+                        <li>Best practices and optimization</li>
+                        <li>Algorithm suggestions</li>
+                        <li>Code review and improvements</li>
+                    </ul>
+                    <p>Just ask me anything about your code!</p>
+                </div>
             </div>
-            <div class="ai-input">
-                <textarea id="aiInput" placeholder="Ask me anything about your code..."></textarea>
-                <button class="btn btn-primary" id="aiSendBtn">
+            
+            <div class="ai-input-container">
+                <div class="quick-actions">
+                    <button class="quick-action" data-prompt="Explain this code">Explain Code</button>
+                    <button class="quick-action" data-prompt="Find bugs in this code">Find Bugs</button>
+                    <button class="quick-action" data-prompt="Optimize this code">Optimize</button>
+                    <button class="quick-action" data-prompt="Suggest improvements">Improvements</button>
+                </div>
+                <textarea id="ai-input" placeholder="Ask me anything about your code..." class="ai-input"></textarea>
+                <button id="ai-send" class="ai-send">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
+    <!-- Enhanced Login Modal -->
+    <div id="loginModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Login to CodeQuest</h2>
-                <button class="modal-close" id="loginModalClose">&times;</button>
+                <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="loginEmail">Email</label>
-                        <input type="email" id="loginEmail" required>
+                        <input type="email" id="loginEmail" required placeholder="Enter your email">
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" required>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
-                <div class="social-login">
-                    <button class="btn btn-google btn-block" id="googleLoginBtn">
-                        <i class="fab fa-google"></i> Continue with Google
-                    </button>
-                </div>
                 <div class="form-footer">
                     <p>Don't have an account? <a href="#" id="showSignupLink">Sign up</a></p>
                 </div>
@@ -221,34 +284,29 @@
         </div>
     </div>
 
-    <!-- Signup Modal -->
-    <div class="modal" id="signupModal">
+    <!-- Enhanced Signup Modal -->
+    <div id="signupModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Join CodeQuest</h2>
-                <button class="modal-close" id="signupModalClose">&times;</button>
+                <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="signupForm">
                     <div class="form-group">
                         <label for="signupUsername">Username</label>
-                        <input type="text" id="signupUsername" required>
+                        <input type="text" id="signupUsername" required placeholder="Choose a username">
                     </div>
                     <div class="form-group">
                         <label for="signupEmail">Email</label>
-                        <input type="email" id="signupEmail" required>
+                        <input type="email" id="signupEmail" required placeholder="Enter your email">
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" required>
+                        <input type="password" id="signupPassword" required placeholder="Create a password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Create Account</button>
                 </form>
-                <div class="social-login">
-                    <button class="btn btn-google btn-block" id="googleSignupBtn">
-                        <i class="fab fa-google"></i> Continue with Google
-                    </button>
-                </div>
                 <div class="form-footer">
                     <p>Already have an account? <a href="#" id="showLoginLink">Login</a></p>
                 </div>
@@ -256,41 +314,10 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>CodeQuest</h3>
-                <p>Master coding through interactive challenges and AI-powered assistance.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="learn.html">Learn</a></li>
-                    <li><a href="editor.html">Editor</a></li>
-                    <li><a href="games.html">Games</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Connect</h4>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 CodeQuest. All rights reserved.</p>
-        </div>
-    </footer>
-
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.7/chai.min.js"></script>
-    <script src="auth.js"></script>
+    <script src="../auth.js"></script>
+    <script src="../main.js"></script>
     <script src="editor.js"></script>
 </body>
 </html>
+

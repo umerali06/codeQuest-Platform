@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coding Challenges - CodeQuest</title>
+    <link rel="stylesheet" href="animations.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="challenges-styles.css">
 </head>
@@ -122,7 +123,7 @@
                         <span class="xp-reward">🏆 100 XP</span>
                         <span class="completion-rate">📊 68% success rate</span>
                     </div>
-                    <button class="btn btn-primary btn-large" onclick="startChallenge('responsive-nav')">Start
+                    <button class="btn btn-primary btn-large" onclick="startChallenge('Style Your HTML')">Start
                         Challenge</button>
                 </div>
             </div>
@@ -191,259 +192,15 @@
     </section>
 
     <!-- Challenges List -->
-    <section class="challenges-list">
+    <section class="challenges-list" id="challengesSection">
         <div class="container">
             <h2 class="section-title">All Challenges</h2>
 
             <div class="challenges-grid" id="challengesGrid">
-
-                <!-- Challenge 1 -->
-                <div class="challenge-card" data-difficulty="beginner" data-topic="html">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#001</span>
-                        <span class="difficulty beginner">Beginner</span>
-                    </div>
-                    <h3>Create a Contact Card</h3>
-                    <p>Build a professional contact card using semantic HTML elements.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">Semantic</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 15 min</span>
-                        <span>🏆 25 XP</span>
-                        <span>✅ 2.5k solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('contact-card')">Start</button>
-                </div>
-
-                <!-- Challenge 2 -->
-                <div class="challenge-card" data-difficulty="beginner" data-topic="css">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#002</span>
-                        <span class="difficulty beginner">Beginner</span>
-                    </div>
-                    <h3>Style a Button Set</h3>
-                    <p>Create different button styles: primary, secondary, success, and danger.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Components</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 20 min</span>
-                        <span>🏆 30 XP</span>
-                        <span>✅ 2.1k solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('button-styles')">Start</button>
-                </div>
-
-                <!-- Challenge 3 -->
-                <div class="challenge-card" data-difficulty="intermediate" data-topic="css">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#003</span>
-                        <span class="difficulty intermediate">Intermediate</span>
-                    </div>
-                    <h3>Flexbox Photo Gallery</h3>
-                    <p>Build a responsive photo gallery using CSS Flexbox.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Flexbox</span>
-                        <span class="tag">Responsive</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 30 min</span>
-                        <span>🏆 50 XP</span>
-                        <span>✅ 1.8k solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('flexbox-gallery')">Start</button>
-                </div>
-
-                <!-- Challenge 4 -->
-                <div class="challenge-card" data-difficulty="intermediate" data-topic="javascript">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#004</span>
-                        <span class="difficulty intermediate">Intermediate</span>
-                    </div>
-                    <h3>Form Validation</h3>
-                    <p>Implement client-side form validation with JavaScript.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">DOM</span>
-                        <span class="tag">Forms</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 35 min</span>
-                        <span>🏆 60 XP</span>
-                        <span>✅ 1.5k solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('form-validation')">Start</button>
-                </div>
-
-                <!-- Challenge 5 -->
-                <div class="challenge-card" data-difficulty="advanced" data-topic="javascript">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#005</span>
-                        <span class="difficulty advanced">Advanced</span>
-                    </div>
-                    <h3>Todo List App</h3>
-                    <p>Build a complete todo list with add, edit, delete, and filter functionality.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">LocalStorage</span>
-                        <span class="tag">CRUD</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 60 min</span>
-                        <span>🏆 100 XP</span>
-                        <span>✅ 987 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('todo-app')">Start</button>
-                </div>
-
-                <!-- Challenge 6 -->
-                <div class="challenge-card" data-difficulty="beginner" data-topic="css">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#006</span>
-                        <span class="difficulty beginner">Beginner</span>
-                    </div>
-                    <h3>CSS Variables Theme</h3>
-                    <p>Create a theme switcher using CSS custom properties.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Variables</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 25 min</span>
-                        <span>🏆 40 XP</span>
-                        <span>✅ 1.2k solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('css-variables')">Start</button>
-                </div>
-
-                <!-- Challenge 7 -->
-                <div class="challenge-card" data-difficulty="intermediate" data-topic="css">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#007</span>
-                        <span class="difficulty intermediate">Intermediate</span>
-                    </div>
-                    <h3>CSS Grid Dashboard</h3>
-                    <p>Design a dashboard layout using CSS Grid.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Grid</span>
-                        <span class="tag">Layout</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 40 min</span>
-                        <span>🏆 70 XP</span>
-                        <span>✅ 856 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('grid-dashboard')">Start</button>
-                </div>
-
-                <!-- Challenge 8 -->
-                <div class="challenge-card" data-difficulty="advanced" data-topic="javascript">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#008</span>
-                        <span class="difficulty advanced">Advanced</span>
-                    </div>
-                    <h3>Memory Game</h3>
-                    <p>Create a card-matching memory game with timer and scoring.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">Game</span>
-                        <span class="tag">Logic</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 75 min</span>
-                        <span>🏆 120 XP</span>
-                        <span>✅ 623 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('memory-game')">Start</button>
-                </div>
-
-                <!-- Challenge 9 -->
-                <div class="challenge-card" data-difficulty="expert" data-topic="javascript">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#009</span>
-                        <span class="difficulty expert">Expert</span>
-                    </div>
-                    <h3>Weather App</h3>
-                    <p>Build a weather app that fetches data from an API and displays forecasts.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">API</span>
-                        <span class="tag">Async</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 90 min</span>
-                        <span>🏆 150 XP</span>
-                        <span>✅ 412 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('weather-app')">Start</button>
-                </div>
-
-                <!-- Challenge 10 -->
-                <div class="challenge-card" data-difficulty="intermediate" data-topic="accessibility">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#010</span>
-                        <span class="difficulty intermediate">Intermediate</span>
-                    </div>
-                    <h3>Accessible Modal</h3>
-                    <p>Create a fully accessible modal dialog with keyboard navigation.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">ARIA</span>
-                        <span class="tag">A11y</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 45 min</span>
-                        <span>🏆 80 XP</span>
-                        <span>✅ 534 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('accessible-modal')">Start</button>
-                </div>
-
-                <!-- Challenge 11 -->
-                <div class="challenge-card" data-difficulty="advanced" data-topic="css">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#011</span>
-                        <span class="difficulty advanced">Advanced</span>
-                    </div>
-                    <h3>CSS Animation Showcase</h3>
-                    <p>Create complex animations using keyframes and transitions.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Animation</span>
-                        <span class="tag">Keyframes</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 50 min</span>
-                        <span>🏆 90 XP</span>
-                        <span>✅ 445 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('css-animations')">Start</button>
-                </div>
-
-                <!-- Challenge 12 -->
-                <div class="challenge-card" data-difficulty="expert" data-topic="javascript">
-                    <div class="challenge-header">
-                        <span class="challenge-number">#012</span>
-                        <span class="difficulty expert">Expert</span>
-                    </div>
-                    <h3>Canvas Drawing App</h3>
-                    <p>Build a drawing application using HTML5 Canvas API.</p>
-                    <div class="challenge-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">Canvas</span>
-                        <span class="tag">Creative</span>
-                    </div>
-                    <div class="challenge-stats">
-                        <span>⏱️ 120 min</span>
-                        <span>🏆 200 XP</span>
-                        <span>✅ 234 solved</span>
-                    </div>
-                    <button class="btn btn-primary" onclick="startChallenge('drawing-app')">Start</button>
+                <!-- Challenges will be loaded dynamically from the API -->
+                <div class="loading-challenges">
+                    <div class="spinner"></div>
+                    <p>Loading challenges...</p>
                 </div>
             </div>
 
@@ -462,13 +219,12 @@
                     <h2>🔥 Weekly Challenge</h2>
                     <div class="countdown">
                         <span>Ends in: </span>
-                        <span id="weekly-countdown">5d 14h 23m</span>
+                        <span id="weekly-countdown">3d 23h 1m</span>
                     </div>
                 </div>
                 <div class="weekly-content">
                     <h3>Build a Landing Page</h3>
-                    <p>Create a stunning landing page for a fictional product. Must include hero section, features,
-                        testimonials, and call-to-action.</p>
+                    <p>Create a stunning landing page for a fictional product. Must include hero section, features, testimonials, and call-to-action.</p>
                     <div class="weekly-prizes">
                         <h4>Prizes:</h4>
                         <div class="prize-list">
@@ -487,50 +243,93 @@
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Brand Column -->
+                <div class="footer-col footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-icon">⚡</div>
                 <h3>CodeQuest</h3>
-                <p>Learn. Play. Conquer the Web.</p>
+                    </div>
+                    <p class="footer-description">
+                        Master web development through interactive coding challenges and projects. 
+                        Build your portfolio while learning modern technologies.
+                    </p>
                 <div class="social-links">
-                    <a href="#" aria-label="Twitter">🐦</a>
-                    <a href="#" aria-label="GitHub">🐙</a>
-                    <a href="#" aria-label="Discord">💬</a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 5.92405C21.2563 6.25005 20.4637 6.46672 19.6375 6.57088C20.4875 6.06255 21.1363 5.25755 21.4412 4.30005C20.6488 4.76255 19.7738 5.09338 18.8412 5.26672C18.0887 4.49088 17.0162 4 15.8462 4C13.5763 4 11.7487 5.80755 11.7487 8.04172C11.7487 8.36172 11.7762 8.67505 11.8438 8.97088C8.435 8.79755 5.41875 7.16672 3.3925 4.74755C3.03875 5.36172 2.83125 6.06255 2.83125 6.81422C2.83125 8.23088 3.5625 9.48922 4.6525 10.2309C3.99375 10.2309 3.3475 10.0542 2.8 9.78088V9.83088C2.8 11.7875 4.22125 13.4142 6.085 13.7975C5.75125 13.8875 5.39375 13.9334 5.02 13.9334C4.76375 13.9334 4.5075 13.9159 4.26625 13.8709C4.7775 15.4659 6.25875 16.6359 8.0225 16.6709C6.67 17.7459 4.8975 18.3734 2.98 18.3734C2.65 18.3734 2.3225 18.3559 2 18.3142C3.78625 19.4509 5.9175 20.1334 8.23 20.1334C15.835 20.1334 19.96 14 19.96 8.83255C19.96 8.66005 19.9538 8.48922 19.945 8.31838C20.7588 7.72255 21.4425 6.97755 22 6.13088L22 5.92405Z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 16.42 4.87 20.17 8.84 21.5C9.34 21.58 9.5 21.27 9.5 21V19.31C6.73 19.91 6.14 17.97 6.14 17.97C5.68 16.81 5.03 16.5 5.03 16.5C4.12 15.88 5.1 15.9 5.1 15.9C6.1 15.97 6.63 16.93 6.63 16.93C7.5 18.45 8.97 18 9.54 17.76C9.63 17.11 9.89 16.67 10.17 16.42C7.95 16.17 5.62 15.31 5.62 11.5C5.62 10.39 6 9.5 6.65 8.79C6.55 8.54 6.2 7.5 6.75 6.15C6.75 6.15 7.59 5.88 9.5 7.17C10.29 6.95 11.15 6.84 12 6.84C12.85 6.84 13.71 6.95 14.5 7.17C16.41 5.88 17.25 6.15 17.25 6.15C17.8 7.5 17.45 8.54 17.35 8.79C18 9.5 18.38 10.39 18.38 11.5C18.38 15.32 16.04 16.16 13.81 16.41C14.17 16.72 14.5 17.33 14.5 18.26V21C14.5 21.27 14.66 21.59 15.17 21.5C19.14 20.16 22 16.42 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 3C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19ZM18.5 18.5V13.2C18.5 12.3354 18.1565 11.5062 17.5452 10.8948C16.9338 10.2835 16.1046 9.94 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17C14.6813 12.17 15.0374 12.3175 15.2999 12.5801C15.5625 12.8426 15.71 13.1987 15.71 13.57V18.5H18.5ZM6.88 8.56C7.32556 8.56 7.75288 8.383 8.06794 8.06794C8.383 7.75288 8.56 7.32556 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19C6.43178 5.19 6.00193 5.36805 5.68499 5.68499C5.36805 6.00193 5.19 6.43178 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56ZM8.27 18.5V10.13H5.5V18.5H8.27Z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="YouTube">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21.593 7.20301C21.393 6.47801 20.806 5.90501 20.063 5.71201C18.563 5.33501 12 5.33501 12 5.33501C12 5.33501 5.438 5.33501 3.938 5.71201C3.198 5.90501 2.608 6.47801 2.408 7.20301C2.017 8.64901 2.017 11.649 2.017 11.649C2.017 11.649 2.017 14.649 2.408 16.095C2.608 16.82 3.198 17.393 3.938 17.586C5.438 17.963 12 17.963 12 17.963C12 17.963 18.563 17.963 20.063 17.586C20.806 17.393 21.393 16.82 21.593 16.095C21.984 14.649 21.984 11.649 21.984 11.649C21.984 11.649 21.984 8.64901 21.593 7.20301ZM9.956 14.328V8.97001L15.514 11.649L9.956 14.328Z" fill="currentColor"/>
+                            </svg>
+                        </a>
                 </div>
             </div>
 
-            <div class="footer-section">
-                <h3>Challenges</h3>
-                <div class="footer-links">
-                    <a href="#" onclick="filterByDifficulty('beginner')">Beginner</a>
-                    <a href="#" onclick="filterByDifficulty('intermediate')">Intermediate</a>
-                    <a href="#" onclick="filterByDifficulty('advanced')">Advanced</a>
-                    <a href="#" onclick="filterByDifficulty('expert')">Expert</a>
+                <!-- Learning Paths Column -->
+                <div class="footer-col">
+                    <h4>Learning Paths</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Web Development</a></li>
+                        <li><a href="#">JavaScript Mastery</a></li>
+                        <li><a href="#">React & Frontend</a></li>
+                        <li><a href="#">Node.js & Backend</a></li>
+                        <li><a href="#">Data Structures</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Resources Column -->
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Code Challenges</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+            </div>
+
+                <!-- Company Column -->
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="footer-section">
-                <h3>Community</h3>
-                <div class="footer-links">
-                    <a href="leaderboard.html">Leaderboard</a>
-                    <a href="#">Forums</a>
-                    <a href="#">Discord</a>
-                    <a href="#">Blog</a>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3>Support</h3>
-                <div class="footer-links">
-                    <a href="#">Help Center</a>
-                    <a href="#">Contact Us</a>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2023 CodeQuest. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Privacy</a>
+                        <span class="separator">|</span>
+                        <a href="#">Terms</a>
+                        <span class="separator">|</span>
+                        <a href="#">Cookies</a>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 CodeQuest. All rights reserved.</p>
         </div>
     </footer>
 
@@ -585,6 +384,181 @@
     <script src="main.js"></script>
     <script src="auth.js"></script>
     <script src="challenges.js"></script>
+    
+    <script>
+        // Dynamic Challenge Loading
+        let allChallenges = [];
+        let filteredChallenges = [];
+        let currentPage = 1;
+        const challengesPerPage = 12;
+
+        // Load challenges when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChallengesFromAPI();
+        });
+
+        // Load challenges from the API
+        async function loadChallengesFromAPI() {
+            try {
+                const response = await fetch('http://localhost:8000/api/challenges');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allChallenges = data.data;
+                    filteredChallenges = [...allChallenges];
+                    
+                    // Update available challenges count
+                    document.getElementById('availableChallenges').textContent = allChallenges.length;
+                    
+                    // Display challenges
+                    displayChallenges();
+                    
+                    // Update category progress
+                    updateCategoryProgress();
+                } else {
+                    showError('Failed to load challenges: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error loading challenges:', error);
+                showError('Failed to load challenges. Please check your connection.');
+            }
+        }
+
+        // Display challenges in the grid
+        function displayChallenges() {
+            const challengesGrid = document.getElementById('challengesGrid');
+            const startIndex = (currentPage - 1) * challengesPerPage;
+            const endIndex = startIndex + challengesPerPage;
+            const challengesToShow = filteredChallenges.slice(startIndex, endIndex);
+            
+            if (challengesToShow.length === 0) {
+                challengesGrid.innerHTML = `
+                    <div class="no-challenges">
+                        <p>No challenges found matching your criteria.</p>
+                        <button class="btn btn-primary" onclick="resetFilters()">Show All Challenges</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const challengesHTML = challengesToShow.map((challenge, index) => `
+                <div class="challenge-card" data-difficulty="${challenge.difficulty}" data-topic="${challenge.category}">
+                    <div class="challenge-header">
+                        <span class="challenge-number">#${String(startIndex + index + 1).padStart(3, '0')}</span>
+                        <span class="difficulty ${challenge.difficulty}">${challenge.difficulty}</span>
+                    </div>
+                    <h3>${challenge.title}</h3>
+                    <p>${challenge.description}</p>
+                    <div class="challenge-tags">
+                        <span class="tag">${challenge.category.toUpperCase()}</span>
+                        <span class="tag">${challenge.difficulty}</span>
+                    </div>
+                    <div class="challenge-stats">
+                        <span>⏱️ ${challenge.time_limit_minutes || 30} min</span>
+                        <span>🏆 ${challenge.xp_reward || challenge.points || 50} XP</span>
+                        <span>✅ New</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="startChallenge('${challenge.title}')">Start</button>
+                </div>
+            `).join('');
+            
+            challengesGrid.innerHTML = challengesHTML;
+        }
+
+        // Update category progress
+        function updateCategoryProgress() {
+            const categories = ['html', 'css', 'javascript', 'fullstack'];
+            const categoryCards = document.querySelectorAll('.category-card');
+            
+            categoryCards.forEach((card, index) => {
+                const category = categories[index];
+                const categoryChallenges = allChallenges.filter(c => c.category === category);
+                const completedCount = 0; // TODO: Get from user progress
+                
+                const progressFill = card.querySelector('.progress-fill');
+                const progressText = card.querySelector('.progress-text');
+                
+                if (progressFill && progressText) {
+                    const percentage = categoryChallenges.length > 0 ? (completedCount / categoryChallenges.length) * 100 : 0;
+                    progressFill.style.width = percentage + '%';
+                    progressText.textContent = `${completedCount}/${categoryChallenges.length} Completed`;
+                }
+            });
+        }
+
+        // Filter challenges
+        function filterChallenges() {
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const topicFilter = document.getElementById('topicFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+            
+            filteredChallenges = allChallenges.filter(challenge => {
+                const difficultyMatch = difficultyFilter === 'all' || challenge.difficulty === difficultyFilter;
+                const topicMatch = topicFilter === 'all' || challenge.category === topicFilter;
+                return difficultyMatch && topicMatch;
+            });
+            
+            // Sort challenges
+            switch (sortFilter) {
+                case 'easiest':
+                    filteredChallenges.sort((a, b) => (a.xp_reward || a.points || 0) - (b.xp_reward || b.points || 0));
+                    break;
+                case 'hardest':
+                    filteredChallenges.sort((a, b) => (b.xp_reward || b.points || 0) - (a.xp_reward || a.points || 0));
+                    break;
+                case 'newest':
+                    // Already sorted by ID (newest first)
+                    break;
+                case 'popular':
+                    // TODO: Sort by completion rate
+                    break;
+            }
+            
+            currentPage = 1;
+            displayChallenges();
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            document.getElementById('topicFilter').value = category;
+            filterChallenges();
+            
+            // Smooth scroll to challenges section
+            smoothScrollToChallenges();
+        }
+
+        // Load more challenges
+        function loadMoreChallenges() {
+            currentPage++;
+            displayChallenges();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('difficultyFilter').value = 'all';
+            document.getElementById('topicFilter').value = 'all';
+            document.getElementById('sortFilter').value = 'newest';
+            filteredChallenges = [...allChallenges];
+            currentPage = 1;
+            displayChallenges();
+        }
+
+        // Add event listeners to filters
+        document.getElementById('difficultyFilter').addEventListener('change', filterChallenges);
+        document.getElementById('topicFilter').addEventListener('change', filterChallenges);
+        document.getElementById('sortFilter').addEventListener('change', filterChallenges);
+
+        // Show error message
+        function showError(message) {
+            const challengesGrid = document.getElementById('challengesGrid');
+            challengesGrid.innerHTML = `
+                <div class="error-message">
+                    <p>❌ ${message}</p>
+                    <button class="btn btn-primary" onclick="loadChallengesFromAPI()">Retry</button>
+                </div>
+            `;
+        }
+    </script>
 </body>
 
 </html>
