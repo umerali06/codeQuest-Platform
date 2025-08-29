@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth Debug Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .debug-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .debug-panel {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-indicator.online {
+        background: #22c55e;
+      }
+
+      .status-indicator.offline {
+        background: #ef4444;
+      }
+
+      .debug-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin: 0.25rem;
+        transition: all 0.3s ease;
+      }
+
+      .debug-btn:hover {
+        background: var(--primary-dark);
+      }
+
+      .debug-btn.danger {
+        background: var(--danger);
+      }
+
+      .debug-btn.success {
+        background: var(--success);
+      }
+
+      .log-output {
+        background: #000;
+        color: #0f0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+
+      .auth-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .info-card {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .info-card h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary);
+      }
+
+      .info-card p {
+        margin: 0;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="debug-container">
+      <h1><i class="fas fa-bug"></i> Authentication Debug Panel</h1>
+
+      <div class="debug-panel">
+        <h3>Authentication Status</h3>
+        <div class="auth-info">
+          <div class="info-card">
+            <h4>AuthManager Status</h4>
+            <p id="authManagerStatus">
+              <span class="status-indicator offline"></span>
+              Checking...
+            </p>
+          </div>
+          <div class="info-card">
+            <h4>Login Status</h4>
+            <p id="loginStatus">
+              <span class="status-indicator offline"></span>
+              Checking...
+            </p>
+          </div>
+          <div class="info-card">
+            <h4>Current User</h4>
+            <p id="currentUser">None</p>
+          </div>
+          <div class="info-card">
+            <h4>Session Storage</h4>
+            <p id="sessionStorage">Checking...</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem">
+          <button class="debug-btn" onclick="checkAuthStatus()">
+            <i class="fas fa-sync"></i> Refresh Status
+          </button>
+          <button class="debug-btn success" onclick="simulateLogin()">
+            <i class="fas fa-sign-in-alt"></i> Simulate Login
+          </button>
+          <button class="debug-btn danger" onclick="simulateLogout()">
+            <i class="fas fa-sign-out-alt"></i> Simulate Logout
+          </button>
+          <button class="debug-btn" onclick="clearStorage()">
+            <i class="fas fa-trash"></i> Clear Storage
+          </button>
+        </div>
+      </div>
+
+      <div class="debug-panel">
+        <h3>Learn Manager Test</h3>
+        <p>This simulates the learn page authentication check:</p>
+        <div id="learnManagerTest">
+          <button class="debug-btn" onclick="testLearnManager()">
+            <i class="fas fa-play"></i> Test Learn Manager Init
+          </button>
+        </div>
+        <div id="learnManagerResult" style="margin-top: 1rem"></div>
+      </div>
+
+      <div class="debug-panel">
+        <h3>Debug Log</h3>
+        <button class="debug-btn" onclick="clearLog()">
+          <i class="fas fa-eraser"></i> Clear Log
+        </button>
+        <div id="debugLog" class="log-output">
+          Debug log will appear here...\n
+        </div>
+      </div>
+    </div>
+
+    <!-- Include the actual auth and learn scripts -->
+    <script src="auth.js"></script>
+    <script src="main-optimized.js"></script>
+
+    <script>
+      let debugLog = document.getElementById("debugLog");
+
+      function log(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        debugLog.textContent += `[${timestamp}] ${message}\n`;
+        debugLog.scrollTop = debugLog.scrollHeight;
+        console.log(message);
+      }
+
+      function clearLog() {
+        debugLog.textContent = "Debug log cleared...\n";
+      }
+
+      function updateStatus(elementId, status, isOnline = false) {
+        const element = document.getElementById(elementId);
+        const indicator = element.querySelector(".status-indicator");
+        if (indicator) {
+          indicator.className = `status-indicator ${
+            isOnline ? "online" : "offline"
+          }`;
+        }
+        element.innerHTML = element.innerHTML.replace(/>(.*?)$/, `>${status}`);
+      }
+
+      function checkAuthStatus() {
+        log("🔍 Checking authentication status...");
+
+        // Check if AuthManager exists
+        if (typeof window.AuthManager !== "undefined") {
+          updateStatus("authManagerStatus", "Available", true);
+          log("✅ AuthManager is available");
+
+          // Check login status
+          try {
+            const isLoggedIn = window.AuthManager.isLoggedIn();
+            const currentUser = window.AuthManager.getCurrentUser();
+
+            updateStatus(
+              "loginStatus",
+              isLoggedIn ? "Logged In" : "Not Logged In",
+              isLoggedIn
+            );
+            document.getElementById("currentUser").textContent = currentUser
+              ? currentUser.name || currentUser.email || "Unknown User"
+              : "None";
+
+            log(
+              `🔐 Login status: ${isLoggedIn ? "Logged In" : "Not Logged In"}`
+            );
+            if (currentUser) {
+              log(`👤 Current user: ${JSON.stringify(currentUser, null, 2)}`);
+            }
+          } catch (error) {
+            log(`❌ Error checking login status: ${error.message}`);
+            updateStatus("loginStatus", "Error", false);
+          }
+        } else {
+          updateStatus("authManagerStatus", "Not Available", false);
+          log("❌ AuthManager is not available");
+        }
+
+        // Check localStorage
+        try {
+          const storedUser = localStorage.getItem("codequest_user");
+          const storedProgress = localStorage.getItem("codequest_progress");
+
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            const isValid =
+              user.sessionExpiry && new Date(user.sessionExpiry) > new Date();
+            document.getElementById(
+              "sessionStorage"
+            ).textContent = `User stored (${isValid ? "Valid" : "Expired"})`;
+            log(
+              `💾 Stored user: ${isValid ? "Valid session" : "Expired session"}`
+            );
+          } else {
+            document.getElementById("sessionStorage").textContent =
+              "No stored user";
+            log("💾 No stored user found");
+          }
+        } catch (error) {
+          log(`❌ Error checking storage: ${error.message}`);
+          document.getElementById("sessionStorage").textContent = "Error";
+        }
+      }
+
+      function simulateLogin() {
+        log("🎭 Simulating login...");
+
+        if (window.AuthManager) {
+          // Create a test user
+          const testUser = {
+            $id: "test-user-123",
+            name: "Test User",
+            email: "test@example.com",
+            sessionExpiry: new Date(
+              Date.now() + 24 * 60 * 60 * 1000
+            ).toISOString(),
+            lastActivity: new Date().toISOString(),
+          };
+
+          // Manually set the user (simulating successful login)
+          window.AuthManager.currentUser = testUser;
+          window.AuthManager.saveUserToStorage(testUser);
+          window.AuthManager.updateAuthUI();
+          window.AuthManager.notifyAuthStateChange(testUser);
+
+          log("✅ Simulated login successful");
+          checkAuthStatus();
+        } else {
+          log("❌ Cannot simulate login - AuthManager not available");
+        }
+      }
+
+      function simulateLogout() {
+        log("🎭 Simulating logout...");
+
+        if (window.AuthManager) {
+          window.AuthManager.currentUser = null;
+          window.AuthManager.clearStoredSession();
+          window.AuthManager.updateAuthUI();
+          window.AuthManager.notifyAuthStateChange(null);
+
+          log("✅ Simulated logout successful");
+          checkAuthStatus();
+        } else {
+          log("❌ Cannot simulate logout - AuthManager not available");
+        }
+      }
+
+      function clearStorage() {
+        log("🗑️ Clearing all storage...");
+        localStorage.clear();
+        sessionStorage.clear();
+        log("✅ Storage cleared");
+        checkAuthStatus();
+      }
+
+      function testLearnManager() {
+        log("🧪 Testing Learn Manager initialization...");
+
+        const resultDiv = document.getElementById("learnManagerResult");
+        resultDiv.innerHTML = "<p>Testing...</p>";
+
+        // Simulate the learn manager authentication check
+        class TestLearnManager {
+          constructor() {
+            this.isAuthenticated = false;
+            this.currentUser = null;
+          }
+
+          async checkAuthentication() {
+            try {
+              if (typeof window.AuthManager === "undefined") {
+                log("⏳ Waiting for AuthManager...");
+                await this.waitForAuthManager();
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 500));
+
+              this.isAuthenticated = window.AuthManager.isLoggedIn();
+              this.currentUser = window.AuthManager.getCurrentUser();
+
+              log(
+                `🔐 Learn Manager Auth Check: ${
+                  this.isAuthenticated ? "Authenticated" : "Not Authenticated"
+                }`
+              );
+              return this.isAuthenticated;
+            } catch (error) {
+              log(`❌ Learn Manager Auth Check failed: ${error.message}`);
+              this.isAuthenticated = false;
+              return false;
+            }
+          }
+
+          waitForAuthManager() {
+            return new Promise((resolve) => {
+              let attempts = 0;
+              const maxAttempts = 50;
+
+              const checkAuthManager = () => {
+                attempts++;
+                if (typeof window.AuthManager !== "undefined") {
+                  log(`✅ AuthManager found after ${attempts} attempts`);
+                  resolve();
+                } else if (attempts >= maxAttempts) {
+                  log("⚠️ AuthManager not found after maximum attempts");
+                  resolve();
+                } else {
+                  setTimeout(checkAuthManager, 100);
+                }
+              };
+              checkAuthManager();
+            });
+          }
+        }
+
+        const testManager = new TestLearnManager();
+        testManager.checkAuthentication().then((isAuth) => {
+          const result = isAuth
+            ? '<p style="color: #22c55e;">✅ Would show learning content</p>'
+            : '<p style="color: #ef4444;">❌ Would show login required modal</p>';
+          resultDiv.innerHTML = result;
+        });
+      }
+
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", () => {
+        log("🚀 Debug panel initialized");
+
+        // Wait a bit for AuthManager to initialize
+        setTimeout(() => {
+          checkAuthStatus();
+        }, 1000);
+
+        // Set up periodic status checks
+        setInterval(checkAuthStatus, 5000);
+      });
+
+      // Listen for auth state changes
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          if (window.AuthManager && window.AuthManager.onAuthStateChange) {
+            window.AuthManager.onAuthStateChange((user) => {
+              log(
+                `🔄 Auth state changed: ${
+                  user ? "User logged in" : "User logged out"
+                }`
+              );
+              checkAuthStatus();
+            });
+          }
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>

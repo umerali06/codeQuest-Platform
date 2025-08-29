@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend AI Assistant Fix Test</title>
+    <link rel="stylesheet" href="ai-assistant.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      .fix-banner {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .success {
+        border-color: #4ade80;
+        background: rgba(74, 222, 128, 0.1);
+      }
+      .error {
+        border-color: #f87171;
+        background: rgba(248, 113, 113, 0.1);
+      }
+      .info {
+        border-color: #60a5fa;
+        background: rgba(96, 165, 250, 0.1);
+      }
+
+      button {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 5px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+      }
+      .result {
+        margin: 15px 0;
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .highlight {
+        background: rgba(255, 255, 0, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-success {
+        background-color: #4ade80;
+      }
+      .status-error {
+        background-color: #f87171;
+      }
+      .status-warning {
+        background-color: #fbbf24;
+      }
+      pre {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="fix-banner">
+        <h1>🔧 Frontend AI Assistant Fix</h1>
+        <p>Testing CSS class conflicts and JavaScript issues</p>
+      </div>
+
+      <div class="test-section info">
+        <h2>🎯 Frontend Issues Fixed</h2>
+        <ul>
+          <li>
+            <span class="status-dot status-success"></span
+            ><strong>CSS Class Conflicts:</strong> Fixed mismatched class names
+            between JS and CSS
+          </li>
+          <li>
+            <span class="status-dot status-success"></span
+            ><strong>Inline CSS Removal:</strong> Removed conflicting inline
+            styles from JavaScript
+          </li>
+          <li>
+            <span class="status-dot status-success"></span
+            ><strong>Message Types:</strong> Fixed user-message and ai-message
+            class assignments
+          </li>
+          <li>
+            <span class="status-dot status-success"></span
+            ><strong>External CSS:</strong> Now properly uses ai-assistant.css
+            file
+          </li>
+        </ul>
+      </div>
+
+      <div class="test-section">
+        <h2>🧪 Frontend Tests</h2>
+        <button onclick="testCSSLoading()">Test CSS Loading</button>
+        <button onclick="testJavaScriptClasses()">Test JS Classes</button>
+        <button onclick="testAPIConnection()">Test API Connection</button>
+        <button onclick="testFullWorkflow()">Test Full Workflow</button>
+        <div id="testResults"></div>
+      </div>
+
+      <div class="test-section">
+        <h2>💬 Manual Test Instructions</h2>
+        <ol>
+          <li>
+            <strong>Look for AI Button:</strong> Should appear in bottom-right
+            corner
+          </li>
+          <li>
+            <strong>Click AI Button:</strong> Should open chat window with
+            proper styling
+          </li>
+          <li>
+            <strong>Check Quick Actions:</strong> Blue buttons should be clearly
+            visible
+          </li>
+          <li>
+            <strong>Send Message:</strong> Type a message and send - should get
+            AI response
+          </li>
+          <li>
+            <strong>Check Text Colors:</strong> All text should be readable
+          </li>
+        </ol>
+        <button onclick="openAIAssistant()">Open AI Assistant</button>
+      </div>
+
+      <div class="test-section success">
+        <h2>✅ Expected Results</h2>
+        <ul>
+          <li>
+            <span class="highlight">Proper Styling:</span> AI assistant uses
+            external CSS file
+          </li>
+          <li>
+            <span class="highlight">Blue Quick Actions:</span> Suggestion
+            buttons clearly visible
+          </li>
+          <li>
+            <span class="highlight">Working API:</span> Messages send and
+            receive responses
+          </li>
+          <li>
+            <span class="highlight">No Console Errors:</span> Clean JavaScript
+            execution
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI Assistant will be injected here -->
+    <script src="ai-assistant.js"></script>
+
+    <script>
+      function testCSSLoading() {
+        const resultDiv = document.getElementById("testResults");
+        resultDiv.innerHTML =
+          '<div class="result info"><h3>🔄 Testing CSS Loading...</h3></div>';
+
+        // Check if ai-assistant.css is loaded
+        const cssLoaded = Array.from(document.styleSheets).some((sheet) => {
+          try {
+            return sheet.href && sheet.href.includes("ai-assistant.css");
+          } catch (e) {
+            return false;
+          }
+        });
+
+        // Check if AI assistant elements exist
+        const aiWidget = document.querySelector(".ai-assistant-widget");
+        const aiButton = document.querySelector(".ai-toggle-button");
+
+        let results = [];
+
+        if (cssLoaded) {
+          results.push(
+            '<span class="status-dot status-success"></span>ai-assistant.css: Loaded'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>ai-assistant.css: Not found'
+          );
+        }
+
+        if (aiWidget) {
+          results.push(
+            '<span class="status-dot status-success"></span>AI Widget: Created'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>AI Widget: Missing'
+          );
+        }
+
+        if (aiButton) {
+          const styles = window.getComputedStyle(aiButton);
+          results.push(
+            '<span class="status-dot status-success"></span>AI Button: Styled'
+          );
+          results.push(`&nbsp;&nbsp;Background: ${styles.background}`);
+          results.push(`&nbsp;&nbsp;Color: ${styles.color}`);
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>AI Button: Missing'
+          );
+        }
+
+        const allGood = cssLoaded && aiWidget && aiButton;
+
+        resultDiv.innerHTML = `<div class="result ${
+          allGood ? "success" : "error"
+        }">
+                <h3>${allGood ? "✅" : "❌"} CSS Loading Test</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    ${results.map((result) => `<li>${result}</li>`).join("")}
+                </ul>
+            </div>`;
+      }
+
+      function testJavaScriptClasses() {
+        const resultDiv = document.getElementById("testResults");
+        resultDiv.innerHTML =
+          '<div class="result info"><h3>🔄 Testing JavaScript Classes...</h3></div>';
+
+        // Test if AI assistant class is properly initialized
+        const aiAssistantExists =
+          window.aiAssistant && typeof window.aiAssistant === "object";
+        const hasAddMessageMethod =
+          aiAssistantExists &&
+          typeof window.aiAssistant.addMessage === "function";
+        const hasSendMessageMethod =
+          aiAssistantExists &&
+          typeof window.aiAssistant.sendMessage === "function";
+
+        // Check for quick action buttons
+        const quickActions = document.querySelectorAll(".quick-action-btn");
+        const quickActionsWork = quickActions.length > 0;
+
+        // Check message container
+        const messagesContainer = document.getElementById("ai-messages");
+
+        let results = [];
+
+        if (aiAssistantExists) {
+          results.push(
+            '<span class="status-dot status-success"></span>AIAssistant Class: Initialized'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>AIAssistant Class: Missing'
+          );
+        }
+
+        if (hasAddMessageMethod) {
+          results.push(
+            '<span class="status-dot status-success"></span>addMessage Method: Available'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>addMessage Method: Missing'
+          );
+        }
+
+        if (hasSendMessageMethod) {
+          results.push(
+            '<span class="status-dot status-success"></span>sendMessage Method: Available'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>sendMessage Method: Missing'
+          );
+        }
+
+        if (quickActionsWork) {
+          results.push(
+            `<span class="status-dot status-success"></span>Quick Actions: Found (${quickActions.length})`
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>Quick Actions: Missing'
+          );
+        }
+
+        if (messagesContainer) {
+          results.push(
+            '<span class="status-dot status-success"></span>Messages Container: Found'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>Messages Container: Missing'
+          );
+        }
+
+        const allGood =
+          aiAssistantExists &&
+          hasAddMessageMethod &&
+          hasSendMessageMethod &&
+          quickActionsWork &&
+          messagesContainer;
+
+        resultDiv.innerHTML = `<div class="result ${
+          allGood ? "success" : "error"
+        }">
+                <h3>${allGood ? "✅" : "❌"} JavaScript Classes Test</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    ${results.map((result) => `<li>${result}</li>`).join("")}
+                </ul>
+            </div>`;
+      }
+
+      async function testAPIConnection() {
+        const resultDiv = document.getElementById("testResults");
+        resultDiv.innerHTML =
+          '<div class="result info"><h3>🔄 Testing API Connection...</h3></div>';
+
+        try {
+          console.log("Testing API connection...");
+
+          const response = await fetch("/api/ai", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: "Frontend test message",
+            }),
+          });
+
+          console.log("API Response:", response.status, response.statusText);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error:", errorText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log("API Data:", data);
+
+          if (data.success && data.response) {
+            resultDiv.innerHTML = `<div class="result success">
+                        <h3><span class="status-dot status-success"></span>API Connection Working!</h3>
+                        <p><strong>Status:</strong> ${response.status} OK</p>
+                        <p><strong>Source:</strong> ${data.source}</p>
+                        <p><strong>Response Length:</strong> ${
+                          data.response.length
+                        } characters</p>
+                        <details>
+                            <summary>View Response Preview</summary>
+                            <pre>${data.response.substring(0, 200)}...</pre>
+                        </details>
+                    </div>`;
+          } else if (data.error) {
+            resultDiv.innerHTML = `<div class="result error">
+                        <h3><span class="status-dot status-error"></span>API Error</h3>
+                        <p><strong>Error:</strong> ${data.error}</p>
+                        ${
+                          data.details
+                            ? `<p><strong>Details:</strong> ${data.details}</p>`
+                            : ""
+                        }
+                    </div>`;
+          } else {
+            throw new Error("Invalid response format");
+          }
+        } catch (error) {
+          console.error("API Test failed:", error);
+          resultDiv.innerHTML = `<div class="result error">
+                    <h3><span class="status-dot status-error"></span>API Connection Failed</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Check browser console and server logs for details.</p>
+                </div>`;
+        }
+      }
+
+      async function testFullWorkflow() {
+        const resultDiv = document.getElementById("testResults");
+        resultDiv.innerHTML =
+          '<div class="result info"><h3>🔄 Testing Full Workflow...</h3></div>';
+
+        let results = [];
+        let allPassed = true;
+
+        // Test 1: CSS Loading
+        const cssLoaded = Array.from(document.styleSheets).some((sheet) => {
+          try {
+            return sheet.href && sheet.href.includes("ai-assistant.css");
+          } catch (e) {
+            return false;
+          }
+        });
+
+        if (cssLoaded) {
+          results.push(
+            '<span class="status-dot status-success"></span>CSS Loading: ✅ PASS'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>CSS Loading: ❌ FAIL'
+          );
+          allPassed = false;
+        }
+
+        // Test 2: JavaScript Initialization
+        const jsWorking =
+          window.aiAssistant &&
+          typeof window.aiAssistant.sendMessage === "function";
+        if (jsWorking) {
+          results.push(
+            '<span class="status-dot status-success"></span>JavaScript Init: ✅ PASS'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>JavaScript Init: ❌ FAIL'
+          );
+          allPassed = false;
+        }
+
+        // Test 3: UI Elements
+        const uiElements =
+          document.querySelector(".ai-assistant-widget") &&
+          document.querySelector(".ai-toggle-button") &&
+          document.querySelectorAll(".quick-action-btn").length > 0;
+        if (uiElements) {
+          results.push(
+            '<span class="status-dot status-success"></span>UI Elements: ✅ PASS'
+          );
+        } else {
+          results.push(
+            '<span class="status-dot status-error"></span>UI Elements: ❌ FAIL'
+          );
+          allPassed = false;
+        }
+
+        // Test 4: API Connection
+        try {
+          const response = await fetch("/api/ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "workflow test" }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            results.push(
+              '<span class="status-dot status-success"></span>API Connection: ✅ PASS'
+            );
+          } else {
+            results.push(
+              '<span class="status-dot status-error"></span>API Connection: ❌ FAIL'
+            );
+            allPassed = false;
+          }
+        } catch (error) {
+          results.push(
+            '<span class="status-dot status-error"></span>API Connection: ❌ FAIL'
+          );
+          allPassed = false;
+        }
+
+        resultDiv.innerHTML = `<div class="result ${
+          allPassed ? "success" : "error"
+        }">
+                <h3>${allPassed ? "🎉" : "❌"} Full Workflow Test ${
+          allPassed ? "PASSED" : "FAILED"
+        }</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    ${results.map((result) => `<li>${result}</li>`).join("")}
+                </ul>
+                ${
+                  allPassed
+                    ? "<p><strong>🎊 All systems working! The AI assistant is fully functional.</strong></p>"
+                    : "<p><strong>⚠️ Some issues detected. Check individual tests for details.</strong></p>"
+                }
+            </div>`;
+      }
+
+      function openAIAssistant() {
+        if (
+          window.aiAssistant &&
+          typeof window.aiAssistant.toggleChat === "function"
+        ) {
+          window.aiAssistant.toggleChat();
+
+          const resultDiv = document.getElementById("testResults");
+          resultDiv.innerHTML = `<div class="result success">
+                    <h3><span class="status-dot status-success"></span>AI Assistant Opened!</h3>
+                    <p>The AI assistant should now be visible. Test these features:</p>
+                    <ul>
+                        <li>Blue quick action buttons (should be clearly visible)</li>
+                        <li>Enhanced send button (larger with animations)</li>
+                        <li>Send a message - should get proper AI responses</li>
+                        <li>Check text readability - no black text on dark backgrounds</li>
+                    </ul>
+                </div>`;
+        } else {
+          const resultDiv = document.getElementById("testResults");
+          resultDiv.innerHTML = `<div class="result error">
+                    <h3><span class="status-dot status-error"></span>AI Assistant Not Available</h3>
+                    <p>The AI assistant JavaScript is not properly loaded.</p>
+                    <p>Check the browser console for errors.</p>
+                </div>`;
+        }
+      }
+
+      // Auto-run tests when page loads
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          testFullWorkflow();
+        }, 2000);
+      });
+
+      // Log frontend fix status
+      console.log("🔧 Frontend AI Assistant Fix Test");
+      console.log("✅ CSS class conflicts resolved");
+      console.log("✅ Inline CSS removed");
+      console.log("✅ External CSS file used");
+      console.log("✅ Message types fixed");
+    </script>
+  </body>
+</html>

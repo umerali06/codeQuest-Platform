@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Enhanced Editor Instructions</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .test-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .test-result {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        border-left: 4px solid;
+      }
+      .success {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        border-color: #17a2b8;
+        color: #0c5460;
+      }
+      .warning {
+        background-color: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .test-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .test-section h3 {
+        margin-top: 0;
+        color: #333;
+      }
+      .url-input {
+        width: 100%;
+        padding: 8px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1>🧪 Enhanced Editor Instructions Test</h1>
+      <p>
+        This test verifies that games and challenges display proper
+        instructions, progress tracking, and completion stats.
+      </p>
+
+      <div class="test-section">
+        <h3>🎮 Game Instructions Test</h3>
+        <p>
+          Test loading a game and displaying enhanced instructions with progress
+          tracking.
+        </p>
+        <input
+          type="text"
+          id="gameSlug"
+          class="url-input"
+          placeholder="Enter game slug (e.g., speed-typing)"
+          value="speed-typing"
+        />
+        <button onclick="testGameInstructions()">Test Game Instructions</button>
+        <button onclick="testGameProgress()">Test Game Progress</button>
+        <button onclick="testGameLeaderboard()">Test Game Leaderboard</button>
+      </div>
+
+      <div class="test-section">
+        <h3>🎯 Challenge Instructions Test</h3>
+        <p>
+          Test loading a challenge and displaying enhanced instructions with
+          progress tracking.
+        </p>
+        <input
+          type="text"
+          id="challengeSlug"
+          class="url-input"
+          placeholder="Enter challenge slug (e.g., html-basics)"
+          value="html-basics"
+        />
+        <button onclick="testChallengeInstructions()">
+          Test Challenge Instructions
+        </button>
+        <button onclick="testChallengeProgress()">
+          Test Challenge Progress
+        </button>
+        <button onclick="testChallengeLeaderboard()">
+          Test Challenge Leaderboard
+        </button>
+      </div>
+
+      <div class="test-section">
+        <h3>📊 API Endpoints Test</h3>
+        <p>Test the new progress tracking and leaderboard API endpoints.</p>
+        <button onclick="testGameAPI()">Test Games API</button>
+        <button onclick="testChallengeAPI()">Test Challenges API</button>
+        <button onclick="testProgressAPIs()">Test Progress APIs</button>
+      </div>
+
+      <div class="test-section">
+        <h3>🎨 UI Components Test</h3>
+        <p>Test the enhanced UI components and styling.</p>
+        <button onclick="testProgressBanner()">Test Progress Banner</button>
+        <button onclick="testCompletionModal()">Test Completion Modal</button>
+        <button onclick="testLeaderboardModal()">Test Leaderboard Modal</button>
+      </div>
+
+      <div id="testResults"></div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8000/api";
+
+      function addTestResult(message, type = "info") {
+        const resultsDiv = document.getElementById("testResults");
+        const resultDiv = document.createElement("div");
+        resultDiv.className = `test-result ${type}`;
+        resultDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+        resultsDiv.appendChild(resultDiv);
+        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+      }
+
+      function clearResults() {
+        document.getElementById("testResults").innerHTML = "";
+      }
+
+      // Game Instructions Tests
+      async function testGameInstructions() {
+        clearResults();
+        const gameSlug = document.getElementById("gameSlug").value;
+        addTestResult(`🎮 Testing game instructions for: ${gameSlug}`, "info");
+
+        try {
+          // Test games API
+          const response = await fetch(`${API_BASE}/games?slug=${gameSlug}`);
+          const result = await response.json();
+
+          if (result.success && result.data.length > 0) {
+            const game = result.data[0];
+            addTestResult(`✅ Game data loaded: ${game.title}`, "success");
+
+            // Check required fields for instructions
+            const requiredFields = [
+              "title",
+              "description",
+              "instructions",
+              "difficulty",
+              "xp_reward",
+              "max_score",
+              "time_limit",
+            ];
+            let missingFields = [];
+
+            requiredFields.forEach((field) => {
+              if (!game[field]) {
+                missingFields.push(field);
+              }
+            });
+
+            if (missingFields.length === 0) {
+              addTestResult(
+                "✅ All required instruction fields present",
+                "success"
+              );
+
+              // Test instruction display
+              displayGameInstructionsPreview(game);
+            } else {
+              addTestResult(
+                `❌ Missing fields: ${missingFields.join(", ")}`,
+                "error"
+              );
+            }
+          } else {
+            addTestResult("❌ Game not found or API error", "error");
+          }
+        } catch (error) {
+          addTestResult(`❌ Error: ${error.message}`, "error");
+        }
+      }
+
+      async function testGameProgress() {
+        const gameSlug = document.getElementById("gameSlug").value;
+        addTestResult(`📊 Testing game progress for: ${gameSlug}`, "info");
+
+        try {
+          // First get game ID
+          const gameResponse = await fetch(
+            `${API_BASE}/games?slug=${gameSlug}`
+          );
+          const gameResult = await gameResponse.json();
+
+          if (gameResult.success && gameResult.data.length > 0) {
+            const gameId = gameResult.data[0].id;
+
+            // Test progress API (will fail without auth, but we can test the endpoint)
+            const progressResponse = await fetch(
+              `${API_BASE}/games/progress?game_id=${gameId}`
+            );
+
+            if (progressResponse.status === 401) {
+              addTestResult(
+                "✅ Progress API endpoint exists (requires authentication)",
+                "success"
+              );
+            } else if (progressResponse.ok) {
+              const progressResult = await progressResponse.json();
+              addTestResult("✅ Progress API working", "success");
+            } else {
+              addTestResult(
+                `⚠️ Progress API returned: ${progressResponse.status}`,
+                "warning"
+              );
+            }
+          } else {
+            addTestResult(
+              "❌ Could not get game ID for progress test",
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(`❌ Progress test error: ${error.message}`, "error");
+        }
+      }
+
+      async function testGameLeaderboard() {
+        const gameSlug = document.getElementById("gameSlug").value;
+        addTestResult(`🏆 Testing game leaderboard for: ${gameSlug}`, "info");
+
+        try {
+          // First get game ID
+          const gameResponse = await fetch(
+            `${API_BASE}/games?slug=${gameSlug}`
+          );
+          const gameResult = await gameResponse.json();
+
+          if (gameResult.success && gameResult.data.length > 0) {
+            const gameId = gameResult.data[0].id;
+
+            // Test leaderboard API
+            const leaderboardResponse = await fetch(
+              `${API_BASE}/games/leaderboard?game_id=${gameId}&limit=5`
+            );
+
+            if (leaderboardResponse.ok) {
+              const leaderboardResult = await leaderboardResponse.json();
+              addTestResult("✅ Leaderboard API working", "success");
+
+              if (
+                leaderboardResult.success &&
+                leaderboardResult.data.length > 0
+              ) {
+                addTestResult(
+                  `📊 Found ${leaderboardResult.data.length} leaderboard entries`,
+                  "info"
+                );
+              } else {
+                addTestResult(
+                  "📊 Leaderboard is empty (expected for new games)",
+                  "info"
+                );
+              }
+            } else {
+              addTestResult(
+                `❌ Leaderboard API error: ${leaderboardResponse.status}`,
+                "error"
+              );
+            }
+          } else {
+            addTestResult(
+              "❌ Could not get game ID for leaderboard test",
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(`❌ Leaderboard test error: ${error.message}`, "error");
+        }
+      }
+
+      // Challenge Instructions Tests
+      async function testChallengeInstructions() {
+        const challengeSlug = document.getElementById("challengeSlug").value;
+        addTestResult(
+          `🎯 Testing challenge instructions for: ${challengeSlug}`,
+          "info"
+        );
+
+        try {
+          // Test challenges API
+          const response = await fetch(
+            `${API_BASE}/challenges/${challengeSlug}`
+          );
+          const result = await response.json();
+
+          if (result.success) {
+            const challenge = result.data;
+            addTestResult(
+              `✅ Challenge data loaded: ${challenge.title}`,
+              "success"
+            );
+
+            // Check required fields for instructions
+            const requiredFields = [
+              "title",
+              "description",
+              "instructions",
+              "difficulty",
+              "xp_reward",
+            ];
+            let missingFields = [];
+
+            requiredFields.forEach((field) => {
+              if (!challenge[field]) {
+                missingFields.push(field);
+              }
+            });
+
+            if (missingFields.length === 0) {
+              addTestResult(
+                "✅ All required instruction fields present",
+                "success"
+              );
+
+              // Test instruction display
+              displayChallengeInstructionsPreview(challenge);
+            } else {
+              addTestResult(
+                `❌ Missing fields: ${missingFields.join(", ")}`,
+                "error"
+              );
+            }
+          } else {
+            addTestResult("❌ Challenge not found or API error", "error");
+          }
+        } catch (error) {
+          addTestResult(`❌ Error: ${error.message}`, "error");
+        }
+      }
+
+      async function testChallengeProgress() {
+        const challengeSlug = document.getElementById("challengeSlug").value;
+        addTestResult(
+          `📊 Testing challenge progress for: ${challengeSlug}`,
+          "info"
+        );
+
+        try {
+          // First get challenge data
+          const challengeResponse = await fetch(
+            `${API_BASE}/challenges/${challengeSlug}`
+          );
+          const challengeResult = await challengeResponse.json();
+
+          if (challengeResult.success) {
+            const challengeId = challengeResult.data.id;
+
+            // Test progress API
+            const progressResponse = await fetch(
+              `${API_BASE}/challenges/progress?challenge_id=${challengeId}`
+            );
+
+            if (progressResponse.status === 401) {
+              addTestResult(
+                "✅ Challenge progress API endpoint exists (requires authentication)",
+                "success"
+              );
+            } else if (progressResponse.ok) {
+              const progressResult = await progressResponse.json();
+              addTestResult("✅ Challenge progress API working", "success");
+            } else {
+              addTestResult(
+                `⚠️ Challenge progress API returned: ${progressResponse.status}`,
+                "warning"
+              );
+            }
+          } else {
+            addTestResult(
+              "❌ Could not get challenge ID for progress test",
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ Challenge progress test error: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      async function testChallengeLeaderboard() {
+        const challengeSlug = document.getElementById("challengeSlug").value;
+        addTestResult(
+          `🏆 Testing challenge leaderboard for: ${challengeSlug}`,
+          "info"
+        );
+
+        try {
+          // First get challenge data
+          const challengeResponse = await fetch(
+            `${API_BASE}/challenges/${challengeSlug}`
+          );
+          const challengeResult = await challengeResponse.json();
+
+          if (challengeResult.success) {
+            const challengeId = challengeResult.data.id;
+
+            // Test leaderboard API
+            const leaderboardResponse = await fetch(
+              `${API_BASE}/challenges/leaderboard?challenge_id=${challengeId}&limit=5`
+            );
+
+            if (leaderboardResponse.ok) {
+              const leaderboardResult = await leaderboardResponse.json();
+              addTestResult("✅ Challenge leaderboard API working", "success");
+
+              if (
+                leaderboardResult.success &&
+                leaderboardResult.data.length > 0
+              ) {
+                addTestResult(
+                  `📊 Found ${leaderboardResult.data.length} leaderboard entries`,
+                  "info"
+                );
+              } else {
+                addTestResult(
+                  "📊 Challenge leaderboard is empty (expected for new challenges)",
+                  "info"
+                );
+              }
+            } else {
+              addTestResult(
+                `❌ Challenge leaderboard API error: ${leaderboardResponse.status}`,
+                "error"
+              );
+            }
+          } else {
+            addTestResult(
+              "❌ Could not get challenge ID for leaderboard test",
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ Challenge leaderboard test error: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      // API Tests
+      async function testGameAPI() {
+        addTestResult("🔌 Testing Games API endpoints...", "info");
+
+        try {
+          // Test main games endpoint
+          const response = await fetch(`${API_BASE}/games?limit=5`);
+          const result = await response.json();
+
+          if (result.success) {
+            addTestResult(
+              `✅ Games API working - found ${result.data.length} games`,
+              "success"
+            );
+
+            // Check data structure
+            if (result.data.length > 0) {
+              const game = result.data[0];
+              const expectedFields = [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "difficulty",
+                "xp_reward",
+              ];
+              const hasAllFields = expectedFields.every((field) =>
+                game.hasOwnProperty(field)
+              );
+
+              if (hasAllFields) {
+                addTestResult("✅ Game data structure is correct", "success");
+              } else {
+                addTestResult(
+                  "⚠️ Some expected fields missing in game data",
+                  "warning"
+                );
+              }
+            }
+          } else {
+            addTestResult("❌ Games API returned error", "error");
+          }
+        } catch (error) {
+          addTestResult(`❌ Games API test error: ${error.message}`, "error");
+        }
+      }
+
+      async function testChallengeAPI() {
+        addTestResult("🔌 Testing Challenges API endpoints...", "info");
+
+        try {
+          // Test main challenges endpoint
+          const response = await fetch(`${API_BASE}/challenges?limit=5`);
+          const result = await response.json();
+
+          if (result.success) {
+            addTestResult(
+              `✅ Challenges API working - found ${result.data.length} challenges`,
+              "success"
+            );
+
+            // Check data structure
+            if (result.data.length > 0) {
+              const challenge = result.data[0];
+              const expectedFields = [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "difficulty",
+                "xp_reward",
+              ];
+              const hasAllFields = expectedFields.every((field) =>
+                challenge.hasOwnProperty(field)
+              );
+
+              if (hasAllFields) {
+                addTestResult(
+                  "✅ Challenge data structure is correct",
+                  "success"
+                );
+              } else {
+                addTestResult(
+                  "⚠️ Some expected fields missing in challenge data",
+                  "warning"
+                );
+              }
+            }
+          } else {
+            addTestResult("❌ Challenges API returned error", "error");
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ Challenges API test error: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      async function testProgressAPIs() {
+        addTestResult("📊 Testing Progress API endpoints...", "info");
+
+        // Test games progress endpoint
+        try {
+          const response = await fetch(
+            `${API_BASE}/games/progress?game_id=test-id`
+          );
+          if (response.status === 401) {
+            addTestResult(
+              "✅ Games progress API exists (requires auth)",
+              "success"
+            );
+          } else if (response.status === 400) {
+            addTestResult(
+              "✅ Games progress API validates parameters",
+              "success"
+            );
+          } else {
+            addTestResult(
+              `⚠️ Games progress API returned: ${response.status}`,
+              "warning"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ Games progress API error: ${error.message}`,
+            "error"
+          );
+        }
+
+        // Test challenges progress endpoint
+        try {
+          const response = await fetch(
+            `${API_BASE}/challenges/progress?challenge_id=test-id`
+          );
+          if (response.status === 401) {
+            addTestResult(
+              "✅ Challenges progress API exists (requires auth)",
+              "success"
+            );
+          } else if (response.status === 400) {
+            addTestResult(
+              "✅ Challenges progress API validates parameters",
+              "success"
+            );
+          } else {
+            addTestResult(
+              `⚠️ Challenges progress API returned: ${response.status}`,
+              "warning"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ Challenges progress API error: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      // UI Component Tests
+      function testProgressBanner() {
+        addTestResult("🎨 Testing progress banner UI component...", "info");
+
+        // Create a sample progress banner
+        const banner = document.createElement("div");
+        banner.className = "user-progress-banner";
+        banner.innerHTML = `
+                <h3>📊 Your Progress</h3>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Best Score:</span>
+                        <span class="stat-value">850</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Times Played:</span>
+                        <span class="stat-value">12</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Best Time:</span>
+                        <span class="stat-value">02:34</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Rank:</span>
+                        <span class="stat-value">#15</span>
+                    </div>
+                </div>
+            `;
+
+        document.body.appendChild(banner);
+        addTestResult("✅ Progress banner created and displayed", "success");
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          banner.remove();
+          addTestResult("✅ Progress banner removed", "info");
+        }, 3000);
+      }
+
+      function testCompletionModal() {
+        addTestResult("🎨 Testing completion modal UI component...", "info");
+
+        // Create a sample completion modal
+        const modal = document.createElement("div");
+        modal.className = "challenge-completion-modal";
+        modal.innerHTML = `
+                <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>🎉 Challenge Completed!</h2>
+                        <button class="modal-close" onclick="this.closest('.challenge-completion-modal').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="completion-stats">
+                            <div class="stat-item">
+                                <div class="stat-value success">✅ Passed</div>
+                                <div class="stat-label">Status</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">8/8</div>
+                                <div class="stat-label">Tests Passed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">+50</div>
+                                <div class="stat-label">XP Earned</div>
+                            </div>
+                        </div>
+                        <div class="completion-message success">
+                            <h3>🎊 Congratulations!</h3>
+                            <p>You've successfully completed the challenge!</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.challenge-completion-modal').remove()">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+        document.body.appendChild(modal);
+        addTestResult("✅ Completion modal created and displayed", "success");
+      }
+
+      function testLeaderboardModal() {
+        addTestResult("🎨 Testing leaderboard modal UI component...", "info");
+
+        // Create a sample leaderboard modal
+        const modal = document.createElement("div");
+        modal.className = "leaderboard-modal";
+        modal.innerHTML = `
+                <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>🏆 Game Leaderboard</h2>
+                        <button class="modal-close" onclick="this.closest('.leaderboard-modal').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="leaderboard-list">
+                            <div class="leaderboard-entry top-three">
+                                <div class="rank">#1</div>
+                                <div class="player-info">
+                                    <div class="player-name">CodeMaster</div>
+                                    <div class="player-stats">Score: 1000 | Time: 01:23</div>
+                                </div>
+                                <div class="entry-medal">🥇</div>
+                            </div>
+                            <div class="leaderboard-entry top-three">
+                                <div class="rank">#2</div>
+                                <div class="player-info">
+                                    <div class="player-name">DevNinja</div>
+                                    <div class="player-stats">Score: 950 | Time: 01:45</div>
+                                </div>
+                                <div class="entry-medal">🥈</div>
+                            </div>
+                            <div class="leaderboard-entry top-three">
+                                <div class="rank">#3</div>
+                                <div class="player-info">
+                                    <div class="player-name">WebWizard</div>
+                                    <div class="player-stats">Score: 900 | Time: 02:01</div>
+                                </div>
+                                <div class="entry-medal">🥉</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.leaderboard-modal').remove()">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+        document.body.appendChild(modal);
+        addTestResult("✅ Leaderboard modal created and displayed", "success");
+      }
+
+      // Helper functions to display previews
+      function displayGameInstructionsPreview(game) {
+        addTestResult("🎮 Game instructions preview:", "info");
+        addTestResult(`Title: ${game.title}`, "info");
+        addTestResult(
+          `Description: ${game.description.substring(0, 100)}...`,
+          "info"
+        );
+        addTestResult(
+          `Instructions: ${
+            game.instructions
+              ? game.instructions.substring(0, 100) + "..."
+              : "None"
+          }`,
+          "info"
+        );
+        addTestResult(
+          `Difficulty: ${game.difficulty} | XP: ${game.xp_reward} | Max Score: ${game.max_score}`,
+          "info"
+        );
+      }
+
+      function displayChallengeInstructionsPreview(challenge) {
+        addTestResult("🎯 Challenge instructions preview:", "info");
+        addTestResult(`Title: ${challenge.title}`, "info");
+        addTestResult(
+          `Description: ${challenge.description.substring(0, 100)}...`,
+          "info"
+        );
+        addTestResult(
+          `Instructions: ${
+            challenge.instructions
+              ? challenge.instructions.substring(0, 100) + "..."
+              : "None"
+          }`,
+          "info"
+        );
+        addTestResult(
+          `Difficulty: ${challenge.difficulty} | XP: ${challenge.xp_reward}`,
+          "info"
+        );
+      }
+
+      // Auto-run basic tests when page loads
+      window.addEventListener("DOMContentLoaded", () => {
+        addTestResult(
+          "🚀 Enhanced Editor Instructions Test loaded. Use the buttons above to run specific tests.",
+          "info"
+        );
+      });
+    </script>
+  </body>
+</html>

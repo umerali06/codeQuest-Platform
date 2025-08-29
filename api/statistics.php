@@ -3,6 +3,15 @@
  * Statistics API endpoints
  */
 
+// Include utility functions if not already loaded
+if (!function_exists('sendResponse')) {
+    function sendResponse($data, $statusCode = 200) {
+        http_response_code($statusCode); 
+        echo json_encode($data);
+        exit();
+    }
+}
+
 switch ($requestMethod) {
     case 'GET':
         handleGetStatistics($pdo);

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Auth - CodeQuest</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .status {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border-left: 4px solid;
+      }
+      .success {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        border-color: #17a2b8;
+        color: #0c5460;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #authButtons {
+        display: inline-flex;
+        gap: 10px;
+      }
+      #userMenu {
+        display: none;
+        gap: 10px;
+        align-items: center;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 CodeQuest Auth Test</h1>
+
+      <div class="status info">
+        <strong>Testing Authentication System</strong><br />
+        This page tests the auth system without the infinite recursion issue.
+      </div>
+
+      <div id="authStatus">
+        <h3>Authentication Status</h3>
+        <div id="authButtons">
+          <button onclick="testLogin()">Test Login</button>
+          <button onclick="testSignup()">Test Signup</button>
+        </div>
+        <div id="userMenu">
+          <span id="userGreeting">Welcome!</span>
+          <button onclick="testLogout()">Logout</button>
+        </div>
+      </div>
+
+      <div id="appwriteStatus">
+        <h3>Appwrite Connection</h3>
+        <div id="appwriteInfo" class="status info">Checking connection...</div>
+      </div>
+
+      <div id="testResults">
+        <h3>Test Results</h3>
+        <div id="results"></div>
+      </div>
+
+      <div id="debugInfo">
+        <h3>Debug Information</h3>
+        <pre id="debugOutput">Loading...</pre>
+      </div>
+    </div>
+
+    <!-- Load auth.js -->
+    <script src="auth.js"></script>
+
+    <script>
+      let testResults = [];
+
+      function addResult(test, status, message) {
+        testResults.push({ test, status, message, timestamp: new Date() });
+        updateResults();
+      }
+
+      function updateResults() {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = testResults
+          .map(
+            (result) =>
+              `<div class="status ${result.status}">
+                    <strong>${result.test}:</strong> ${result.message}
+                    <small style="display: block; margin-top: 5px;">${result.timestamp.toLocaleTimeString()}</small>
+                </div>`
+          )
+          .join("");
+      }
+
+      function updateDebugInfo() {
+        const debugOutput = document.getElementById("debugOutput");
+        const info = {
+          "AuthManager Available": typeof window.AuthManager !== "undefined",
+          "AuthManager Methods": window.AuthManager
+            ? Object.getOwnPropertyNames(window.AuthManager)
+            : "N/A",
+          "Current User": window.AuthManager
+            ? window.AuthManager.getCurrentUser()
+            : "N/A",
+          "Is Logged In": window.AuthManager
+            ? window.AuthManager.isLoggedIn()
+            : "N/A",
+          "Appwrite Available": typeof window.Appwrite !== "undefined",
+          "Local Storage": {
+            codequest_user: localStorage.getItem("codequest_user"),
+            appwrite_session: localStorage.getItem("appwrite_session"),
+          },
+        };
+        debugOutput.textContent = JSON.stringify(info, null, 2);
+      }
+
+      async function testAppwriteConnection() {
+        const appwriteInfo = document.getElementById("appwriteInfo");
+
+        try {
+          if (
+            typeof window.AuthManager !== "undefined" &&
+            window.AuthManager.appwrite
+          ) {
+            const account = window.AuthManager.appwrite.account;
+
+            try {
+              await account.get();
+              appwriteInfo.className = "status success";
+              appwriteInfo.innerHTML =
+                "<strong>✅ Appwrite Connected</strong><br>Successfully connected to Appwrite and user is authenticated.";
+              addResult(
+                "Appwrite Connection",
+                "success",
+                "Connected and authenticated"
+              );
+            } catch (authError) {
+              appwriteInfo.className = "status info";
+              appwriteInfo.innerHTML =
+                "<strong>🔗 Appwrite Connected</strong><br>Connected to Appwrite but no active session.";
+              addResult(
+                "Appwrite Connection",
+                "info",
+                "Connected but not authenticated"
+              );
+            }
+          } else {
+            appwriteInfo.className = "status error";
+            appwriteInfo.innerHTML =
+              "<strong>❌ Appwrite Not Available</strong><br>AuthManager or Appwrite client not initialized.";
+            addResult(
+              "Appwrite Connection",
+              "error",
+              "AuthManager not available"
+            );
+          }
+        } catch (error) {
+          appwriteInfo.className = "status error";
+          appwriteInfo.innerHTML = `<strong>❌ Connection Error</strong><br>${error.message}`;
+          addResult("Appwrite Connection", "error", error.message);
+        }
+      }
+
+      function testLogin() {
+        addResult(
+          "Login Test",
+          "info",
+          "Login functionality would be triggered here"
+        );
+        if (window.AuthManager && window.AuthManager.showLogin) {
+          window.AuthManager.showLogin();
+        } else {
+          addResult(
+            "Login Test",
+            "error",
+            "AuthManager.showLogin not available"
+          );
+        }
+      }
+
+      function testSignup() {
+        addResult(
+          "Signup Test",
+          "info",
+          "Signup functionality would be triggered here"
+        );
+        if (window.AuthManager && window.AuthManager.showSignup) {
+          window.AuthManager.showSignup();
+        } else {
+          addResult(
+            "Signup Test",
+            "error",
+            "AuthManager.showSignup not available"
+          );
+        }
+      }
+
+      function testLogout() {
+        addResult("Logout Test", "info", "Logout functionality triggered");
+        if (window.AuthManager && window.AuthManager.logout) {
+          window.AuthManager.logout();
+        } else {
+          addResult("Logout Test", "error", "AuthManager.logout not available");
+        }
+      }
+
+      // Simple auth UI update without recursion
+      function updateAuthUI() {
+        const authButtons = document.getElementById("authButtons");
+        const userMenu = document.getElementById("userMenu");
+        const userGreeting = document.getElementById("userGreeting");
+
+        let currentUser = null;
+        if (window.AuthManager && window.AuthManager.getCurrentUser) {
+          currentUser = window.AuthManager.getCurrentUser();
+        }
+
+        if (currentUser) {
+          authButtons.style.display = "none";
+          userMenu.style.display = "inline-flex";
+          userGreeting.textContent = `Welcome, ${
+            currentUser.name || currentUser.email || "User"
+          }!`;
+          addResult(
+            "Auth UI Update",
+            "success",
+            `Showing user menu for ${currentUser.name || currentUser.email}`
+          );
+        } else {
+          authButtons.style.display = "inline-flex";
+          userMenu.style.display = "none";
+          addResult("Auth UI Update", "info", "Showing login/signup buttons");
+        }
+      }
+
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        addResult("Page Load", "success", "Test page loaded successfully");
+
+        // Wait a bit for auth.js to initialize
+        setTimeout(() => {
+          testAppwriteConnection();
+          updateAuthUI();
+          updateDebugInfo();
+
+          // Set up periodic updates
+          setInterval(() => {
+            updateDebugInfo();
+            updateAuthUI();
+          }, 2000);
+        }, 1000);
+      });
+
+      // Listen for auth state changes
+      if (window.AuthManager) {
+        // Set up auth state listener if available
+        if (window.AuthManager.onAuthStateChange) {
+          window.AuthManager.onAuthStateChange((user) => {
+            addResult(
+              "Auth State Change",
+              "info",
+              user ? `User logged in: ${user.email}` : "User logged out"
+            );
+            updateAuthUI();
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

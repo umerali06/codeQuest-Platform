@@ -3,13 +3,74 @@
  * User API endpoints
  */
 
+// Include utility functions if not already loaded
+if (!function_exists('sendResponse')) {
+    function sendResponse($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        echo json_encode($data);
+        exit();
+    }
+}
+
+if (!function_exists('getRequestBody')) {
+    function getRequestBody() {
+        return json_decode(file_get_contents('php://input'), true) ?? [];
+    }
+}
+
+if (!function_exists('getAuthenticatedUser')) {
+    function getAuthenticatedUser($pdo) {
+        // Handle CLI mode (for testing)
+        if (php_sapi_name() === 'cli') {
+            return null;
+        }
+        
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return null;
+        }
+        
+        $token = substr($authHeader, 7);
+        
+        // For development, we'll use a simple token validation
+        if (($_ENV['NODE_ENV'] ?? 'development') === 'development') {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+            $stmt->execute([$token]);
+            return $stmt->fetch();
+        }
+        
+        return null;
+    }
+}
+
+// Check for progress endpoint
+$endpoint = $pathParts[1] ?? '';
+
 switch ($requestMethod) {
     case 'GET':
-        handleGetUser($pdo);
+        if ($endpoint === 'progress') {
+            handleGetUserProgress($pdo);
+        } else {
+            handleGetUser($pdo);
+        }
+        break;
+        
+    case 'POST':
+        if ($endpoint === 'progress') {
+            handleCreateUserProgress($pdo);
+        } else {
+            sendResponse(['error' => 'Endpoint not found'], 404);
+        }
         break;
         
     case 'PUT':
-        handleUpdateUser($pdo);
+        if ($endpoint === 'progress') {
+            handleUpdateUserProgress($pdo);
+        } else {
+            handleUpdateUser($pdo);
+        }
         break;
         
     default:
@@ -146,3 +207,152 @@ function handleUpdateUser($pdo) {
     }
 }
 ?>
+
+function handleGetUserProgress($pdo) {
+    $user = getAuthenticatedUser($pdo);
+    
+    if (!$user) {
+        sendResponse(['error' => 'Unauthorized'], 401);
+    }
+    
+    // Get user progress
+    $stmt = $pdo->prepare("
+        SELECT * FROM user_progress WHERE user_id = ?
+    ");
+    $stmt->execute([$user['id']]);
+    $progress = $stmt->fetch();
+    
+    if (!$progress) {
+        // Create default progress
+        $defaultProgress = [
+            'user_id' => $user['id'],
+            'total_xp' => 0,
+            'level' => 1,
+            'level_title' => 'Beginner',
+            'streak' => 0,
+            'html_xp' => 0,
+            'css_xp' => 0,
+            'javascript_xp' => 0,
+            'html_lessons' => 0,
+            'css_lessons' => 0,
+            'javascript_lessons' => 0,
+            'html_progress' => 0.0,
+            'css_progress' => 0.0,
+            'javascript_progress' => 0.0
+        ];
+        
+        $stmt = $pdo->prepare("
+            INSERT INTO user_progress (
+                user_id, total_xp, level, level_title, streak,
+                html_xp, css_xp, javascript_xp,
+                html_lessons, css_lessons, javascript_lessons,
+                html_progress, css_progress, javascript_progress
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        
+        $stmt->execute([
+            $user['id'], 0, 1, 'Beginner', 0,
+            0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0
+        ]);
+        
+        $progress = $defaultProgress;
+    }
+    
+    sendResponse([
+        'success' => true,
+        'progress' => $progress
+    ]);
+}
+
+function handleCreateUserProgress($pdo) {
+    $user = getAuthenticatedUser($pdo);
+    
+    if (!$user) {
+        sendResponse(['error' => 'Unauthorized'], 401);
+    }
+    
+    $data = getRequestBody();
+    
+    // Check if progress already exists
+    $stmt = $pdo->prepare("SELECT id FROM user_progress WHERE user_id = ?");
+    $stmt->execute([$user['id']]);
+    
+    if ($stmt->fetch()) {
+        sendResponse(['error' => 'User progress already exists'], 409);
+    }
+    
+    // Create new progress
+    $stmt = $pdo->prepare("
+        INSERT INTO user_progress (
+            user_id, total_xp, level, level_title, streak,
+            html_xp, css_xp, javascript_xp,
+            html_lessons, css_lessons, javascript_lessons,
+            html_progress, css_progress, javascript_progress
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    
+    $result = $stmt->execute([
+        $user['id'],
+        $data['total_xp'] ?? 0,
+        $data['current_level'] ?? 1,
+        'Beginner',
+        0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0
+    ]);
+    
+    if ($result) {
+        sendResponse([
+            'success' => true,
+            'message' => 'User progress created successfully'
+        ]);
+    } else {
+        sendResponse(['error' => 'Failed to create progress'], 500);
+    }
+}
+
+function handleUpdateUserProgress($pdo) {
+    $user = getAuthenticatedUser($pdo);
+    
+    if (!$user) {
+        sendResponse(['error' => 'Unauthorized'], 401);
+    }
+    
+    $data = getRequestBody();
+    
+    $allowedFields = [
+        'total_xp', 'level', 'level_title', 'streak',
+        'html_xp', 'css_xp', 'javascript_xp',
+        'html_lessons', 'css_lessons', 'javascript_lessons',
+        'html_progress', 'css_progress', 'javascript_progress'
+    ];
+    
+    $updates = [];
+    $values = [];
+    
+    foreach ($allowedFields as $field) {
+        if (isset($data[$field])) {
+            $updates[] = "$field = ?";
+            $values[] = $data[$field];
+        }
+    }
+    
+    if (empty($updates)) {
+        sendResponse(['error' => 'No valid fields to update'], 400);
+    }
+    
+    $values[] = $user['id'];
+    
+    $stmt = $pdo->prepare("
+        UPDATE user_progress 
+        SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP 
+        WHERE user_id = ?
+    ");
+    
+    if ($stmt->execute($values)) {
+        sendResponse([
+            'success' => true,
+            'message' => 'Progress updated successfully'
+        ]);
+    } else {
+        sendResponse(['error' => 'Update failed'], 500);
+    }
+}

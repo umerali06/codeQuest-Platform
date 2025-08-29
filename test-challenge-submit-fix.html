@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Challenge Submit Fix</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+      }
+      .error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+      }
+      .info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+      }
+      .warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: white;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .btn-success {
+        background-color: #28a745;
+      }
+      .btn-success:hover {
+        background-color: #218838;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 10px;
+        overflow-x: auto;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+        font-size: 12px;
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+        font-family: monospace;
+        font-size: 12px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .test-result {
+        margin: 5px 0;
+        padding: 8px;
+        border-radius: 4px;
+      }
+      .test-passed {
+        background-color: #d4edda;
+      }
+      .test-failed {
+        background-color: #f8d7da;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Test Challenge Submit Fix</h1>
+
+      <div class="section info">
+        <h2>🎯 Issue Fixed</h2>
+        <p>
+          <strong>Problem:</strong> Challenge submission was returning 401
+          Unauthorized error
+        </p>
+        <p>
+          <strong>Solution:</strong> Modified API to allow challenge testing
+          without authentication
+        </p>
+        <p>
+          <strong>Result:</strong> Users can now test challenges without logging
+          in (progress won't be saved)
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>🧪 Test Challenge Submission</h2>
+        <p>Test submitting code to the challenge API without authentication:</p>
+
+        <div style="margin: 10px 0">
+          <label><strong>Challenge:</strong></label>
+          <select id="challengeSelect">
+            <option value="responsive-nav">Responsive Navigation Menu</option>
+            <option value="contact-card">Contact Card Component</option>
+            <option value="todo-app">Interactive Todo List</option>
+          </select>
+        </div>
+
+        <div style="margin: 10px 0">
+          <label><strong>HTML Code:</strong></label>
+          <textarea id="htmlCode" placeholder="Enter HTML code here...">
+<nav class="navbar">
+  <div class="logo">My Logo</div>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav></textarea
+          >
+        </div>
+
+        <div style="margin: 10px 0">
+          <label><strong>CSS Code:</strong></label>
+          <textarea id="cssCode" placeholder="Enter CSS code here...">
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #333;
+  color: white;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+  }
+}</textarea
+          >
+        </div>
+
+        <div style="margin: 10px 0">
+          <label><strong>JavaScript Code:</strong></label>
+          <textarea id="jsCode" placeholder="Enter JavaScript code here...">
+// Add navigation functionality here
+console.log('Navigation loaded');</textarea
+          >
+        </div>
+
+        <button onclick="testChallengeSubmission()" class="btn-success">
+          🚀 Submit Challenge Code
+        </button>
+        <div id="submissionResult"></div>
+      </div>
+
+      <div class="section">
+        <h2>🔗 Test in Editor</h2>
+        <p>Test the actual editor to make sure the 401 error is fixed:</p>
+        <button onclick="openEditor()">Open Editor with Challenge</button>
+        <button onclick="openEditorFreePlay()">Open Editor (Free Play)</button>
+        <div id="editorResult"></div>
+      </div>
+
+      <div class="section info">
+        <h2>📋 Expected Behavior</h2>
+        <ul>
+          <li>✅ Challenge submission should work without authentication</li>
+          <li>✅ Test results should be returned</li>
+          <li>✅ No 401 Unauthorized errors</li>
+          <li>⚠️ Progress won't be saved (user not logged in)</li>
+          <li>✅ XP earned will be 0 (no authentication)</li>
+          <li>✅ Message should indicate login required to save progress</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      async function testChallengeSubmission() {
+        const resultDiv = document.getElementById("submissionResult");
+        resultDiv.innerHTML = "<p>Submitting challenge...</p>";
+
+        const challengeSlug = document.getElementById("challengeSelect").value;
+        const htmlCode = document.getElementById("htmlCode").value;
+        const cssCode = document.getElementById("cssCode").value;
+        const jsCode = document.getElementById("jsCode").value;
+
+        const payload = {
+          challengeSlug: challengeSlug,
+          code: {
+            html: htmlCode,
+            css: cssCode,
+            js: jsCode,
+          },
+        };
+
+        try {
+          const response = await fetch("/api/challenges/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            let html = `<div class="success">
+                        <h3>✅ Challenge Submission Successful!</h3>
+                        <p><strong>Status:</strong> ${response.status} OK</p>
+                        <p><strong>Challenge:</strong> ${challengeSlug}</p>
+                        <p><strong>Tests Passed:</strong> ${
+                          data.data.testsPassed
+                        }/${data.data.totalTests}</p>
+                        <p><strong>Completed:</strong> ${
+                          data.data.isCompleted ? "Yes" : "No"
+                        }</p>
+                        <p><strong>XP Earned:</strong> ${data.data.xpEarned}</p>
+                        <p><strong>Authenticated:</strong> ${
+                          data.data.authenticated ? "Yes" : "No"
+                        }</p>
+                        <p><strong>Message:</strong> ${data.data.message}</p>
+                    </div>`;
+
+            if (data.data.testResults && data.data.testResults.length > 0) {
+              html += "<h4>Test Results:</h4>";
+              data.data.testResults.forEach((test) => {
+                html += `<div class="test-result ${
+                  test.passed ? "test-passed" : "test-failed"
+                }">
+                                <strong>${test.name}:</strong> ${
+                  test.passed ? "✅ PASSED" : "❌ FAILED"
+                }
+                                ${test.message ? ` - ${test.message}` : ""}
+                            </div>`;
+              });
+            }
+
+            resultDiv.innerHTML = html;
+          } else {
+            resultDiv.innerHTML = `<div class="error">
+                        <h3>❌ Submission Failed</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Error:</strong> ${
+                          data.error || data.message || "Unknown error"
+                        }</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<div class="error">
+                    <h3>❌ Network Error</h3>
+                    <p>${error.message}</p>
+                </div>`;
+        }
+      }
+
+      function openEditor() {
+        const resultDiv = document.getElementById("editorResult");
+        resultDiv.innerHTML = `<div class="info">
+                <h3>🔗 Opening Editor with Challenge</h3>
+                <p>Check the browser console for any 401 errors when you click "Run Tests".</p>
+                <p><a href="editor.html?challenge=responsive-nav" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                    → Open Editor with Responsive Nav Challenge
+                </a></p>
+            </div>`;
+
+        window.open("editor.html?challenge=responsive-nav", "_blank");
+      }
+
+      function openEditorFreePlay() {
+        const resultDiv = document.getElementById("editorResult");
+        resultDiv.innerHTML = `<div class="info">
+                <h3>🔗 Opening Editor (Free Play)</h3>
+                <p>Test the editor without any specific challenge.</p>
+                <p><a href="editor.html" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                    → Open Editor (Free Play Mode)
+                </a></p>
+            </div>`;
+
+        window.open("editor.html", "_blank");
+      }
+    </script>
+  </body>
+</html>

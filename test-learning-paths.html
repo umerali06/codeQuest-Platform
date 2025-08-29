@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Paths Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 2rem 0;
+      }
+      .test-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .test-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--light);
+      }
+      .breakpoint-info {
+        text-align: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .resize-instruction {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+      .test-section {
+        margin-bottom: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1 class="test-title">Responsive Learning Paths Test</h1>
+      <p class="resize-instruction">
+        Resize your browser window to see how the learning path cards adapt to
+        different screen sizes
+      </p>
+
+      <div class="breakpoint-info">
+        <strong>Current Breakpoints:</strong>
+        Desktop (1200px+) → Tablet (768px-1199px) → Mobile (480px-767px) → Small
+        Mobile (below 480px)
+      </div>
+
+      <div class="test-section">
+        <h2 class="test-title">Default Learning Paths (No Progress)</h2>
+
+        <section class="learning-paths-section">
+          <div class="container">
+            <div class="section-header">
+              <h2>Learning Paths</h2>
+              <p>Structured roadmaps to guide your learning journey</p>
+            </div>
+            <div class="paths-container">
+              <div class="path-card frontend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-paint-brush"></i>
+                  </div>
+                  <h3>Frontend Development</h3>
+                </div>
+                <p>
+                  Master HTML, CSS, JavaScript and modern frameworks to build
+                  beautiful, interactive websites.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 120 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 8 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+
+              <div class="path-card backend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-server"></i>
+                  </div>
+                  <h3>Backend Development</h3>
+                </div>
+                <p>
+                  Learn server-side programming, databases, APIs and
+                  authentication to power your applications.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 90 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 6 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+
+              <div class="path-card fullstack-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-code"></i>
+                  </div>
+                  <h3>Full Stack Mastery</h3>
+                </div>
+                <p>
+                  Combine frontend and backend skills to build complete,
+                  production-ready web applications.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 200 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 12 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="test-section">
+        <h2 class="test-title">Learning Paths with Progress</h2>
+
+        <section class="learning-paths-section">
+          <div class="container">
+            <div class="paths-container">
+              <div class="path-card frontend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-paint-brush"></i>
+                  </div>
+                  <h3>Frontend Development</h3>
+                </div>
+                <p>
+                  Master HTML, CSS, JavaScript and modern frameworks to build
+                  beautiful, interactive websites.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 120 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 8 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                  </div>
+                  <span>65% complete</span>
+                </div>
+                <button class="btn btn-primary">Continue Path</button>
+              </div>
+
+              <div class="path-card backend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-server"></i>
+                  </div>
+                  <h3>Backend Development</h3>
+                </div>
+                <p>
+                  Learn server-side programming, databases, APIs and
+                  authentication to power your applications.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 90 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 6 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 30%"></div>
+                  </div>
+                  <span>30% complete</span>
+                </div>
+                <button class="btn btn-primary">Continue Path</button>
+              </div>
+
+              <div class="path-card fullstack-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-code"></i>
+                  </div>
+                  <h3>Full Stack Mastery</h3>
+                </div>
+                <p>
+                  Combine frontend and backend skills to build complete,
+                  production-ready web applications.
+                </p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 200 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 12 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                  </div>
+                  <span>100% complete</span>
+                </div>
+                <button class="btn btn-success">Review Path</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="test-section">
+        <h2 class="test-title">Extended Learning Paths (6 Cards)</h2>
+
+        <section class="learning-paths-section">
+          <div class="container">
+            <div class="paths-container">
+              <div class="path-card frontend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-paint-brush"></i>
+                  </div>
+                  <h3>Frontend Development</h3>
+                </div>
+                <p>Master HTML, CSS, JavaScript and modern frameworks.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 120 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 8 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                  </div>
+                  <span>75% complete</span>
+                </div>
+                <button class="btn btn-primary">Continue Path</button>
+              </div>
+
+              <div class="path-card backend-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-server"></i>
+                  </div>
+                  <h3>Backend Development</h3>
+                </div>
+                <p>Learn server-side programming and databases.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 90 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 6 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                  </div>
+                  <span>45% complete</span>
+                </div>
+                <button class="btn btn-primary">Continue Path</button>
+              </div>
+
+              <div class="path-card fullstack-path">
+                <div class="path-header">
+                  <div class="path-icon">
+                    <i class="fas fa-code"></i>
+                  </div>
+                  <h3>Full Stack Mastery</h3>
+                </div>
+                <p>Build complete web applications from scratch.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 200 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 12 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+
+              <div class="path-card">
+                <div class="path-header">
+                  <div
+                    class="path-icon"
+                    style="
+                      background: linear-gradient(135deg, #ef4444, #dc2626);
+                    "
+                  >
+                    <i class="fas fa-mobile-alt"></i>
+                  </div>
+                  <h3>Mobile Development</h3>
+                </div>
+                <p>Create mobile apps with React Native and Flutter.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 150 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 10 modules</span>
+                </div>
+                <div class="path-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 20%"></div>
+                  </div>
+                  <span>20% complete</span>
+                </div>
+                <button class="btn btn-primary">Continue Path</button>
+              </div>
+
+              <div class="path-card">
+                <div class="path-header">
+                  <div
+                    class="path-icon"
+                    style="
+                      background: linear-gradient(135deg, #06b6d4, #0891b2);
+                    "
+                  >
+                    <i class="fas fa-database"></i>
+                  </div>
+                  <h3>Database Mastery</h3>
+                </div>
+                <p>Master SQL, NoSQL, and database optimization.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 80 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 5 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+
+              <div class="path-card">
+                <div class="path-header">
+                  <div
+                    class="path-icon"
+                    style="
+                      background: linear-gradient(135deg, #f59e0b, #d97706);
+                    "
+                  >
+                    <i class="fas fa-cloud"></i>
+                  </div>
+                  <h3>DevOps & Cloud</h3>
+                </div>
+                <p>Deploy and scale applications in the cloud.</p>
+                <div class="path-stats">
+                  <span><i class="fas fa-clock"></i> 100 hours</span>
+                  <span><i class="fas fa-graduation-cap"></i> 7 modules</span>
+                </div>
+                <button class="btn btn-secondary">Start Path</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // Show current viewport width for testing
+      function updateViewportInfo() {
+        const width = window.innerWidth;
+        let breakpoint = "";
+
+        if (width >= 1200) breakpoint = "Desktop (1200px+) - 3 cards per row";
+        else if (width >= 768)
+          breakpoint = "Tablet (768px-1199px) - 2 cards per row";
+        else if (width >= 480)
+          breakpoint = "Mobile (480px-767px) - 1 card per row";
+        else
+          breakpoint =
+            "Small Mobile (below 480px) - 1 card per row, stacked header";
+
+        document.querySelector(".breakpoint-info").innerHTML = `
+                <strong>Current Viewport:</strong> ${width}px - ${breakpoint}
+            `;
+      }
+
+      // Update on load and resize
+      updateViewportInfo();
+      window.addEventListener("resize", updateViewportInfo);
+
+      // Simulate button clicks
+      document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("btn")) {
+          const pathCard = e.target.closest(".path-card");
+          const pathName = pathCard.querySelector("h3").textContent;
+          const action = e.target.textContent;
+
+          // Simple notification simulation
+          const notification = document.createElement("div");
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #22c55e;
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+          notification.textContent = `${action}: ${pathName}`;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.remove();
+          }, 3000);
+        }
+      });
+
+      // Add CSS animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

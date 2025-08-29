@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Comprehensive Diagnostic</title>
+    <link rel="stylesheet" href="ai-assistant.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .diagnostic-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .test-card.success { border-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        .test-card.error { border-color: #f87171; background: rgba(248, 113, 113, 0.1); }
+        .test-card.warning { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        .test-card.info { border-color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background-color: #4ade80; }
+        .status-error { background-color: #f87171; }
+        .status-warning { background-color: #fbbf24; }
+        .status-info { background-color: #60a5fa; }
+        
+        button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .result {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagnostic-container">
+        <h1>🔍 AI Assistant Comprehensive Diagnostic</h1>
+        <p>This tool will identify and diagnose all issues with the AI assistant system.</p>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="runFullDiagnostic()" style="font-size: 18px; padding: 15px 30px;">
+                🚀 Run Full Diagnostic
+            </button>
+        </div>
+        
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        
+        <div class="test-grid" id="testGrid">
+            <!-- Test cards will be populated here -->
+        </div>
+        
+        <div id="summaryReport" style="display: none;">
+            <h2>📊 Diagnostic Summary</h2>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <!-- AI Assistant will be injected here -->
+    <script src="ai-assistant.js"></script>
+    
+    <script>
+        let diagnosticResults = {};
+        let testProgress = 0;
+        let totalTests = 8;
+
+        async function runFullDiagnostic() {
+            console.log('🔍 Starting comprehensive AI assistant diagnostic...');
+            
+            // Reset results
+            diagnosticResults = {};
+            testProgress = 0;
+            
+            // Show progress bar
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('summaryReport').style.display = 'none';
+            
+            // Initialize test grid
+            initializeTestGrid();
+            
+            // Run all tests
+            await runTest('API Endpoint Test', testAPIEndpoint);
+            await runTest('Environment Variables', testEnvironmentVariables);
+            await runTest('DeepSeek API Connection', testDeepSeekAPI);
+            await runTest('UI Components', testUIComponents);
+            await runTest('JavaScript Loading', testJavaScriptLoading);
+            await runTest('CSS Styling', testCSSStyles);
+            await runTest('Error Handling', testErrorHandling);
+            await runTest('Cross-Browser Compatibility', testCrossBrowser);
+            
+                <div id="jsResults"></div>
+            </div>
+
+            <!-- CSS Styling -->
+            <div class="test-card">
+                <h3>🎨 CSS Styling</h3>
+                <button onclick="testCSS()">Test Styling</button>
+                <div id="cssResults"></div>
+            </div>
+        </div>
+
+        <div class="test-card" style="margin-top: 20px;">
+            <h3>📋 Diagnostic Summary</h3>
+            <div id="summaryResults"></div>
+        </div>
+
+        <div class="test-card" style="margin-top: 20px;">
+            <h3>🔧 Recommended Fixes</h3>
+            <div id="fixRecommendations"></div>
+        </div>
+    </div>
+
+    <script>
+        let diagnosticResults = {
+            api: {},
+            server: {},
+            environment: {},
+            dependencies: {},
+            javascript: {},
+            css: {},
+            errors: [],
+            warnings: [],
+            successes: []
+        };
+
+        async function runFullDiagnostic() {
+            clearResults();
+            updateSummary('🔄 Running comprehensive diagnostic...');
+            
+            try {
+                await testAPIEndpoints();
+                await testServerConfig();
+                await testEnvironment();
+                await testDependencies();
+                await testJavaScript();
+                await testCSS();
+                
+                generateSummary();
+                generateRecommendations();
+            } catch (error) {
+                console.error('Diagnostic failed:', error);
+                updateSummary('❌ Diagnostic failed: ' + error.message);
+            }
+        }
+
+        async function testAPIEndpoints() {
+            const resultDiv = document.getElementById('apiResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Testing API endpoints...</div>';
+            
+            const tests = [
+                { name: 'Direct API Call', url: '/api/ai', method: 'POST' },
+                { name: 'Router Health Check', url: '/api/health', method: 'GET' },
+                { name: 'Options Request', url: '/api/ai', method: 'OPTIONS' }
+            ];
+            
+            let results = [];
+            
+            for (const test of tests) {
+                try {
+                    console.log(`Testing ${test.name}: ${test.method} ${test.url}`);
+                    
+                    const options = {
+                        method: test.method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    
+                    if (test.method === 'POST') {
+                        options.body = JSON.stringify({
+                            message: 'Diagnostic test message'
+                        });
+                    }
+                    
+                    const response = await fetch(test.url, options);
+                    const responseText = await response.text();
+                    
+                    let responseData;
+                    try {
+                        responseData = JSON.parse(responseText);
+                    } catch (e) {
+                        responseData = { raw: responseText };
+                    }
+                    
+                    const result = {
+                        name: test.name,
+                        status: response.status,
+                        ok: response.ok,
+                        headers: Object.fromEntries(response.headers.entries()),
+                        data: responseData,
+                        error: null
+                    };
+                    
+                    results.push(result);
+                    diagnosticResults.api[test.name] = result;
+                    
+                    if (response.ok) {
+                        diagnosticResults.successes.push(`${test.name}: ${response.status}`);
+                    } else {
+                        diagnosticResults.errors.push(`${test.name}: HTTP ${response.status}`);
+                    }
+                    
+                } catch (error) {
+                    console.error(`${test.name} failed:`, error);
+                    const result = {
+                        name: test.name,
+                        status: 0,
+                        ok: false,
+                        error: error.message
+                    };
+                    results.push(result);
+                    diagnosticResults.api[test.name] = result;
+                    diagnosticResults.errors.push(`${test.name}: ${error.message}`);
+                }
+            }
+            
+            // Display results
+            let html = '';
+            results.forEach(result => {
+                const statusClass = result.ok ? 'success' : 'error';
+                const statusIcon = result.ok ? '✅' : '❌';
+                
+                html += `<div class="${statusClass}-details">
+                    <strong>${statusIcon} ${result.name}</strong><br>
+                    Status: ${result.status} ${result.ok ? 'OK' : 'ERROR'}<br>`;
+                
+                if (result.error) {
+                    html += `Error: ${result.error}<br>`;
+                }
+                
+                if (result.data) {
+                    if (result.data.success !== undefined) {
+                        html += `Success: ${result.data.success}<br>`;
+                    }
+                    if (result.data.response) {
+                        html += `Response: ${result.data.response.substring(0, 100)}...<br>`;
+                    }
+                    if (result.data.source) {
+                        html += `Source: ${result.data.source}<br>`;
+                    }
+                    if (result.data.error) {
+                        html += `API Error: ${result.data.error}<br>`;
+                    }
+                }
+                
+                html += '</div>';
+            });
+            
+            resultDiv.innerHTML = html;
+        }
+
+        async function testServerConfig() {
+            const resultDiv = document.getElementById('serverResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Checking server configuration...</div>';
+            
+            let html = '';
+            
+            // Test .htaccess rules
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    html += '<div class="success-details">✅ .htaccess routing working</div>';
+                    diagnosticResults.successes.push('.htaccess routing functional');
+                } else {
+                    html += '<div class="error-details">❌ .htaccess routing issues</div>';
+                    diagnosticResults.errors.push('.htaccess routing broken');
+                }
+            } catch (error) {
+                html += '<div class="error-details">❌ Server routing error: ' + error.message + '</div>';
+                diagnosticResults.errors.push('Server routing: ' + error.message);
+            }
+            
+            // Check PHP version and extensions
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    html += '<div class="success-details">✅ PHP server responding</div>';
+                } else {
+                    html += '<div class="warning-details">⚠️ PHP server issues detected</div>';
+                }
+            } catch (error) {
+                html += '<div class="error-details">❌ PHP server error: ' + error.message + '</div>';
+            }
+            
+            diagnosticResults.server = { routing: true, php: true };
+            resultDiv.innerHTML = html;
+        }
+
+        async function testEnvironment() {
+            const resultDiv = document.getElementById('envResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Checking environment variables...</div>';
+            
+            let html = '';
+            
+            // Test if API can access environment variables
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'env test' })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.source === 'external_api') {
+                        html += '<div class="success-details">✅ DeepSeek API configured and working</div>';
+                        diagnosticResults.successes.push('DeepSeek API functional');
+                    } else if (data.source === 'local_fallback') {
+                        html += '<div class="warning-details">⚠️ Using local fallback (DeepSeek not configured)</div>';
+                        diagnosticResults.warnings.push('DeepSeek API not configured');
+                    }
+                } else {
+                    html += '<div class="error-details">❌ Environment configuration error</div>';
+                    diagnosticResults.errors.push('Environment configuration broken');
+                }
+            } catch (error) {
+                html += '<div class="error-details">❌ Environment test failed: ' + error.message + '</div>';
+                diagnosticResults.errors.push('Environment test: ' + error.message);
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+
+        async function testDependencies() {
+            const resultDiv = document.getElementById('depResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Checking dependencies...</div>';
+            
+            let html = '';
+            
+            // Test if composer dependencies are working
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    html += '<div class="success-details">✅ Composer autoloader working</div>';
+                    diagnosticResults.successes.push('Composer dependencies loaded');
+                } else {
+                    html += '<div class="error-details">❌ Composer dependency issues</div>';
+                    diagnosticResults.errors.push('Composer dependencies broken');
+                }
+            } catch (error) {
+                html += '<div class="error-details">❌ Dependency test failed: ' + error.message + '</div>';
+                diagnosticResults.errors.push('Dependencies: ' + error.message);
+            }
+            
+            // Test cURL availability
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'curl test' })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.source === 'external_api') {
+                        html += '<div class="success-details">✅ cURL extension working</div>';
+                    } else {
+                        html += '<div class="warning-details">⚠️ cURL may not be available</div>';
+                    }
+                }
+            } catch (error) {
+                html += '<div class="error-details">❌ cURL test failed</div>';
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+
+        function testJavaScript() {
+            const resultDiv = document.getElementById('jsResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Testing JavaScript components...</div>';
+            
+            let html = '';
+            
+            // Check if AI assistant JavaScript is loaded
+            if (typeof window.aiAssistant !== 'undefined') {
+                html += '<div class="success-details">✅ AI Assistant JavaScript loaded</div>';
+                diagnosticResults.successes.push('AI Assistant JS loaded');
+            } else {
+                html += '<div class="error-details">❌ AI Assistant JavaScript not loaded</div>';
+                diagnosticResults.errors.push('AI Assistant JS missing');
+            }
+            
+            // Check for AI assistant DOM elements
+            const aiWidget = document.querySelector('.ai-assistant-widget');
+            if (aiWidget) {
+                html += '<div class="success-details">✅ AI Widget DOM element found</div>';
+                diagnosticResults.successes.push('AI Widget DOM present');
+            } else {
+                html += '<div class="error-details">❌ AI Widget DOM element missing</div>';
+                diagnosticResults.errors.push('AI Widget DOM missing');
+            }
+            
+            // Check for console errors
+            const originalConsoleError = console.error;
+            let jsErrors = [];
+            console.error = function(...args) {
+                jsErrors.push(args.join(' '));
+                originalConsoleError.apply(console, args);
+            };
+            
+            setTimeout(() => {
+                console.error = originalConsoleError;
+                if (jsErrors.length > 0) {
+                    html += `<div class="error-details">❌ JavaScript errors detected:<br>`;
+                    jsErrors.forEach(error => {
+                        html += `• ${error}<br>`;
+                    });
+                    html += '</div>';
+                    diagnosticResults.errors.push(`JS errors: ${jsErrors.length}`);
+                } else {
+                    html += '<div class="success-details">✅ No JavaScript errors detected</div>';
+                }
+                
+                resultDiv.innerHTML = html;
+            }, 1000);
+        }
+
+        function testCSS() {
+            const resultDiv = document.getElementById('cssResults');
+            resultDiv.innerHTML = '<div class="result">🔄 Testing CSS styling...</div>';
+            
+            let html = '';
+            
+            // Check if AI assistant CSS is loaded
+            const testElement = document.createElement('div');
+            testElement.className = 'ai-toggle-button';
+            testElement.style.display = 'none';
+            document.body.appendChild(testElement);
+            
+            const styles = window.getComputedStyle(testElement);
+            const hasAIStyles = styles.background.includes('linear-gradient') || 
+                               styles.backgroundColor === 'rgb(99, 102, 241)' ||
+                               styles.backgroundColor.includes('99, 102, 241');
+            
+            document.body.removeChild(testElement);
+            
+            if (hasAIStyles) {
+                html += '<div class="success-details">✅ AI Assistant CSS loaded and applied</div>';
+                diagnosticResults.successes.push('AI Assistant CSS loaded');
+            } else {
+                html += '<div class="error-details">❌ AI Assistant CSS not loaded or not applied</div>';
+                diagnosticResults.errors.push('AI Assistant CSS missing');
+            }
+            
+            // Check for quick action button styling
+            const quickActionBtn = document.querySelector('.quick-action-btn');
+            if (quickActionBtn) {
+                const btnStyles = window.getComputedStyle(quickActionBtn);
+                const hasBlueBackground = btnStyles.backgroundColor === 'rgb(99, 102, 241)' ||
+                                        btnStyles.backgroundColor.includes('99, 102, 241');
+                
+                if (hasBlueBackground) {
+                    html += '<div class="success-details">✅ Quick action buttons have correct blue styling</div>';
+                    diagnosticResults.successes.push('Quick action button styling correct');
+                } else {
+                    html += '<div class="warning-details">⚠️ Quick action buttons may not have correct styling</div>';
+                    diagnosticResults.warnings.push('Quick action button styling needs update');
+                }
+            } else {
+                html += '<div class="warning-details">⚠️ Quick action buttons not found (AI assistant may not be open)</div>';
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+
+        function generateSummary() {
+            const summaryDiv = document.getElementById('summaryResults');
+            
+            const totalTests = diagnosticResults.successes.length + 
+                             diagnosticResults.errors.length + 
+                             diagnosticResults.warnings.length;
+            
+            let html = `
+                <div class="success-details">
+                    <h4>📊 Test Results Summary</h4>
+                    <p><strong>Total Tests:</strong> ${totalTests}</p>
+                    <p><span class="status status-success"></span><strong>Successes:</strong> ${diagnosticResults.successes.length}</p>
+                    <p><span class="status status-error"></span><strong>Errors:</strong> ${diagnosticResults.errors.length}</p>
+                    <p><span class="status status-warning"></span><strong>Warnings:</strong> ${diagnosticResults.warnings.length}</p>
+                </div>
+            `;
+            
+            if (diagnosticResults.errors.length > 0) {
+                html += '<div class="error-details"><h4>🚨 Critical Issues:</h4><ul>';
+                diagnosticResults.errors.forEach(error => {
+                    html += `<li>${error}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (diagnosticResults.warnings.length > 0) {
+                html += '<div class="warning-details"><h4>⚠️ Warnings:</h4><ul>';
+                diagnosticResults.warnings.forEach(warning => {
+                    html += `<li>${warning}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (diagnosticResults.successes.length > 0) {
+                html += '<div class="success-details"><h4>✅ Working Components:</h4><ul>';
+                diagnosticResults.successes.forEach(success => {
+                    html += `<li>${success}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            summaryDiv.innerHTML = html;
+        }
+
+        function generateRecommendations() {
+            const fixDiv = document.getElementById('fixRecommendations');
+            let html = '';
+            
+            if (diagnosticResults.errors.length === 0 && diagnosticResults.warnings.length === 0) {
+                html = '<div class="success-details">🎉 All systems working correctly! No fixes needed.</div>';
+            } else {
+                html = '<div class="warning-details"><h4>🔧 Recommended Fixes:</h4>';
+                
+                // API-specific fixes
+                if (diagnosticResults.errors.some(e => e.includes('API') || e.includes('HTTP'))) {
+                    html += `
+                        <h5>API Issues:</h5>
+                        <ul>
+                            <li>Check if the server is running on localhost:8000</li>
+                            <li>Verify .htaccess file is properly configured</li>
+                            <li>Ensure api/index.php has correct routing</li>
+                            <li>Check PHP error logs for detailed error information</li>
+                        </ul>
+                    `;
+                }
+                
+                // Environment fixes
+                if (diagnosticResults.warnings.some(w => w.includes('DeepSeek'))) {
+                    html += `
+                        <h5>Environment Configuration:</h5>
+                        <ul>
+                            <li>Add your DeepSeek API key to .env file</li>
+                            <li>Ensure DEEPSEEK_API_KEY is properly set</li>
+                            <li>Verify .env file is readable by PHP</li>
+                        </ul>
+                    `;
+                }
+                
+                // JavaScript fixes
+                if (diagnosticResults.errors.some(e => e.includes('JS') || e.includes('JavaScript'))) {
+                    html += `
+                        <h5>JavaScript Issues:</h5>
+                        <ul>
+                            <li>Include ai-assistant.js in your HTML pages</li>
+                            <li>Check browser console for JavaScript errors</li>
+                            <li>Ensure ai-assistant.css is properly linked</li>
+                        </ul>
+                    `;
+                }
+                
+                // CSS fixes
+                if (diagnosticResults.errors.some(e => e.includes('CSS')) || 
+                    diagnosticResults.warnings.some(w => w.includes('styling'))) {
+                    html += `
+                        <h5>CSS Styling Issues:</h5>
+                        <ul>
+                            <li>Link ai-assistant.css in HTML head section</li>
+                            <li>Clear browser cache and reload</li>
+                            <li>Check if CSS file path is correct</li>
+                        </ul>
+                    `;
+                }
+                
+                html += '</div>';
+            }
+            
+            fixDiv.innerHTML = html;
+        }
+
+        function updateSummary(message) {
+            const summaryDiv = document.getElementById('summaryResults');
+            summaryDiv.innerHTML = `<div class="result">${message}</div>`;
+        }
+
+        function clearResults() {
+            const resultDivs = ['apiResults', 'serverResults', 'envResults', 'depResults', 'jsResults', 'cssResults', 'summaryResults', 'fixRecommendations'];
+            resultDivs.forEach(id => {
+                const div = document.getElementById(id);
+                if (div) div.innerHTML = '';
+            });
+            
+            diagnosticResults = {
+                api: {},
+                server: {},
+                environment: {},
+                dependencies: {},
+                javascript: {},
+                css: {},
+                errors: [],
+                warnings: [],
+                successes: []
+            };
+        }
+
+        // Auto-run diagnostic when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔍 AI Assistant Diagnostic Tool Loaded');
+                console.log('Click "Run Full Diagnostic" to identify all issues');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>          // Generate summary report
+            generateSummaryReport();
+        }
+
+        function initializeTestGrid() {
+            const testGrid = document.getElementById('testGrid');
+            const tests = [
+                'API Endpoint Test',
+                'Environment Variables', 
+                'DeepSeek API Connection',
+                'UI Components',
+                'JavaScript Loading',
+                'CSS Styling',
+                'Error Handling',
+                'Cross-Browser Compatibility'
+            ];
+            
+            testGrid.innerHTML = tests.map(test => `
+                <div class="test-card info" id="card-${test.replace(/\\s+/g, '-').toLowerCase()}">
+                    <h3><span class="status-indicator status-info"></span>${test}</h3>
+                    <div class="result">
+                        <p>⏳ Waiting to run...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function runTest(testName, testFunction) {
+            const cardId = `card-${testName.replace(/\\s+/g, '-').toLowerCase()}`;
+            const card = document.getElementById(cardId);
+            
+            // Update card to running state
+            card.className = 'test-card warning';
+            card.querySelector('.status-indicator').className = 'status-indicator status-warning';
+            card.querySelector('.result').innerHTML = '<p>🔄 Running test...</p>';
+            
+            try {
+                const result = await testFunction();
+                diagnosticResults[testName] = result;
+                
+                // Update card with results
+                const isSuccess = result.success;
+                card.className = `test-card ${isSuccess ? 'success' : 'error'}`;
+                card.querySelector('.status-indicator').className = `status-indicator ${isSuccess ? 'status-success' : 'status-error'}`;
+                card.querySelector('.result').innerHTML = formatTestResult(result);
+                
+            } catch (error) {
+                console.error(`Test "${testName}" failed:`, error);
+                diagnosticResults[testName] = {
+                    success: false,
+                    error: error.message,
+                    details: 'Test execution failed'
+                };
+                
+                card.className = 'test-card error';
+                card.querySelector('.status-indicator').className = 'status-indicator status-error';
+                card.querySelector('.result').innerHTML = `<p>❌ Test failed: ${error.message}</p>`;
+            }
+            
+            // Update progress
+            testProgress++;
+            const progressPercent = (testProgress / totalTests) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            
+            // Small delay between tests
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        async function testAPIEndpoint() {
+            console.log('Testing API endpoint...');
+            
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Diagnostic test message'
+                    })
+                });
+                
+                const responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    return {
+                        success: false,
+                        error: 'Invalid JSON response',
+                        details: `Response: ${responseText.substring(0, 200)}...`,
+                        httpStatus: response.status
+                    };
+                }
+                
+                if (!response.ok) {
+                    return {
+                        success: false,
+                        error: `HTTP ${response.status}`,
+                        details: data.error || 'Unknown API error',
+                        httpStatus: response.status
+                    };
+                }
+                
+                return {
+                    success: true,
+                    httpStatus: response.status,
+                    responseTime: 'Good',
+                    source: data.source,
+                    hasResponse: !!data.response,
+                    responseLength: data.response ? data.response.length : 0
+                };
+                
+            } catch (error) {
+                return {
+                    success: false,
+                    error: 'Network error',
+                    details: error.message
+                };
+            }
+        }
+
+        async function testEnvironmentVariables() {
+            console.log('Testing environment variables...');
+            
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'env test'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                return {
+                    success: response.ok,
+                    envLoaded: true,
+                    deepseekConfigured: data.source === 'external_api',
+                    fallbackWorking: data.source === 'local_fallback',
+                    source: data.source
+                };
+                
+            } catch (error) {
+                return {
+                    success: false,
+                    error: 'Failed to test environment',
+                    details: error.message
+                };
+            }
+        }
+
+        async function testDeepSeekAPI() {
+            console.log('Testing DeepSeek API connection...');
+            
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Test DeepSeek connection'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                const isUsingDeepSeek = data.source === 'external_api';
+                
+                return {
+                    success: true,
+                    usingDeepSeek: isUsingDeepSeek,
+                    source: data.source,
+                    hasUsage: !!data.usage,
+                    details: isUsingDeepSeek ? 'DeepSeek API working' : 'Using local fallback'
+                };
+                
+            } catch (error) {
+                return {
+                    success: false,
+                    error: 'DeepSeek test failed',
+                    details: error.message
+                };
+            }
+        }
+
+        async function testUIComponents() {
+            console.log('Testing UI components...');
+            
+            // Wait for AI assistant to load
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const aiWidget = document.querySelector('.ai-assistant-widget');
+            const aiButton = document.querySelector('.ai-toggle-button');
+            const aiWindow = document.querySelector('.ai-chat-window');
+            const quickActions = document.querySelectorAll('.quick-action-btn');
+            const sendButton = document.querySelector('#ai-send-btn');
+            
+            let issues = [];
+            let successes = [];
+            
+            if (!aiWidget) issues.push('AI widget not found');
+            else successes.push('AI widget found');
+            
+            if (!aiButton) issues.push('AI button not found');
+            else successes.push('AI button found');
+            
+            if (!aiWindow) issues.push('AI chat window not found');
+            else successes.push('AI chat window found');
+            
+            if (quickActions.length === 0) issues.push('Quick action buttons not found');
+            else {
+                successes.push(`${quickActions.length} quick action buttons found`);
+                
+                // Check styling
+                const firstBtn = quickActions[0];
+                const styles = window.getComputedStyle(firstBtn);
+                const bgColor = styles.backgroundColor;
+                
+                if (bgColor.includes('99, 102, 241') || bgColor === 'rgb(99, 102, 241)') {
+                    successes.push('Quick actions have correct blue styling');
+                } else {
+                    issues.push(`Quick actions have wrong color: ${bgColor}`);
+                }
+            }
+            
+            if (!sendButton) issues.push('Send button not found');
+            else {
+                successes.push('Send button found');
+                const styles = window.getComputedStyle(sendButton);
+                if (styles.width === '44px') {
+                    successes.push('Send button has correct size');
+                } else {
+                    issues.push(`Send button wrong size: ${styles.width}`);
+                }
+            }
+            
+            return {
+                success: issues.length === 0,
+                issues: issues,
+                successes: successes,
+                componentsFound: successes.length,
+                totalComponents: 5
+            };
+        }
+
+        async function testJavaScriptLoading() {
+            console.log('Testing JavaScript loading...');
+            
+            const issues = [];
+            const successes = [];
+            
+            // Check if AI assistant class is available
+            if (typeof window.aiAssistant !== 'undefined') {
+                successes.push('AI assistant object loaded');
+            } else {
+                issues.push('AI assistant object not found');
+            }
+            
+            // Check for console errors
+            const originalError = console.error;
+            const errors = [];
+            console.error = function(...args) {
+                errors.push(args.join(' '));
+                originalError.apply(console, args);
+            };
+            
+            // Wait a moment to catch any errors
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            console.error = originalError;
+            
+            if (errors.length === 0) {
+                successes.push('No JavaScript errors detected');
+            } else {
+                issues.push(`${errors.length} JavaScript errors found`);
+            }
+            
+            return {
+                success: issues.length === 0,
+                issues: issues,
+                successes: successes,
+                jsErrors: errors
+            };
+        }
+
+        async function testCSSStyles() {
+            console.log('Testing CSS styles...');
+            
+            const issues = [];
+            const successes = [];
+            
+            // Check if AI assistant CSS is loaded
+            const stylesheets = Array.from(document.styleSheets);
+            const aiCSSLoaded = stylesheets.some(sheet => {
+                try {
+                    return sheet.href && sheet.href.includes('ai-assistant.css');
+                } catch (e) {
+                    return false;
+                }
+            });
+            
+            if (aiCSSLoaded) {
+                successes.push('AI assistant CSS loaded');
+            } else {
+                issues.push('AI assistant CSS not found');
+            }
+            
+            // Check specific styles
+            const testElement = document.createElement('div');
+            testElement.className = 'ai-toggle-button';
+            document.body.appendChild(testElement);
+            
+            const styles = window.getComputedStyle(testElement);
+            
+            if (styles.background.includes('linear-gradient') || styles.background.includes('rgb(99, 102, 241)')) {
+                successes.push('AI button has correct gradient background');
+            } else {
+                issues.push('AI button missing gradient background');
+            }
+            
+            document.body.removeChild(testElement);
+            
+            return {
+                success: issues.length === 0,
+                issues: issues,
+                successes: successes,
+                cssLoaded: aiCSSLoaded
+            };
+        }
+
+        async function testErrorHandling() {
+            console.log('Testing error handling...');
+            
+            try {
+                // Test with invalid endpoint
+                const response = await fetch('/api/nonexistent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'test'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                return {
+                    success: !response.ok && data.error,
+                    handlesErrors: !response.ok,
+                    returnsJSON: !!data,
+                    hasErrorMessage: !!data.error,
+                    httpStatus: response.status
+                };
+                
+            } catch (error) {
+                return {
+                    success: false,
+                    error: 'Error handling test failed',
+                    details: error.message
+                };
+            }
+        }
+
+        async function testCrossBrowser() {
+            console.log('Testing cross-browser compatibility...');
+            
+            const issues = [];
+            const successes = [];
+            
+            // Check for modern JavaScript features
+            if (typeof fetch !== 'undefined') {
+                successes.push('Fetch API supported');
+            } else {
+                issues.push('Fetch API not supported');
+            }
+            
+            if (typeof Promise !== 'undefined') {
+                successes.push('Promises supported');
+            } else {
+                issues.push('Promises not supported');
+            }
+            
+            if (typeof document.querySelector !== 'undefined') {
+                successes.push('Modern DOM methods supported');
+            } else {
+                issues.push('Modern DOM methods not supported');
+            }
+            
+            // Check CSS features
+            const testDiv = document.createElement('div');
+            testDiv.style.background = 'linear-gradient(45deg, red, blue)';
+            
+            if (testDiv.style.background.includes('linear-gradient')) {
+                successes.push('CSS gradients supported');
+            } else {
+                issues.push('CSS gradients not supported');
+            }
+            
+            return {
+                success: issues.length === 0,
+                issues: issues,
+                successes: successes,
+                browserInfo: {
+                    userAgent: navigator.userAgent,
+                    vendor: navigator.vendor
+                }
+            };
+        }
+
+        function formatTestResult(result) {
+            if (!result) return '<p>❌ No result</p>';
+            
+            let html = '';
+            
+            if (result.success) {
+                html += '<p>✅ Test passed</p>';
+            } else {
+                html += '<p>❌ Test failed</p>';
+            }
+            
+            if (result.error) {
+                html += `<p><strong>Error:</strong> ${result.error}</p>`;
+            }
+            
+            if (result.details) {
+                html += `<p><strong>Details:</strong> ${result.details}</p>`;
+            }
+            
+            if (result.successes && result.successes.length > 0) {
+                html += '<p><strong>Successes:</strong></p><ul>';
+                result.successes.forEach(success => {
+                    html += `<li>✅ ${success}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (result.issues && result.issues.length > 0) {
+                html += '<p><strong>Issues:</strong></p><ul>';
+                result.issues.forEach(issue => {
+                    html += `<li>❌ ${issue}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Add specific result data
+            Object.keys(result).forEach(key => {
+                if (!['success', 'error', 'details', 'successes', 'issues'].includes(key)) {
+                    html += `<p><strong>${key}:</strong> ${JSON.stringify(result[key])}</p>`;
+                }
+            });
+            
+            return html;
+        }
+
+        function generateSummaryReport() {
+            console.log('Generating summary report...');
+            
+            const summaryDiv = document.getElementById('summaryReport');
+            const summaryContent = document.getElementById('summaryContent');
+            
+            let totalTests = Object.keys(diagnosticResults).length;
+            let passedTests = Object.values(diagnosticResults).filter(r => r.success).length;
+            let failedTests = totalTests - passedTests;
+            
+            let criticalIssues = [];
+            let warnings = [];
+            let recommendations = [];
+            
+            // Analyze results
+            Object.entries(diagnosticResults).forEach(([testName, result]) => {
+                if (!result.success) {
+                    if (testName === 'API Endpoint Test') {
+                        criticalIssues.push('AI API is not working - this will prevent all AI functionality');
+                    } else if (testName === 'UI Components') {
+                        criticalIssues.push('AI assistant UI components are missing or broken');
+                    } else if (testName === 'JavaScript Loading') {
+                        criticalIssues.push('JavaScript errors are preventing proper functionality');
+                    } else {
+                        warnings.push(`${testName} failed: ${result.error || 'Unknown issue'}`);
+                    }
+                }
+            });
+            
+            // Generate recommendations
+            if (diagnosticResults['API Endpoint Test'] && !diagnosticResults['API Endpoint Test'].success) {
+                recommendations.push('Check server configuration and ensure PHP is running properly');
+                recommendations.push('Verify .htaccess file is correctly routing /api/ requests');
+                recommendations.push('Check for PHP syntax errors in api/ai.php and api/index.php');
+            }
+            
+            if (diagnosticResults['DeepSeek API Connection'] && diagnosticResults['DeepSeek API Connection'].source === 'local_fallback') {
+                recommendations.push('Configure DeepSeek API key in .env file for enhanced AI responses');
+            }
+            
+            if (diagnosticResults['UI Components'] && !diagnosticResults['UI Components'].success) {
+                recommendations.push('Ensure ai-assistant.css is properly linked in HTML files');
+                recommendations.push('Check that ai-assistant.js is loading without errors');
+            }
+            
+            let summaryHTML = `
+                <div class="test-card ${failedTests === 0 ? 'success' : (criticalIssues.length > 0 ? 'error' : 'warning')}">
+                    <h3>Overall Status: ${failedTests === 0 ? '✅ All Tests Passed' : (criticalIssues.length > 0 ? '❌ Critical Issues Found' : '⚠️ Minor Issues Found')}</h3>
+                    <p><strong>Tests Passed:</strong> ${passedTests}/${totalTests}</p>
+                    <p><strong>Tests Failed:</strong> ${failedTests}/${totalTests}</p>
+                </div>
+            `;
+            
+            if (criticalIssues.length > 0) {
+                summaryHTML += `
+                    <div class="test-card error">
+                        <h3>🚨 Critical Issues</h3>
+                        <ul>
+                            ${criticalIssues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (warnings.length > 0) {
+                summaryHTML += `
+                    <div class="test-card warning">
+                        <h3>⚠️ Warnings</h3>
+                        <ul>
+                            ${warnings.map(warning => `<li>${warning}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (recommendations.length > 0) {
+                summaryHTML += `
+                    <div class="test-card info">
+                        <h3>💡 Recommendations</h3>
+                        <ul>
+                            ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            summaryContent.innerHTML = summaryHTML;
+            summaryDiv.style.display = 'block';
+            
+            console.log('Diagnostic complete!', diagnosticResults);
+        }
+
+        // Auto-run diagnostic when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔍 AI Assistant Diagnostic Tool Ready');
+                console.log('Click "Run Full Diagnostic" to identify all issues');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

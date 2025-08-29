@@ -5,6 +5,7 @@ class AuthManager {
     this.currentUser = null;
     this.userProgress = null;
     this.apiBase = "/api";
+    this.authStateListeners = [];
 
     // Initialize when Appwrite SDK is loaded
     this.initializeAppwrite();
@@ -37,8 +38,14 @@ class AuthManager {
 
       // Check for existing session
       await this.checkSession();
+
+      // Set up auth state listeners
+      this.setupAuthStateListeners();
     } catch (error) {
-      console.error("Failed to initialize Appwrite:", error);
+      console.warn(
+        "Failed to initialize Appwrite, using fallback:",
+        error.message
+      );
       // Fallback to localStorage for development
       this.initializeFallback();
     }
@@ -80,8 +87,11 @@ class AuthManager {
         resolve();
       };
       script.onerror = () => {
-        console.error("Failed to load Appwrite SDK");
-        reject(new Error("Failed to load Appwrite SDK"));
+        console.warn(
+          "Failed to load Appwrite SDK, using fallback authentication"
+        );
+        // Don't reject, just use fallback
+        resolve();
       };
       document.head.appendChild(script);
     });
@@ -93,6 +103,7 @@ class AuthManager {
     this.currentUser = this.loadUserFromStorage();
     this.userProgress = this.loadProgressFromStorage();
     this.updateAuthUI();
+    this.setupAuthStateListeners();
   }
 
   // Check for existing Appwrite session
@@ -102,12 +113,101 @@ class AuthManager {
       if (user) {
         this.currentUser = user;
         await this.loadUserProgress();
+        this.saveUserToStorage(user);
         this.updateAuthUI();
+        this.notifyAuthStateChange(user);
       }
     } catch (error) {
       console.log("No active session");
-      this.currentUser = null;
-      this.updateAuthUI();
+      // Check localStorage for fallback session
+      const storedUser = this.loadUserFromStorage();
+      if (storedUser && this.isValidStoredSession(storedUser)) {
+        this.currentUser = storedUser;
+        this.userProgress = this.loadProgressFromStorage();
+        this.updateAuthUI();
+        this.notifyAuthStateChange(storedUser);
+      } else {
+        this.currentUser = null;
+        this.clearStoredSession();
+        this.updateAuthUI();
+        this.notifyAuthStateChange(null);
+      }
+    }
+  }
+
+  // Setup auth state listeners for cross-page communication
+  setupAuthStateListeners() {
+    this.authStateListeners = [];
+
+    // Listen for storage changes (cross-tab authentication)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "codequest_user") {
+        if (e.newValue) {
+          const user = JSON.parse(e.newValue);
+          if (this.isValidStoredSession(user)) {
+            this.currentUser = user;
+            this.userProgress = this.loadProgressFromStorage();
+            this.updateAuthUI();
+            this.notifyAuthStateChange(user);
+          }
+        } else {
+          this.currentUser = null;
+          this.userProgress = null;
+          this.updateAuthUI();
+          this.notifyAuthStateChange(null);
+        }
+      }
+    });
+
+    // Periodic session validation
+    setInterval(() => {
+      this.validateSession();
+    }, 60000); // Check every minute
+  }
+
+  // Add auth state change listener
+  onAuthStateChange(callback) {
+    if (typeof callback === "function") {
+      this.authStateListeners.push(callback);
+    }
+  }
+
+  // Notify all listeners of auth state changes
+  notifyAuthStateChange(user) {
+    if (this.authStateListeners) {
+      this.authStateListeners.forEach((callback) => {
+        try {
+          callback(user);
+        } catch (error) {
+          console.error("Auth state listener error:", error);
+        }
+      });
+    }
+  }
+
+  // Validate stored session
+  isValidStoredSession(user) {
+    if (!user || !user.sessionExpiry) return false;
+    return new Date(user.sessionExpiry) > new Date();
+  }
+
+  // Validate current session
+  async validateSession() {
+    if (!this.currentUser) return;
+
+    try {
+      if (this.account) {
+        // Validate Appwrite session
+        await this.account.get();
+      } else {
+        // Validate localStorage session
+        if (!this.isValidStoredSession(this.currentUser)) {
+          await this.logout();
+        }
+      }
+    } catch (error) {
+      console.log("Session validation failed, logging out");
+      await this.logout();
     }
   }
 
@@ -129,7 +229,9 @@ class AuthManager {
 
         this.currentUser = user;
         await this.loadUserProgress();
+        this.saveUserToStorage(user);
         this.updateAuthUI();
+        this.notifyAuthStateChange(user);
 
         return { success: true, user };
       } else {
@@ -152,7 +254,9 @@ class AuthManager {
 
         this.currentUser = user;
         await this.loadUserProgress();
+        this.saveUserToStorage(user);
         this.updateAuthUI();
+        this.notifyAuthStateChange(user);
 
         return { success: true, user };
       } else {
@@ -193,19 +297,19 @@ class AuthManager {
       // Clear local state
       this.currentUser = null;
       this.userProgress = null;
-      localStorage.removeItem("codequest_user");
-      localStorage.removeItem("codequest_progress");
+      this.clearStoredSession();
 
       this.updateAuthUI();
+      this.notifyAuthStateChange(null);
       return true;
     } catch (error) {
       console.error("Logout error:", error);
       // Still clear local state
       this.currentUser = null;
       this.userProgress = null;
-      localStorage.removeItem("codequest_user");
-      localStorage.removeItem("codequest_progress");
+      this.clearStoredSession();
       this.updateAuthUI();
+      this.notifyAuthStateChange(null);
       return false;
     }
   }
@@ -214,12 +318,43 @@ class AuthManager {
   async loadUserProgress() {
     try {
       if (this.databases && this.currentUser) {
-        const progress = await this.databases.getDocument(
+        const appwriteProgress = await this.databases.getDocument(
           "codequest_db",
           "user_progress",
           this.currentUser.$id
         );
-        this.userProgress = progress;
+
+        // Convert from Appwrite schema to internal format
+        this.userProgress = {
+          totalXP: appwriteProgress.total_xp || 0,
+          level: appwriteProgress.level || 1,
+          levelTitle: appwriteProgress.level_title || "Beginner",
+          streak: appwriteProgress.streak || 0,
+          lastLogin: appwriteProgress.last_login || new Date().toISOString(),
+          completedLessons: [],
+          completedChallenges: [],
+          badges: [],
+          achievements: [],
+          projects: [],
+          statistics: {
+            html: {
+              xp: appwriteProgress.html_xp || 0,
+              progress: appwriteProgress.html_progress || 0,
+              lessons: appwriteProgress.html_lessons || 0,
+            },
+            css: {
+              xp: appwriteProgress.css_xp || 0,
+              progress: appwriteProgress.css_progress || 0,
+              lessons: appwriteProgress.css_lessons || 0,
+            },
+            javascript: {
+              xp: appwriteProgress.javascript_xp || 0,
+              progress: appwriteProgress.javascript_progress || 0,
+              lessons: appwriteProgress.javascript_lessons || 0,
+            },
+          },
+        };
+        console.log("User progress loaded from Appwrite");
       } else {
         // Fallback to localStorage
         this.userProgress = this.loadProgressFromStorage();
@@ -238,17 +373,46 @@ class AuthManager {
     try {
       if (this.databases) {
         const defaultProgress = this.getDefaultProgress();
+        // Add required user_id field and map to Appwrite schema
+        const appwriteProgress = {
+          user_id: userId,
+          total_xp: defaultProgress.totalXP || 0,
+          level: defaultProgress.level || 1,
+          level_title: defaultProgress.levelTitle || "Beginner",
+          streak: defaultProgress.streak || 0,
+          html_xp: defaultProgress.statistics?.html?.xp || 0,
+          css_xp: defaultProgress.statistics?.css?.xp || 0,
+          javascript_xp: defaultProgress.statistics?.javascript?.xp || 0,
+          html_lessons: defaultProgress.statistics?.html?.lessons || 0,
+          css_lessons: defaultProgress.statistics?.css?.lessons || 0,
+          javascript_lessons:
+            defaultProgress.statistics?.javascript?.lessons || 0,
+          html_progress: defaultProgress.statistics?.html?.progress || 0.0,
+          css_progress: defaultProgress.statistics?.css?.progress || 0.0,
+          javascript_progress:
+            defaultProgress.statistics?.javascript?.progress || 0.0,
+          last_login: new Date().toISOString(),
+        };
+
         await this.databases.createDocument(
           "codequest_db",
           "user_progress",
           userId,
-          defaultProgress
+          appwriteProgress
         );
         this.userProgress = defaultProgress;
+        console.log("User progress created in Appwrite");
       }
     } catch (error) {
       console.error("Failed to create user progress:", error);
+
+      // Fallback: Use default progress with localStorage
       this.userProgress = this.getDefaultProgress();
+      localStorage.setItem(
+        "codequest_progress",
+        JSON.stringify(this.userProgress)
+      );
+      console.log("Using default progress with localStorage fallback");
     }
   }
 
@@ -258,12 +422,34 @@ class AuthManager {
       this.userProgress = { ...this.userProgress, ...progressData };
 
       if (this.databases && this.currentUser) {
+        // Convert internal format to Appwrite schema
+        const appwriteProgress = {
+          user_id: this.currentUser.$id,
+          total_xp: this.userProgress.totalXP || 0,
+          level: this.userProgress.level || 1,
+          level_title: this.userProgress.levelTitle || "Beginner",
+          streak: this.userProgress.streak || 0,
+          html_xp: this.userProgress.statistics?.html?.xp || 0,
+          css_xp: this.userProgress.statistics?.css?.xp || 0,
+          javascript_xp: this.userProgress.statistics?.javascript?.xp || 0,
+          html_lessons: this.userProgress.statistics?.html?.lessons || 0,
+          css_lessons: this.userProgress.statistics?.css?.lessons || 0,
+          javascript_lessons:
+            this.userProgress.statistics?.javascript?.lessons || 0,
+          html_progress: this.userProgress.statistics?.html?.progress || 0.0,
+          css_progress: this.userProgress.statistics?.css?.progress || 0.0,
+          javascript_progress:
+            this.userProgress.statistics?.javascript?.progress || 0.0,
+          last_login: new Date().toISOString(),
+        };
+
         await this.databases.updateDocument(
           "codequest_db",
           "user_progress",
           this.currentUser.$id,
-          this.userProgress
+          appwriteProgress
         );
+        console.log("Progress updated in Appwrite");
       } else {
         // Fallback to localStorage
         localStorage.setItem(
@@ -303,13 +489,14 @@ class AuthManager {
 
     this.currentUser = user;
     this.userProgress = this.getDefaultProgress();
-    localStorage.setItem("codequest_user", JSON.stringify(user));
+    this.saveUserToStorage(user);
     localStorage.setItem(
       "codequest_progress",
       JSON.stringify(this.userProgress)
     );
 
     this.updateAuthUI();
+    this.notifyAuthStateChange(user);
     return { success: true, user };
   }
 
@@ -325,21 +512,65 @@ class AuthManager {
 
     this.currentUser = user;
     this.userProgress = this.loadProgressFromStorage();
-    localStorage.setItem("codequest_user", JSON.stringify(user));
+    this.saveUserToStorage(user);
 
     this.updateAuthUI();
+    this.notifyAuthStateChange(user);
     return { success: true, user };
   }
 
   // Utility methods
   loadUserFromStorage() {
-    const userData = localStorage.getItem("codequest_user");
-    return userData ? JSON.parse(userData) : null;
+    try {
+      const userData = localStorage.getItem("codequest_user");
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error("Error loading user from storage:", error);
+      return null;
+    }
   }
 
   loadProgressFromStorage() {
-    const progressData = localStorage.getItem("codequest_progress");
-    return progressData ? JSON.parse(progressData) : this.getDefaultProgress();
+    try {
+      const progressData = localStorage.getItem("codequest_progress");
+      return progressData
+        ? JSON.parse(progressData)
+        : this.getDefaultProgress();
+    } catch (error) {
+      console.error("Error loading progress from storage:", error);
+      return this.getDefaultProgress();
+    }
+  }
+
+  saveUserToStorage(user) {
+    try {
+      // Add session expiry (24 hours from now)
+      const userWithSession = {
+        ...user,
+        sessionExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        lastActivity: new Date().toISOString(),
+      };
+      localStorage.setItem("codequest_user", JSON.stringify(userWithSession));
+    } catch (error) {
+      console.error("Error saving user to storage:", error);
+    }
+  }
+
+  clearStoredSession() {
+    try {
+      localStorage.removeItem("codequest_user");
+      localStorage.removeItem("codequest_progress");
+    } catch (error) {
+      console.error("Error clearing stored session:", error);
+    }
+  }
+
+  // Update last activity timestamp
+  updateLastActivity() {
+    if (this.currentUser) {
+      this.currentUser.lastActivity = new Date().toISOString();
+      this.saveUserToStorage(this.currentUser);
+    }
   }
 
   getDefaultProgress() {
@@ -776,3 +1007,76 @@ function showNotification(message, type = "info") {
     alert(message);
   }
 }
+// Auto-initialize authentication when page loads
+document.addEventListener("DOMContentLoaded", function () {
+  // Ensure AuthManager is initialized
+  if (window.AuthManager) {
+    // Update activity tracking
+    let activityTimer;
+
+    function trackActivity() {
+      if (
+        window.AuthManager &&
+        typeof window.AuthManager.isLoggedIn === "function" &&
+        window.AuthManager.isLoggedIn()
+      ) {
+        window.AuthManager.updateLastActivity();
+      }
+
+      // Reset the timer
+      clearTimeout(activityTimer);
+      activityTimer = setTimeout(() => {
+        // Auto-logout after 24 hours of inactivity
+        if (
+          window.AuthManager &&
+          typeof window.AuthManager.isLoggedIn === "function" &&
+          window.AuthManager.isLoggedIn()
+        ) {
+          const user = window.AuthManager.getCurrentUser();
+          if (user && user.lastActivity) {
+            const lastActivity = new Date(user.lastActivity);
+            const now = new Date();
+            const hoursSinceActivity = (now - lastActivity) / (1000 * 60 * 60);
+
+            if (hoursSinceActivity > 24) {
+              console.log("Auto-logout due to inactivity");
+              window.AuthManager.logout();
+            }
+          }
+        }
+      }, 60000); // Check every minute
+    }
+
+    // Track user activity
+    ["click", "keypress", "scroll", "mousemove"].forEach((event) => {
+      document.addEventListener(event, trackActivity, { passive: true });
+    });
+
+    // Initial activity tracking
+    trackActivity();
+  }
+});
+
+// Handle page visibility changes
+document.addEventListener("visibilitychange", function () {
+  if (
+    !document.hidden &&
+    window.AuthManager &&
+    typeof window.AuthManager.isLoggedIn === "function" &&
+    window.AuthManager.isLoggedIn()
+  ) {
+    // Page became visible, validate session
+    window.AuthManager.validateSession();
+  }
+});
+
+// Handle beforeunload to update last activity
+window.addEventListener("beforeunload", function () {
+  if (
+    window.AuthManager &&
+    typeof window.AuthManager.isLoggedIn === "function" &&
+    window.AuthManager.isLoggedIn()
+  ) {
+    window.AuthManager.updateLastActivity();
+  }
+});

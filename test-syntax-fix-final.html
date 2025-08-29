@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Syntax Fix Final</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #1a1a1a;
+        color: white;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background-color: #2a2a2a;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #2d5a2d;
+        color: #90ee90;
+      }
+      .error {
+        background-color: #5a2d2d;
+        color: #ffcccb;
+      }
+      .info {
+        background-color: #2d4a5a;
+        color: #87ceeb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Final Syntax Fix Test</h1>
+
+    <div class="test-section">
+      <h2>📋 Test Results</h2>
+      <div id="testResults"></div>
+    </div>
+
+    <!-- Simple editor structure for testing -->
+    <div class="test-section">
+      <h2>🎯 Editor Test</h2>
+
+      <div class="tab-container">
+        <div class="tab-header">
+          <button class="tab-btn active" data-tab="html">HTML</button>
+          <button class="tab-btn" data-tab="css">CSS</button>
+          <button class="tab-btn" data-tab="js">JavaScript</button>
+          <button class="tab-btn" data-tab="preview">Preview</button>
+        </div>
+
+        <div id="html-editor" class="editor-pane active">
+          <div class="editor-header">
+            <span>HTML Editor</span>
+          </div>
+          <div id="html-monaco" class="monaco-editor"></div>
+        </div>
+
+        <div id="css-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>CSS Editor</span>
+          </div>
+          <div id="css-monaco" class="monaco-editor"></div>
+        </div>
+
+        <div id="js-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>JavaScript Editor</span>
+          </div>
+          <div id="js-monaco" class="monaco-editor"></div>
+        </div>
+
+        <div id="preview-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>Live Preview</span>
+          </div>
+          <div class="preview-container">
+            <iframe id="preview-frame" sandbox="allow-scripts"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <button onclick="testEverything()" class="btn btn-primary">
+          🧪 Test Everything
+        </button>
+        <button onclick="testTabSwitching()" class="btn btn-secondary">
+          🔄 Test Tabs
+        </button>
+        <button onclick="testTextareas()" class="btn btn-success">
+          ✍️ Test Writing
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let testResults = [];
+
+      function addTestResult(test, status, message) {
+        testResults.push({ test, status, message });
+        updateTestDisplay();
+      }
+
+      function updateTestDisplay() {
+        const container = document.getElementById("testResults");
+        container.innerHTML = testResults
+          .map(
+            (result) =>
+              `<div class="status ${result.status}">
+                    <strong>${result.test}:</strong> ${result.message}
+                </div>`
+          )
+          .join("");
+      }
+
+      function testEverything() {
+        testResults = [];
+        addTestResult(
+          "Starting Tests",
+          "info",
+          "Running comprehensive tests..."
+        );
+
+        // Test 1: Check if CodeEditor class exists
+        try {
+          if (typeof CodeEditor !== "undefined") {
+            addTestResult("CodeEditor Class", "success", "Class is defined");
+          } else {
+            addTestResult("CodeEditor Class", "error", "Class not found");
+          }
+        } catch (error) {
+          addTestResult("CodeEditor Class", "error", `Error: ${error.message}`);
+        }
+
+        // Test 2: Check if instance exists
+        if (window.codeEditor) {
+          addTestResult(
+            "CodeEditor Instance",
+            "success",
+            "Instance created successfully"
+          );
+
+          // Test 3: Check methods
+          const methods = [
+            "switchTab",
+            "formatCode",
+            "updatePreview",
+            "initializeSimpleEditor",
+          ];
+          methods.forEach((method) => {
+            if (typeof window.codeEditor[method] === "function") {
+              addTestResult(`Method ${method}`, "success", "Method exists");
+            } else {
+              addTestResult(`Method ${method}`, "error", "Method missing");
+            }
+          });
+
+          // Test 4: Check editors object
+          if (window.codeEditor.editors) {
+            addTestResult("Editors Object", "success", "Editors object exists");
+          } else {
+            addTestResult("Editors Object", "error", "Editors object missing");
+          }
+        } else {
+          addTestResult("CodeEditor Instance", "error", "Instance not found");
+        }
+
+        // Test tab switching and textareas
+        setTimeout(() => {
+          testTabSwitching();
+          setTimeout(() => testTextareas(), 500);
+        }, 500);
+      }
+
+      function testTabSwitching() {
+        const tabs = ["html", "css", "js", "preview"];
+        let successCount = 0;
+
+        tabs.forEach((tab) => {
+          try {
+            if (
+              window.codeEditor &&
+              typeof window.codeEditor.switchTab === "function"
+            ) {
+              window.codeEditor.switchTab(tab);
+
+              // Check if tab is active
+              const activeTab = document.querySelector(".tab-btn.active");
+              const activePane = document.querySelector(".editor-pane.active");
+
+              if (
+                activeTab &&
+                activeTab.dataset.tab === tab &&
+                activePane &&
+                activePane.id === `${tab}-editor`
+              ) {
+                successCount++;
+                addTestResult(
+                  `Tab ${tab.toUpperCase()}`,
+                  "success",
+                  "Tab switching works"
+                );
+              } else {
+                addTestResult(
+                  `Tab ${tab.toUpperCase()}`,
+                  "error",
+                  "Tab switching failed"
+                );
+              }
+            } else {
+              addTestResult(
+                `Tab ${tab.toUpperCase()}`,
+                "error",
+                "switchTab method not available"
+              );
+            }
+          } catch (error) {
+            addTestResult(
+              `Tab ${tab.toUpperCase()}`,
+              "error",
+              `Error: ${error.message}`
+            );
+          }
+        });
+
+        addTestResult(
+          "Tab Switching Overall",
+          successCount === tabs.length ? "success" : "error",
+          `${successCount}/${tabs.length} tabs working`
+        );
+      }
+
+      function testTextareas() {
+        const editors = ["html", "css", "js"];
+        let successCount = 0;
+
+        editors.forEach((type) => {
+          const textarea = document.getElementById(`${type}-textarea-editor`);
+          if (textarea) {
+            try {
+              const testText = `/* Test ${type} ${Date.now()} */`;
+              textarea.value = testText;
+
+              if (
+                textarea.value === testText &&
+                !textarea.disabled &&
+                !textarea.readOnly
+              ) {
+                successCount++;
+                addTestResult(
+                  `${type.toUpperCase()} Textarea`,
+                  "success",
+                  "Writable and functional"
+                );
+              } else {
+                addTestResult(
+                  `${type.toUpperCase()} Textarea`,
+                  "error",
+                  "Not writable or disabled"
+                );
+              }
+            } catch (error) {
+              addTestResult(
+                `${type.toUpperCase()} Textarea`,
+                "error",
+                `Error: ${error.message}`
+              );
+            }
+          } else {
+            addTestResult(
+              `${type.toUpperCase()} Textarea`,
+              "error",
+              "Textarea not found"
+            );
+          }
+        });
+
+        addTestResult(
+          "Textareas Overall",
+          successCount === editors.length ? "success" : "error",
+          `${successCount}/${editors.length} textareas working`
+        );
+      }
+
+      // Run tests when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        addTestResult(
+          "Page Load",
+          "info",
+          "Page loaded, waiting for editor..."
+        );
+
+        // Wait for editor to initialize
+        setTimeout(() => {
+          testEverything();
+        }, 1000);
+      });
+
+      // Listen for errors
+      window.addEventListener("error", function (event) {
+        addTestResult(
+          "JavaScript Error",
+          "error",
+          `${event.message} at ${event.filename}:${event.lineno}`
+        );
+      });
+    </script>
+
+    <!-- Load Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Load the editor script -->
+    <script src="public/editor.js"></script>
+  </body>
+</html>

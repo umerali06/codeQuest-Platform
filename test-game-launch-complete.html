@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Game Launch Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .test-section {
+        background: #2a2a2a;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border: 1px solid #444;
+      }
+      .success {
+        color: #4caf50;
+      }
+      .error {
+        color: #f44336;
+      }
+      .info {
+        color: #2196f3;
+      }
+      button {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .game-card {
+        background: #333;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Complete Game Launch Test</h1>
+
+    <div class="test-section">
+      <h2>Test Game Launch Flow</h2>
+      <div id="results"></div>
+      <button onclick="testCompleteLaunch()">Test Complete Launch</button>
+    </div>
+
+    <script>
+      async function testCompleteLaunch() {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML =
+          '<div class="info">🚀 Starting complete game launch test...</div>';
+
+        try {
+          // Step 1: Load games from API
+          resultsDiv.innerHTML +=
+            '<div class="info">📡 Step 1: Loading games from API...</div>';
+
+          const response = await fetch("/api/games");
+          const data = await response.json();
+
+          if (!data.success || !data.data || data.data.length === 0) {
+            throw new Error("No games available");
+          }
+
+          resultsDiv.innerHTML += `<div class="success">✅ Loaded ${data.data.length} games</div>`;
+
+          // Step 2: Select a test game
+          const testGame = data.data[0]; // Use first game
+          resultsDiv.innerHTML += `<div class="info">🎮 Step 2: Selected test game: ${testGame.title}</div>`;
+
+          // Step 3: Simulate game launch (store in sessionStorage)
+          resultsDiv.innerHTML +=
+            '<div class="info">💾 Step 3: Storing game data...</div>';
+          sessionStorage.setItem("current_game", JSON.stringify(testGame));
+
+          const storedData = sessionStorage.getItem("current_game");
+          if (storedData) {
+            resultsDiv.innerHTML +=
+              '<div class="success">✅ Game data stored successfully</div>';
+          } else {
+            throw new Error("Failed to store game data");
+          }
+
+          // Step 4: Test URL construction
+          const editorURL = `editor.html?game=${testGame.slug}`;
+          resultsDiv.innerHTML += `<div class="info">🔗 Step 4: Editor URL: ${editorURL}</div>`;
+
+          // Step 5: Test URL parameter parsing
+          const testURL = new URL(editorURL, window.location.origin);
+          const params = new URLSearchParams(testURL.search);
+          const gameSlug = params.get("game");
+
+          if (gameSlug === testGame.slug) {
+            resultsDiv.innerHTML +=
+              '<div class="success">✅ URL parameter parsing works</div>';
+          } else {
+            throw new Error("URL parameter parsing failed");
+          }
+
+          // Step 6: Show game details that would be displayed in editor
+          resultsDiv.innerHTML += `
+                    <div class="success">✅ Complete launch test successful!</div>
+                    <div class="game-card">
+                        <h3>Game Details for Editor:</h3>
+                        <div><strong>Title:</strong> ${testGame.title}</div>
+                        <div><strong>Description:</strong> ${
+                          testGame.description
+                        }</div>
+                        <div><strong>Instructions:</strong> ${
+                          testGame.instructions || "None provided"
+                        }</div>
+                        <div><strong>Difficulty:</strong> ${
+                          testGame.difficulty
+                        }</div>
+                        <div><strong>Time Limit:</strong> ${Math.floor(
+                          testGame.time_limit / 60
+                        )} minutes</div>
+                        <div><strong>Max Score:</strong> ${
+                          testGame.max_score
+                        }</div>
+                        <div><strong>XP Reward:</strong> ${
+                          testGame.xp_reward
+                        }</div>
+                        <div><strong>Category:</strong> ${
+                          testGame.category
+                        }</div>
+                        <div><strong>Tags:</strong> ${testGame.tags.join(
+                          ", "
+                        )}</div>
+                    </div>
+                    <button onclick="launchActualEditor('${testGame.slug}')">
+                        🚀 Launch Actual Editor
+                    </button>
+                `;
+        } catch (error) {
+          resultsDiv.innerHTML += `<div class="error">❌ Test failed: ${error.message}</div>`;
+        }
+      }
+
+      function launchActualEditor(gameSlug) {
+        // This simulates what games.js does
+        window.location.href = `editor.html?game=${gameSlug}`;
+      }
+
+      // Auto-run test on page load
+      window.addEventListener("load", () => {
+        setTimeout(testCompleteLaunch, 1000);
+      });
+    </script>
+  </body>
+</html>

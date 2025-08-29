@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal Scroll Fix Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-height: 200vh; /* Make page scrollable to test body scroll prevention */
+      }
+
+      .test-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .test-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .test-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .test-info {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .status {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        z-index: 20000;
+      }
+
+      .scroll-test {
+        height: 100vh;
+        background: linear-gradient(
+          45deg,
+          rgba(99, 102, 241, 0.1),
+          rgba(139, 92, 246, 0.1)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2rem 0;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .scroll-indicator {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        z-index: 20000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status" id="status">Testing scroll behavior</div>
+    <div class="scroll-indicator" id="scrollIndicator">Scroll: 0px</div>
+
+    <div class="test-container">
+      <h1><i class="fas fa-scroll"></i> Modal Scroll Fix Test</h1>
+
+      <div class="test-info">
+        <h3>Testing Improved Modal Scrolling</h3>
+        <p>
+          This test verifies that modal scrolling is clean and doesn't interfere
+          with background scrolling.
+        </p>
+        <ul style="text-align: left; max-width: 500px; margin: 0 auto">
+          <li>✅ No double scrollbars</li>
+          <li>✅ Thin, subtle scrollbars in modal</li>
+          <li>✅ Background scroll disabled when modal open</li>
+          <li>✅ Clean mobile scrolling (no scrollbars)</li>
+          <li>✅ Proper modal height constraints</li>
+        </ul>
+      </div>
+
+      <div>
+        <button class="test-btn" onclick="showLogin()">
+          <i class="fas fa-sign-in-alt"></i> Test Login Modal
+        </button>
+        <button class="test-btn" onclick="showSignup()">
+          <i class="fas fa-user-plus"></i> Test Signup Modal
+        </button>
+        <button class="test-btn" onclick="showLongModal()">
+          <i class="fas fa-scroll"></i> Test Long Content Modal
+        </button>
+      </div>
+
+      <div class="scroll-test">
+        <div style="text-align: center">
+          <h2>Scroll Test Area</h2>
+          <p>This page is intentionally long to test background scrolling.</p>
+          <p>When a modal is open, background scrolling should be disabled.</p>
+        </div>
+      </div>
+
+      <div class="test-info">
+        <h3>What to Test:</h3>
+        <ol style="text-align: left">
+          <li>Scroll this page up and down (notice the scroll indicator)</li>
+          <li>Open a modal - background scrolling should stop</li>
+          <li>
+            Scroll within the modal - should be smooth with thin scrollbar
+          </li>
+          <li>Close modal - background scrolling should resume</li>
+          <li>Test on mobile - no scrollbars should be visible</li>
+        </ol>
+      </div>
+
+      <div class="scroll-test">
+        <div style="text-align: center">
+          <h2>More Content</h2>
+          <p>Additional content to make the page scrollable.</p>
+          <p>Test the modal behavior from different scroll positions.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Welcome Back!</h2>
+        <p>Sign in to continue your learning journey</p>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </button>
+          <div class="form-divider">
+            <span>or</span>
+          </div>
+          <button type="button" class="btn btn-google" onclick="googleLogin()">
+            <i class="fab fa-google"></i>
+            Continue with Google
+          </button>
+        </form>
+        <p class="modal-footer">
+          Don't have an account?
+          <a href="#" onclick="switchToSignup()">Sign up here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Join CodeQuest!</h2>
+        <p>Start your coding adventure today</p>
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input
+              type="text"
+              id="signupName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Create a password (min 6 characters)"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+          </button>
+          <div class="form-divider">
+            <span>or</span>
+          </div>
+          <button type="button" class="btn btn-google" onclick="googleSignup()">
+            <i class="fab fa-google"></i>
+            Sign up with Google
+          </button>
+        </form>
+        <p class="modal-footer">
+          Already have an account?
+          <a href="#" onclick="switchToLogin()">Sign in here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Long Content Modal -->
+    <div id="longModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('longModal')">&times;</button>
+        <h2>Long Content Scroll Test</h2>
+        <p>This modal has extensive content to test scrolling behavior.</p>
+        <form style="padding: 2rem">
+          <div class="form-group">
+            <label>Section 1: Basic Information</label>
+            <input type="text" placeholder="Field 1" />
+          </div>
+          <div class="form-group">
+            <label>Field 2</label>
+            <input type="text" placeholder="Field 2" />
+          </div>
+          <div class="form-group">
+            <label>Section 2: Additional Details</label>
+            <textarea
+              style="
+                width: 100%;
+                height: 100px;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light);
+              "
+              placeholder="Long text area for testing scroll behavior..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Field 3</label>
+            <input type="text" placeholder="Field 3" />
+          </div>
+          <div class="form-group">
+            <label>Field 4</label>
+            <input type="text" placeholder="Field 4" />
+          </div>
+          <div class="form-group">
+            <label>Section 3: More Fields</label>
+            <input type="text" placeholder="Field 5" />
+          </div>
+          <div class="form-group">
+            <label>Field 6</label>
+            <input type="text" placeholder="Field 6" />
+          </div>
+          <div class="form-group">
+            <label>Field 7</label>
+            <input type="text" placeholder="Field 7" />
+          </div>
+          <div class="form-group">
+            <label>Final Section</label>
+            <textarea
+              style="
+                width: 100%;
+                height: 80px;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light);
+              "
+              placeholder="Another text area..."
+            ></textarea>
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="closeModal('longModal')"
+          >
+            <i class="fas fa-check"></i>
+            Close Modal
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function updateStatus(message) {
+        document.getElementById("status").textContent = message;
+      }
+
+      function showLogin() {
+        updateStatus("Login modal open - background scroll disabled");
+        showModal("loginModal");
+      }
+
+      function showSignup() {
+        updateStatus("Signup modal open - background scroll disabled");
+        showModal("signupModal");
+      }
+
+      function showLongModal() {
+        updateStatus("Long modal open - test internal scrolling");
+        showModal("longModal");
+      }
+
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          document.body.classList.add("modal-open");
+          modal.classList.add("show");
+          modal.style.display = "block";
+
+          // Focus first input if it exists
+          setTimeout(() => {
+            const firstInput = modal.querySelector("input");
+            if (firstInput) firstInput.focus();
+          }, 100);
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add("hide");
+          document.body.classList.remove("modal-open");
+          setTimeout(() => {
+            modal.style.display = "none";
+            modal.classList.remove("show", "hide");
+            updateStatus("Modal closed - background scroll enabled");
+          }, 300);
+        }
+      }
+
+      function switchToSignup() {
+        closeModal("loginModal");
+        setTimeout(() => showSignup(), 350);
+      }
+
+      function switchToLogin() {
+        closeModal("signupModal");
+        setTimeout(() => showLogin(), 350);
+      }
+
+      function googleLogin() {
+        alert("Google login integration coming soon!");
+      }
+
+      function googleSignup() {
+        alert("Google signup integration coming soon!");
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("modal")) {
+          const modalId = e.target.id;
+          closeModal(modalId);
+        }
+      });
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const openModals = document.querySelectorAll(".modal.show");
+          openModals.forEach((modal) => closeModal(modal.id));
+        }
+      });
+
+      // Track scroll position
+      window.addEventListener("scroll", () => {
+        const scrollY = window.scrollY;
+        document.getElementById(
+          "scrollIndicator"
+        ).textContent = `Scroll: ${scrollY}px`;
+      });
+
+      // Initial status
+      updateStatus("Ready to test - Try scrolling the page");
+    </script>
+  </body>
+</html>

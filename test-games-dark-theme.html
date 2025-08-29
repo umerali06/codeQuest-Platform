@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Games - Dark Theme Test</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/games-styles.css" />
+    <link rel="stylesheet" href="public/ai-assistant.css" />
+    <style>
+      /* Additional test styles */
+      .test-info {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        color: var(--light);
+        font-size: 0.9rem;
+        z-index: 1000;
+        max-width: 300px;
+      }
+      .test-info h4 {
+        margin: 0 0 10px 0;
+        color: var(--primary);
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-indicator.success {
+        background: var(--success);
+      }
+      .status-indicator.warning {
+        background: var(--warning);
+      }
+      .status-indicator.error {
+        background: var(--danger);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Test Info Panel -->
+    <div class="test-info">
+      <h4>🎮 Games System Status</h4>
+      <div id="api-status">
+        <span class="status-indicator warning"></span>
+        <span>Testing API...</span>
+      </div>
+      <div id="theme-status">
+        <span class="status-indicator success"></span>
+        <span>Dark Theme: Active</span>
+      </div>
+      <div id="fallback-status">
+        <span class="status-indicator success"></span>
+        <span>Fallback Data: Ready</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="logo">⚡CodeQuest</a>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+          <a href="public/index.html" class="nav-link">Home</a>
+          <a href="public/learn.html" class="nav-link">Learn</a>
+          <a href="public/editor.html" class="nav-link">Code Editor</a>
+          <a href="public/challenges.html" class="nav-link">Challenges</a>
+          <a href="public/games.html" class="nav-link active">Games</a>
+          <a href="#" class="nav-link">Leaderboard</a>
+          <a href="#" class="nav-link">About</a>
+          <span id="authButtons">
+            <button class="btn btn-secondary" onclick="showLogin()">
+              Login
+            </button>
+            <button class="btn btn-primary" onclick="showSignup()">
+              Sign Up
+            </button>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="games-main">
+      <!-- Games Hero -->
+      <section class="games-hero">
+        <div class="container">
+          <h1 class="page-title">Coding Games & Challenges</h1>
+          <p class="page-subtitle">
+            Test your skills with fun coding games and compete with other
+            developers!
+          </p>
+        </div>
+      </section>
+
+      <!-- Game Categories -->
+      <div class="game-categories">
+        <div class="category-tabs">
+          <button class="category-tab active" data-category="all">
+            All Games
+          </button>
+          <button class="category-tab" data-category="speed">
+            Speed Coding
+          </button>
+          <button class="category-tab" data-category="bugfix">Bug Hunt</button>
+          <button class="category-tab" data-category="memory">
+            Memory Games
+          </button>
+          <button class="category-tab" data-category="puzzle">
+            Code Puzzles
+          </button>
+          <button class="category-tab" data-category="algorithm">
+            Algorithms
+          </button>
+          <button class="category-tab" data-category="trivia">Trivia</button>
+        </div>
+      </div>
+
+      <!-- Games Grid -->
+      <div class="games-grid" id="gamesGrid">
+        <!-- Games will be loaded here -->
+      </div>
+
+      <!-- No Games Message -->
+      <div class="no-games" id="noGames" style="display: none">
+        <div class="no-games-content">
+          <h3>No Games Available</h3>
+          <p>There are no games available in this category at the moment.</p>
+          <button class="btn btn-primary" onclick="gamesPage.resetFilters()">
+            Show All Games
+          </button>
+        </div>
+      </div>
+
+      <!-- Leaderboard Section -->
+      <div class="leaderboard-section">
+        <div class="section-header">
+          <h2>Leaderboard</h2>
+          <div class="leaderboard-filters">
+            <select id="leaderboardFilter">
+              <option value="all">All Time</option>
+              <option value="weekly">This Week</option>
+              <option value="monthly">This Month</option>
+            </select>
+          </div>
+        </div>
+        <div class="leaderboard-content" id="leaderboardContent">
+          <div class="no-data">Login to view leaderboard</div>
+        </div>
+      </div>
+
+      <!-- User Statistics -->
+      <div class="stats-section">
+        <div class="section-header">
+          <h2>Your Statistics</h2>
+        </div>
+        <div class="stats-grid" id="statsGrid">
+          <div class="no-data">Login to view your statistics</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="public/auth.js"></script>
+    <script src="public/ai-assistant.js"></script>
+    <script src="public/main.js"></script>
+    <script src="public/games.js"></script>
+
+    <script>
+      // Test status tracking
+      let apiWorking = false;
+      let fallbackLoaded = false;
+
+      // Monitor games loading
+      const originalConsoleLog = console.log;
+      const originalConsoleError = console.error;
+
+      console.log = function (...args) {
+        originalConsoleLog.apply(console, args);
+
+        if (args[0] && args[0].includes("Games loaded from API")) {
+          updateStatus("api-status", "success", "API: Connected");
+          apiWorking = true;
+        } else if (
+          args[0] &&
+          args[0].includes("Loading fallback sample games")
+        ) {
+          updateStatus("api-status", "warning", "API: Using Fallback");
+          updateStatus("fallback-status", "success", "Fallback Data: Loaded");
+          fallbackLoaded = true;
+        }
+      };
+
+      console.error = function (...args) {
+        originalConsoleError.apply(console, args);
+
+        if (args[0] && args[0].includes("Error loading games from API")) {
+          updateStatus("api-status", "error", "API: Failed");
+        }
+      };
+
+      function updateStatus(elementId, type, text) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          const indicator = element.querySelector(".status-indicator");
+          const span = element.querySelector("span:last-child");
+
+          indicator.className = `status-indicator ${type}`;
+          span.textContent = text;
+        }
+      }
+
+      // Authentication functions
+      function showLogin() {
+        alert("Login functionality - integrate with your auth system");
+      }
+
+      function showSignup() {
+        alert("Signup functionality - integrate with your auth system");
+      }
+
+      // Test the theme and functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("🎮 Games page loaded with dark theme");
+
+        // Test theme variables
+        const root = getComputedStyle(document.documentElement);
+        const primaryColor = root.getPropertyValue("--primary").trim();
+        const darkColor = root.getPropertyValue("--dark").trim();
+
+        if (primaryColor && darkColor) {
+          console.log("✅ Theme variables loaded successfully");
+          updateStatus("theme-status", "success", "Dark Theme: Active");
+        } else {
+          console.log("❌ Theme variables not found");
+          updateStatus("theme-status", "error", "Dark Theme: Failed");
+        }
+
+        // Test games loading after a delay
+        setTimeout(() => {
+          if (!apiWorking && !fallbackLoaded) {
+            console.log("⚠️ Neither API nor fallback data loaded");
+            updateStatus("api-status", "error", "API: No Response");
+            updateStatus("fallback-status", "error", "Fallback: Failed");
+          }
+        }, 5000);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Editor Duplicate Fix</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .test-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .test-result {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        border-left: 4px solid;
+      }
+      .success {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        border-color: #17a2b8;
+        color: #0c5460;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .method-count {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1>🔧 Editor Duplicate Methods Fix Test</h1>
+      <p>
+        This test verifies that duplicate methods have been removed from
+        editor.js
+      </p>
+
+      <button onclick="testDuplicateMethods()">
+        Test for Duplicate Methods
+      </button>
+      <button onclick="testEditorFunctionality()">
+        Test Editor Functionality
+      </button>
+      <button onclick="testGameMethods()">Test Game Methods</button>
+
+      <div id="testResults"></div>
+    </div>
+
+    <script>
+      function addTestResult(message, type = "info") {
+        const resultsDiv = document.getElementById("testResults");
+        const resultDiv = document.createElement("div");
+        resultDiv.className = `test-result ${type}`;
+        resultDiv.innerHTML = message;
+        resultsDiv.appendChild(resultDiv);
+      }
+
+      function clearResults() {
+        document.getElementById("testResults").innerHTML = "";
+      }
+
+      async function testDuplicateMethods() {
+        clearResults();
+        addTestResult("🔍 Testing for duplicate methods...", "info");
+
+        try {
+          // Load the editor.js file content
+          const response = await fetch("editor.js");
+          const editorCode = await response.text();
+
+          // Test for duplicate method definitions
+          const methodsToCheck = [
+            "async checkForGame()",
+            "loadGameInstructions(game)",
+            "setupGameMode()",
+            "handleGameTimeout()",
+            "completeGame(",
+            "showGameCompletionModal(",
+            "formatTime(",
+            "showToast(",
+          ];
+
+          let totalDuplicates = 0;
+
+          methodsToCheck.forEach((method) => {
+            const regex = new RegExp(method.replace(/[()]/g, "\\$&"), "g");
+            const matches = editorCode.match(regex);
+            const count = matches ? matches.length : 0;
+
+            if (count > 1) {
+              addTestResult(
+                `❌ DUPLICATE: ${method} found ${count} times`,
+                "error"
+              );
+              totalDuplicates += count - 1;
+            } else if (count === 1) {
+              addTestResult(`✅ OK: ${method} found exactly once`, "success");
+            } else {
+              addTestResult(`⚠️ MISSING: ${method} not found`, "error");
+            }
+          });
+
+          if (totalDuplicates === 0) {
+            addTestResult("🎉 SUCCESS: No duplicate methods found!", "success");
+          } else {
+            addTestResult(
+              `❌ FAILED: Found ${totalDuplicates} duplicate methods`,
+              "error"
+            );
+          }
+
+          // Check file structure
+          const classMatches = editorCode.match(/class CodeEditor/g);
+          const classCount = classMatches ? classMatches.length : 0;
+
+          if (classCount === 1) {
+            addTestResult(
+              "✅ OK: CodeEditor class defined exactly once",
+              "success"
+            );
+          } else {
+            addTestResult(
+              `❌ ERROR: CodeEditor class found ${classCount} times`,
+              "error"
+            );
+          }
+
+          // Check initialization
+          const initMatches = editorCode.match(
+            /document\.addEventListener\('DOMContentLoaded'/g
+          );
+          const initCount = initMatches ? initMatches.length : 0;
+
+          if (initCount === 1) {
+            addTestResult(
+              "✅ OK: DOMContentLoaded listener defined exactly once",
+              "success"
+            );
+          } else {
+            addTestResult(
+              `❌ ERROR: DOMContentLoaded listener found ${initCount} times`,
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            `❌ ERROR: Failed to load editor.js - ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      async function testEditorFunctionality() {
+        clearResults();
+        addTestResult("🧪 Testing editor functionality...", "info");
+
+        try {
+          // Try to create a CodeEditor instance
+          if (typeof CodeEditor !== "undefined") {
+            addTestResult("✅ OK: CodeEditor class is available", "success");
+
+            // Check if methods exist
+            const methodsToCheck = [
+              "checkForGame",
+              "loadGameInstructions",
+              "setupGameMode",
+              "runTests",
+              "refreshPreview",
+            ];
+
+            methodsToCheck.forEach((method) => {
+              if (typeof CodeEditor.prototype[method] === "function") {
+                addTestResult(`✅ OK: ${method} method exists`, "success");
+              } else {
+                addTestResult(`❌ ERROR: ${method} method missing`, "error");
+              }
+            });
+          } else {
+            addTestResult("❌ ERROR: CodeEditor class not available", "error");
+          }
+        } catch (error) {
+          addTestResult(`❌ ERROR: ${error.message}`, "error");
+        }
+      }
+
+      async function testGameMethods() {
+        clearResults();
+        addTestResult("🎮 Testing game-specific methods...", "info");
+
+        try {
+          if (typeof CodeEditor !== "undefined") {
+            const gameMethods = [
+              "checkForGame",
+              "loadGameFromAPI",
+              "loadGameInstructions",
+              "setupGameMode",
+              "startGameTimer",
+              "handleGameTimeout",
+              "completeGame",
+              "testGame",
+              "calculateGameScores",
+              "showGameCompletionModal",
+            ];
+
+            let foundMethods = 0;
+            gameMethods.forEach((method) => {
+              if (typeof CodeEditor.prototype[method] === "function") {
+                addTestResult(`✅ OK: ${method} method exists`, "success");
+                foundMethods++;
+              } else {
+                addTestResult(
+                  `⚠️ MISSING: ${method} method not found`,
+                  "error"
+                );
+              }
+            });
+
+            addTestResult(
+              `📊 Summary: ${foundMethods}/${gameMethods.length} game methods found`,
+              "info"
+            );
+
+            if (foundMethods >= gameMethods.length * 0.8) {
+              addTestResult(
+                "🎉 SUCCESS: Most game methods are available!",
+                "success"
+              );
+            } else {
+              addTestResult(
+                "⚠️ WARNING: Some game methods are missing",
+                "error"
+              );
+            }
+          } else {
+            addTestResult(
+              "❌ ERROR: CodeEditor class not available for testing",
+              "error"
+            );
+          }
+        } catch (error) {
+          addTestResult(`❌ ERROR: ${error.message}`, "error");
+        }
+      }
+
+      // Auto-run tests when page loads
+      window.addEventListener("DOMContentLoaded", () => {
+        addTestResult(
+          "🚀 Test page loaded. Click buttons to run tests.",
+          "info"
+        );
+      });
+    </script>
+  </body>
+</html>

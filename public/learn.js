@@ -1,564 +1,246 @@
-// Enhanced CodeQuest Learn Page JavaScript
-// Handles module/lesson display, API integration, progress tracking, and AI assistant
+/**
+ * Enhanced Learn Page Manager
+ * Handles authentication, database integration, progress tracking, and UI management
+ */
 
-class LearnPage {
+class LearnManager {
   constructor() {
     this.modules = [];
-    this.currentModule = null;
-    this.currentLesson = null;
-    this.userProgress = {};
+    this.filteredModules = [];
+    this.currentFilter = "all";
+    this.userProgress = null;
     this.isAuthenticated = false;
+    this.currentUser = null;
+    this.searchTerm = "";
+
     this.init();
   }
 
   async init() {
     try {
+      console.log("🚀 Initializing Learn Manager...");
+
       // Check authentication status
-      this.checkAuthStatus();
+      await this.checkAuthentication();
 
-      // Load modules and user progress
-      await this.loadModules();
+      if (!this.isAuthenticated) {
+        console.log("❌ User not authenticated, showing auth prompt");
+        this.showAuthPrompt();
+        this.setupEventListeners(); // Still setup listeners for auth state changes
+        return;
+      }
 
-      // Setup AI assistant
-      this.setupAI();
+      console.log("✅ User authenticated, loading content");
+      this.hideAuthPrompt();
 
-      // Setup event listeners
+      // Load user progress, modules, and learning paths
+      await Promise.all([
+        this.loadUserProgress(),
+        this.loadModules(),
+        this.loadLearningPaths(),
+      ]);
+
+      // Setup UI
       this.setupEventListeners();
+      this.updateProgressOverview();
 
-      console.log("Learn page initialized successfully");
+      // Start periodic auth check
+      this.startPeriodicAuthCheck();
+
+      console.log("✅ Learn Manager initialized successfully");
     } catch (error) {
-      console.error("Error initializing learn page:", error);
+      console.error("❌ Error initializing Learn Manager:", error);
       this.showError(
-        "Failed to initialize learn page. Please refresh and try again."
+        "Failed to initialize learning platform. Please refresh and try again."
       );
     }
   }
 
-  checkAuthStatus() {
-    // Check if user is authenticated (from auth.js)
-    if (window.AuthManager && window.AuthManager.isLoggedIn()) {
-      this.isAuthenticated = true;
-      this.userProgress = window.AuthManager.getProgress() || {};
+  async checkAuthentication() {
+    try {
+      // Wait for AuthManager to be available
+      if (typeof window.AuthManager === "undefined") {
+        console.log("⏳ Waiting for AuthManager...");
+        await this.waitForAuthManager();
+      }
+
+      // Give AuthManager time to initialize and check session
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Force AuthManager to check session again
+      if (window.AuthManager && window.AuthManager.checkSession) {
+        await window.AuthManager.checkSession();
+      }
+
+      this.isAuthenticated = window.AuthManager.isLoggedIn();
+      this.currentUser = window.AuthManager.getCurrentUser();
+
+      console.log(
+        "🔐 Authentication status:",
+        this.isAuthenticated ? "Logged in" : "Not logged in",
+        this.currentUser
+          ? `User: ${this.currentUser.name || this.currentUser.email}`
+          : ""
+      );
+
+      // Double check with localStorage as fallback
+      if (!this.isAuthenticated) {
+        const storedUser = localStorage.getItem("codequest_user");
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            if (
+              userData &&
+              userData.sessionExpiry &&
+              new Date(userData.sessionExpiry) > new Date()
+            ) {
+              this.isAuthenticated = true;
+              this.currentUser = userData;
+              console.log("🔐 Found valid session in localStorage");
+            }
+          } catch (e) {
+            console.log("Invalid stored session data");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Authentication check failed:", error);
+      this.isAuthenticated = false;
     }
   }
 
-  setupEventListeners() {
-    // Handle browser back/forward navigation
-    window.addEventListener("popstate", (event) => {
-      if (event.state) {
-        this.handleNavigation(event.state);
-      }
-    });
+  waitForAuthManager() {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 50; // 5 seconds max wait
 
-    // Handle keyboard shortcuts
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        this.goBackToModules();
-      }
+      const checkAuthManager = () => {
+        attempts++;
+        if (
+          typeof window.AuthManager !== "undefined" &&
+          window.AuthManager.isLoggedIn
+        ) {
+          console.log(`✅ AuthManager found after ${attempts} attempts`);
+          resolve();
+        } else if (attempts >= maxAttempts) {
+          console.warn(
+            "⚠️ AuthManager not found after maximum attempts, proceeding anyway"
+          );
+          resolve();
+        } else {
+          setTimeout(checkAuthManager, 100);
+        }
+      };
+      checkAuthManager();
     });
+  }
+
+  // Periodic authentication check
+  startPeriodicAuthCheck() {
+    setInterval(() => {
+      if (window.AuthManager) {
+        const currentAuthState = window.AuthManager.isLoggedIn();
+        if (currentAuthState !== this.isAuthenticated) {
+          console.log("🔄 Auth state mismatch detected, syncing...");
+          this.isAuthenticated = currentAuthState;
+          this.currentUser = window.AuthManager.getCurrentUser();
+
+          if (this.isAuthenticated) {
+            this.hideAuthPrompt();
+            this.init();
+          } else {
+            this.showAuthPrompt();
+          }
+        }
+      }
+    }, 5000); // Check every 5 seconds
+  }
+
+  showAuthPrompt() {
+    const authCheck = document.getElementById("authCheck");
+    const learnHeader = document.getElementById("learnHeader");
+    const progressOverview = document.getElementById("progressOverview");
+    const modulesSection = document.getElementById("modulesSection");
+
+    // Prevent scrolling when auth prompt is shown
+    document.body.style.overflow = "hidden";
+    document.body.classList.add("modal-open");
+
+    if (authCheck) {
+      authCheck.style.display = "flex";
+      authCheck.style.position = "fixed";
+      authCheck.style.top = "0";
+      authCheck.style.left = "0";
+      authCheck.style.width = "100%";
+      authCheck.style.height = "100%";
+      authCheck.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+      authCheck.style.zIndex = "9999";
+      authCheck.style.justifyContent = "center";
+      authCheck.style.alignItems = "center";
+    }
+    if (learnHeader) learnHeader.style.display = "none";
+    if (progressOverview) progressOverview.style.display = "none";
+    if (modulesSection) modulesSection.style.display = "none";
+  }
+
+  hideAuthPrompt() {
+    const authCheck = document.getElementById("authCheck");
+    const learnHeader = document.getElementById("learnHeader");
+    const progressOverview = document.getElementById("progressOverview");
+    const modulesSection = document.getElementById("modulesSection");
+
+    // Restore scrolling
+    document.body.style.overflow = "";
+    document.body.classList.remove("modal-open");
+
+    if (authCheck) {
+      authCheck.style.display = "none";
+      authCheck.style.position = "";
+      authCheck.style.top = "";
+      authCheck.style.left = "";
+      authCheck.style.width = "";
+      authCheck.style.height = "";
+      authCheck.style.backgroundColor = "";
+      authCheck.style.zIndex = "";
+    }
+    if (learnHeader) learnHeader.style.display = "block";
+    if (progressOverview) progressOverview.style.display = "block";
+    if (modulesSection) modulesSection.style.display = "block";
+  }
+
+  async loadUserProgress() {
+    try {
+      if (!this.isAuthenticated) return;
+
+      this.userProgress = window.AuthManager.getProgress();
+      console.log("📊 User progress loaded:", this.userProgress);
+    } catch (error) {
+      console.error("Failed to load user progress:", error);
+      this.userProgress = this.getDefaultProgress();
+    }
+  }
+
+  getDefaultProgress() {
+    return {
+      totalXP: 0,
+      level: 1,
+      levelTitle: "Beginner",
+      streak: 0,
+      statistics: {
+        html: { xp: 0, progress: 0, lessons: 0 },
+        css: { xp: 0, progress: 0, lessons: 0 },
+        javascript: { xp: 0, progress: 0, lessons: 0 },
+      },
+      completedLessons: [],
+      achievements: [],
+    };
   }
 
   async loadModules() {
     try {
+      console.log("📚 Loading modules...");
+
       const response = await fetch("/api/modules");
-      if (!response.ok) {
-        throw new Error("Failed to load modules");
-      }
-
-      const result = await response.json();
-      this.modules = result.modules || [];
-
-      if (this.modules.length === 0) {
-        this.showError("No learning modules available");
-        return;
-      }
-
-      this.renderModules();
-    } catch (error) {
-      console.error("Error loading modules:", error);
-      this.showError(
-        "Failed to load learning modules. Please check your connection and try again."
-      );
-    }
-  }
-
-  renderModules() {
-    const modulesGrid = document.getElementById("modulesGrid");
-    if (!modulesGrid) return;
-
-    modulesGrid.innerHTML = this.modules
-      .map(
-        (module) => `
-            <div class="module-card" onclick="learnPage.viewModule('${
-              module.id
-            }')">
-                <div class="module-icon" style="background-color: ${
-                  module.color
-                }">
-                    ${module.icon}
-                </div>
-                <div class="module-info">
-                    <h3>${this.escapeHtml(module.title)}</h3>
-                    <p>${this.escapeHtml(module.description)}</p>
-                    <div class="module-stats">
-                        <span class="stat">
-                            <i class="icon">📚</i>
-                            ${module.lesson_count || 0} lessons
-                        </span>
-                        <span class="stat">
-                            <i class="icon">🎯</i>
-                            ${module.challenge_count || 0} challenges
-                        </span>
-                        <span class="stat">
-                            <i class="icon">⏱️</i>
-                            ${module.estimated_hours || 0}h
-                        </span>
-                    </div>
-                    <div class="module-difficulty ${module.difficulty}">
-                        ${
-                          module.difficulty.charAt(0).toUpperCase() +
-                          module.difficulty.slice(1)
-                        }
-                    </div>
-                </div>
-            </div>
-        `
-      )
-      .join("");
-  }
-
-  async viewModule(moduleId) {
-    try {
-      const module = this.modules.find((m) => m.id === moduleId);
-      if (!module) {
-        throw new Error("Module not found");
-      }
-
-      this.currentModule = module;
-      await this.loadLessons(moduleId);
-      this.showModuleView();
-    } catch (error) {
-      console.error("Error viewing module:", error);
-      this.showError("Failed to load module details");
-    }
-  }
-
-  async loadLessons(moduleId) {
-    try {
-      const response = await fetch(`/api/lessons?module_id=${moduleId}`);
-      if (!response.ok) {
-        throw new Error("Failed to load lessons");
-      }
-
-      const result = await response.json();
-      this.currentModule.lessons = result.lessons || [];
-    } catch (error) {
-      console.error("Error loading lessons:", error);
-      this.currentModule.lessons = [];
-    }
-  }
-
-  showModuleView() {
-    const modulesSection = document.querySelector(".modules-section");
-    if (!modulesSection) return;
-
-    modulesSection.innerHTML = `
-            <div class="container">
-                <div class="module-header">
-                    <button class="btn btn-secondary back-btn" onclick="learnPage.showModulesList()">
-                        ← Back to Modules
-                    </button>
-                    <div class="course-header">
-                        <div class="course-icon" style="background-color: ${
-                          this.currentModule.color
-                        }">
-                            ${this.currentModule.icon}
-                        </div>
-                        <div class="course-info">
-                            <h1>${this.escapeHtml(
-                              this.currentModule.title
-                            )}</h1>
-                            <p>${this.escapeHtml(
-                              this.currentModule.description
-                            )}</p>
-                            <div class="course-stats">
-                                <span class="stat">
-                                    <i class="icon">📚</i>
-                                    ${
-                                      this.currentModule.lessons?.length || 0
-                                    } lessons
-                                </span>
-                                <span class="stat">
-                                    <i class="icon">🎯</i>
-                                    ${
-                                      this.currentModule.challenge_count || 0
-                                    } challenges
-                                </span>
-                                <span class="stat">
-                                    <i class="icon">⏱️</i>
-                                    ${
-                                      this.currentModule.estimated_hours || 0
-                                    } hours
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="lessons-grid">
-                    ${this.renderLessons()}
-                </div>
-            </div>
-        `;
-  }
-
-  renderLessons() {
-    if (
-      !this.currentModule.lessons ||
-      this.currentModule.lessons.length === 0
-    ) {
-      return `
-                <div class="no-lessons">
-                    <p>No lessons available for this module yet.</p>
-                </div>
-            `;
-    }
-
-    return this.currentModule.lessons
-      .map(
-        (lesson) => `
-            <div class="lesson-card" onclick="learnPage.startLesson('${
-              lesson.id
-            }')">
-                <div class="lesson-header">
-                    <h3>${this.escapeHtml(lesson.title)}</h3>
-                    <span class="lesson-duration">${
-                      lesson.duration_minutes || 0
-                    } min</span>
-                </div>
-                <p>${this.escapeHtml(lesson.description || "")}</p>
-                <div class="lesson-difficulty ${lesson.difficulty}">
-                    ${
-                      lesson.difficulty.charAt(0).toUpperCase() +
-                      lesson.difficulty.slice(1)
-                    }
-                </div>
-            </div>
-        `
-      )
-      .join("");
-  }
-
-  showModulesList() {
-    const modulesSection = document.querySelector(".modules-section");
-    if (!modulesSection) return;
-
-    modulesSection.innerHTML = `
-            <div class="container">
-                <div class="learn-header">
-                    <h1>Choose Your Learning Path</h1>
-                    <p>Master web development with our structured courses designed for your success.</p>
-                </div>
-                <div id="modulesGrid" class="modules-grid">
-                    <!-- Modules will be loaded here -->
-                </div>
-            </div>
-        `;
-
-    this.renderModules();
-  }
-
-  async startLesson(lessonId) {
-    try {
-      const response = await fetch(`/api/lessons/${lessonId}`);
-      if (!response.ok) {
-        throw new Error("Failed to load lesson");
-      }
-
-      const result = await response.json();
-      this.currentLesson = result;
-      this.showLessonView();
-    } catch (error) {
-      console.error("Error starting lesson:", error);
-      this.showError("Failed to load lesson");
-    }
-  }
-
-  showLessonView() {
-    const modulesSection = document.querySelector(".modules-section");
-    if (!modulesSection) return;
-
-    modulesSection.innerHTML = `
-            <div class="container">
-                <div class="lesson-header">
-                    <button class="btn btn-secondary back-btn" onclick="learnPage.viewModule('${
-                      this.currentModule.id
-                    }')">
-                        ← Back to ${this.currentModule.title}
-                    </button>
-                    <h1>${this.escapeHtml(this.currentLesson.title)}</h1>
-                    <p>${this.escapeHtml(
-                      this.currentLesson.description || ""
-                    )}</p>
-                </div>
-                
-                <div class="lesson-content">
-                    <div class="content-section">
-                        <h2>Lesson Content</h2>
-                        <div class="markdown-content">
-                            ${this.renderMarkdown(
-                              this.currentLesson.content_md
-                            )}
-                        </div>
-                    </div>
-                    
-                    ${this.renderChallenges()}
-                    
-                    <div class="lesson-actions">
-                        <button class="btn btn-primary" onclick="learnPage.startChallenge('practice')">
-                            Practice Exercise
-                        </button>
-                        <button class="btn btn-secondary" onclick="learnPage.completeLesson()">
-                            Mark Complete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-  }
-
-  renderChallenges() {
-    if (
-      !this.currentLesson.challenges ||
-      this.currentLesson.challenges.length === 0
-    ) {
-      return "";
-    }
-
-    return `
-            <div class="content-section">
-                <h2>Challenges</h2>
-                <div class="challenges-grid">
-                    ${this.currentLesson.challenges
-                      .map(
-                        (challenge) => `
-                        <div class="challenge-card">
-                            <h3>${this.escapeHtml(challenge.title)}</h3>
-                            <p>${this.escapeHtml(challenge.description)}</p>
-                            <div class="challenge-stats">
-                                <span class="difficulty ${
-                                  challenge.difficulty
-                                }">
-                                    ${
-                                      challenge.difficulty
-                                        .charAt(0)
-                                        .toUpperCase() +
-                                      challenge.difficulty.slice(1)
-                                    }
-                                </span>
-                                <span class="xp">${
-                                  challenge.xp_reward || 0
-                                } XP</span>
-                            </div>
-                            <button class="btn btn-primary" onclick="learnPage.startChallenge('${
-                              challenge.id
-                            }')">
-                                Start Challenge
-                            </button>
-                        </div>
-                    `
-                      )
-                      .join("")}
-                </div>
-            </div>
-        `;
-  }
-
-  startChallenge(challengeId) {
-    if (challengeId === "practice") {
-      // Store lesson data for practice
-      localStorage.setItem(
-        "codequest_lesson",
-        JSON.stringify({
-          id: this.currentLesson.id,
-          slug: this.currentLesson.slug,
-          title: this.currentLesson.title,
-          starter_code: this.currentLesson.starter_code,
-          test_spec: this.currentLesson.test_spec_json,
-        })
-      );
-    } else {
-      // Store challenge data
-      const challenge = this.currentLesson.challenges.find(
-        (c) => c.id == challengeId
-      );
-      if (challenge) {
-        localStorage.setItem(
-          "codequest_challenge",
-          JSON.stringify({
-            id: challengeId,
-            title: challenge.title,
-            description: challenge.description,
-            starter_code: challenge.starter_code,
-            test_spec: challenge.test_spec_json,
-          })
-        );
-      }
-    }
-
-    // Redirect to editor
-    window.location.href = "../editor.html";
-  }
-
-  completeLesson() {
-    // Mark lesson as complete
-    this.showNotification("Lesson completed! Great job!", "success");
-
-    // In a real app, you'd save progress to the database
-    setTimeout(() => {
-      this.viewModule(this.currentModule.id);
-    }, 2000);
-  }
-
-  renderMarkdown(markdown) {
-    if (!markdown) return "";
-
-    // Simple markdown to HTML conversion
-    return markdown
-      .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-      .replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>")
-      .replace(/\*(.*)\*/gim, "<em>$1</em>")
-      .replace(/\n/gim, "<br>")
-      .replace(/^- (.*$)/gim, "<li>$1</li>")
-      .replace(/(<li>.*<\/li>)/gim, "<ul>$1</ul>");
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  showError(message) {
-    const modulesGrid = document.getElementById("modulesGrid");
-    if (modulesGrid) {
-      modulesGrid.innerHTML = `
-                <div class="error-message">
-                    <div class="error-icon">⚠️</div>
-                    <h3>Oops! Something went wrong</h3>
-                    <p>${message}</p>
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        Try Again
-                    </button>
-                </div>
-            `;
-    }
-  }
-
-  showNotification(message, type = "info") {
-    const notification = document.createElement("div");
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-            <span class="notification-message">${message}</span>
-            <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
-        `;
-
-    document.body.appendChild(notification);
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      if (notification.parentElement) {
-        notification.remove();
-      }
-    }, 5000);
-  }
-
-  setupAI() {
-    // AI Assistant functionality
-    const aiButton = document.getElementById("ai-assistant-button");
-    const aiChat = document.getElementById("ai-chat-window");
-    const closeAiChat = document.getElementById("close-ai-chat");
-    const aiSend = document.getElementById("ai-send");
-    const aiInput = document.getElementById("ai-input");
-    const quickActions = document.querySelectorAll(".quick-action");
-
-    if (aiButton && aiChat) {
-      aiButton.addEventListener("click", () => {
-        aiChat.classList.toggle("active");
-      });
-
-      if (closeAiChat) {
-        closeAiChat.addEventListener("click", () => {
-          aiChat.classList.remove("active");
-        });
-      }
-    }
-
-    if (aiSend && aiInput) {
-      aiSend.addEventListener("click", () => this.sendAIMessage());
-      aiInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-          this.sendAIMessage();
-        }
-      });
-    }
-
-    quickActions.forEach((button) => {
-      button.addEventListener("click", () => {
-        const prompt = button.dataset.prompt;
-        if (prompt) {
-          this.sendAIMessage(prompt);
-        }
-      });
-    });
-  }
-
-  async sendAIMessage(customPrompt = null) {
-    const aiInput = document.getElementById("ai-input");
-    const aiMessages = document.getElementById("ai-messages");
-
-    if (!aiInput || !aiMessages) return;
-
-    const prompt = customPrompt || aiInput.value.trim();
-    if (!prompt) return;
-
-    // Add user message
-    const userMessage = document.createElement("div");
-    userMessage.className = "ai-message user-message";
-    userMessage.innerHTML = `<p>${this.escapeHtml(prompt)}</p>`;
-    aiMessages.appendChild(userMessage);
-
-    // Clear input
-    if (!customPrompt) {
-      aiInput.value = "";
-    }
-
-    // Add loading message
-    const loadingMessage = document.createElement("div");
-    loadingMessage.className = "ai-message ai-message";
-    loadingMessage.innerHTML = "<p>🤔 Thinking...</p>";
-    aiMessages.appendChild(loadingMessage);
-
-    // Scroll to bottom
-    aiMessages.scrollTop = aiMessages.scrollHeight;
-
-    try {
-      const response = await fetch("/api/ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          context: {
-            page: "learn",
-            module: this.currentModule?.slug,
-            lesson: this.currentLesson?.slug,
-          },
-        }),
-      });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -566,63 +248,1605 @@ class LearnPage {
 
       const result = await response.json();
 
-      // Remove loading message
-      loadingMessage.remove();
-
-      if (result.response) {
-        const aiMessage = document.createElement("div");
-        aiMessage.className = "ai-message ai-message";
-        aiMessage.innerHTML = `<p>${this.renderMarkdown(result.response)}</p>`;
-        aiMessages.appendChild(aiMessage);
-      } else {
-        throw new Error("Invalid response format from API");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load modules");
       }
+
+      this.modules = result.modules || [];
+      this.filteredModules = [...this.modules];
+
+      console.log(`✅ Loaded ${this.modules.length} modules`);
+
+      this.renderModules();
     } catch (error) {
-      console.error("AI request failed:", error);
+      console.error("❌ Error loading modules:", error);
+      this.showModulesError(
+        "Failed to load learning modules. Please check your connection and try again."
+      );
+    }
+  }
 
-      // Remove loading message
-      loadingMessage.remove();
+  async loadLearningPaths() {
+    try {
+      console.log("🛤️ Loading learning paths...");
 
-      // Add error message
-      const errorMessage = document.createElement("div");
-      errorMessage.className = "ai-message ai-message error";
-      errorMessage.innerHTML =
-        "<p>❌ Sorry, I encountered an error. Please try again later.</p>";
-      aiMessages.appendChild(errorMessage);
+      // Try different API URLs to debug
+      const apiUrls = [
+        "/api/learning-paths",
+        "./api/learning-paths",
+        "api/learning-paths.php",
+      ];
+
+      let response = null;
+      let lastError = null;
+
+      for (const url of apiUrls) {
+        try {
+          console.log(`Trying API URL: ${url}`);
+          response = await fetch(url);
+          if (response.ok) {
+            console.log(`✅ Success with URL: ${url}`);
+            break;
+          } else {
+            console.log(
+              `❌ Failed with URL: ${url} - Status: ${response.status}`
+            );
+            lastError = new Error(
+              `HTTP ${response.status}: ${response.statusText}`
+            );
+          }
+        } catch (err) {
+          console.log(`❌ Network error with URL: ${url} - ${err.message}`);
+          lastError = err;
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw lastError || new Error("All API endpoints failed");
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load learning paths");
+      }
+
+      this.learningPaths = result.paths || [];
+
+      console.log(`✅ Loaded ${this.learningPaths.length} learning paths`);
+
+      this.renderLearningPaths();
+    } catch (error) {
+      console.error("❌ Error loading learning paths:", error);
+      console.log("🔄 Falling back to static learning paths");
+      // Fallback to static data if API fails
+      this.renderStaticLearningPaths();
+    }
+  }
+
+  renderLearningPaths() {
+    const pathsContainer = document.querySelector(".paths-container");
+    if (!pathsContainer) return;
+
+    if (this.learningPaths.length === 0) {
+      this.renderStaticLearningPaths();
+      return;
     }
 
-    // Scroll to bottom
-    aiMessages.scrollTop = aiMessages.scrollHeight;
+    pathsContainer.innerHTML = this.learningPaths
+      .map((path) => this.renderLearningPathCard(path))
+      .join("");
+  }
+
+  renderLearningPathCard(path) {
+    const progressPercentage = path.user_progress || 0;
+    const status = path.status || "not_started";
+
+    let buttonText = "Start Path";
+    let buttonClass = "btn-secondary";
+
+    if (status === "completed") {
+      buttonText = "Review Path";
+      buttonClass = "btn-success";
+    } else if (status === "in_progress") {
+      buttonText = "Continue Path";
+      buttonClass = "btn-primary";
+    }
+
+    return `
+      <div class="path-card ${path.slug}" data-path-id="${path.id}">
+        <div class="path-header">
+          <div class="path-icon">
+            <i class="${path.icon}"></i>
+          </div>
+          <h3>${this.escapeHtml(path.title)}</h3>
+        </div>
+        <p>${this.escapeHtml(path.description)}</p>
+        <div class="path-stats">
+          <span><i class="fas fa-clock"></i> ${
+            path.estimated_hours
+          } hours</span>
+          <span><i class="fas fa-graduation-cap"></i> ${
+            path.total_modules
+          } modules</span>
+        </div>
+        ${
+          progressPercentage > 0
+            ? `
+          <div class="path-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+            </div>
+            <span>${progressPercentage}% complete</span>
+          </div>
+        `
+            : ""
+        }
+        <button class="btn ${buttonClass}" onclick="learnManager.handlePathAction('${
+      path.id
+    }', '${status}')">
+          ${buttonText}
+        </button>
+      </div>
+    `;
+  }
+
+  renderStaticLearningPaths() {
+    const pathsContainer = document.querySelector(".paths-container");
+    if (!pathsContainer) return;
+
+    // Fallback static data with dynamic progress from user data
+    const staticPaths = [
+      {
+        id: "frontend-development",
+        title: "Frontend Development",
+        description:
+          "Master HTML, CSS, JavaScript and modern frameworks to build beautiful, interactive websites.",
+        icon: "fas fa-paint-brush",
+        estimated_hours: 120,
+        total_modules: 8,
+        progress: this.calculateFrontendProgress(),
+      },
+      {
+        id: "backend-development",
+        title: "Backend Development",
+        description:
+          "Learn server-side programming, databases, APIs and authentication to power your applications.",
+        icon: "fas fa-server",
+        estimated_hours: 90,
+        total_modules: 6,
+        progress: this.calculateBackendProgress(),
+      },
+      {
+        id: "fullstack-mastery",
+        title: "Full Stack Mastery",
+        description:
+          "Combine frontend and backend skills to build complete, production-ready web applications.",
+        icon: "fas fa-code",
+        estimated_hours: 200,
+        total_modules: 12,
+        progress: 0,
+      },
+    ];
+
+    pathsContainer.innerHTML = staticPaths
+      .map((path) => this.renderStaticPathCard(path))
+      .join("");
+  }
+
+  renderStaticPathCard(path) {
+    const progressPercentage = path.progress;
+    let buttonText = "Start Path";
+    let buttonClass = "btn-secondary";
+
+    if (progressPercentage >= 100) {
+      buttonText = "Review Path";
+      buttonClass = "btn-success";
+    } else if (progressPercentage > 0) {
+      buttonText = "Continue Path";
+      buttonClass = "btn-primary";
+    }
+
+    return `
+      <div class="path-card ${path.id}" data-path-id="${path.id}">
+        <div class="path-header">
+          <div class="path-icon">
+            <i class="${path.icon}"></i>
+          </div>
+          <h3>${path.title}</h3>
+        </div>
+        <p>${path.description}</p>
+        <div class="path-stats">
+          <span><i class="fas fa-clock"></i> ${
+            path.estimated_hours
+          } hours</span>
+          <span><i class="fas fa-graduation-cap"></i> ${
+            path.total_modules
+          } modules</span>
+        </div>
+        ${
+          progressPercentage > 0
+            ? `
+          <div class="path-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+            </div>
+            <span>${Math.round(progressPercentage)}% complete</span>
+          </div>
+        `
+            : ""
+        }
+        <button class="btn ${buttonClass}" onclick="learnManager.handlePathAction('${
+      path.id
+    }', '${progressPercentage > 0 ? "in_progress" : "not_started"}')">
+          ${buttonText}
+        </button>
+      </div>
+    `;
+  }
+
+  calculateFrontendProgress() {
+    if (!this.userProgress || !this.userProgress.statistics) return 0;
+
+    const htmlProgress = this.userProgress.statistics.html?.progress || 0;
+    const cssProgress = this.userProgress.statistics.css?.progress || 0;
+    const jsProgress = this.userProgress.statistics.javascript?.progress || 0;
+
+    return Math.round((htmlProgress + cssProgress + jsProgress) / 3);
+  }
+
+  calculateBackendProgress() {
+    if (!this.userProgress || !this.userProgress.statistics) return 0;
+
+    // Backend is primarily JavaScript for this platform
+    return Math.round(this.userProgress.statistics.javascript?.progress || 0);
+  }
+
+  async handlePathAction(pathId, status) {
+    try {
+      if (status === "not_started") {
+        // Enroll in path
+        const response = await fetch("/api/learning-paths/enroll", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ path_id: pathId }),
+        });
+
+        if (response.ok) {
+          this.showNotification(
+            "Successfully enrolled in learning path!",
+            "success"
+          );
+          // Reload paths to show updated progress
+          await this.loadLearningPaths();
+        }
+      } else {
+        // Navigate to path details or modules
+        this.showNotification("Navigating to learning path...", "info");
+        // You can implement path-specific navigation here
+      }
+    } catch (error) {
+      console.error("Error handling path action:", error);
+      this.showNotification("Failed to update learning path", "error");
+    }
+  }
+
+  updateProgressOverview() {
+    const progressCards = document.getElementById("progressCards");
+    if (!progressCards || !this.userProgress) return;
+
+    const completedModules = this.modules.filter(
+      (module) => module.user_progress && module.user_progress.is_completed
+    ).length;
+
+    const totalXP = this.userProgress.totalXP || 0;
+    const streak = this.userProgress.streak || 0;
+    const achievements = this.userProgress.achievements
+      ? this.userProgress.achievements.length
+      : 0;
+
+    progressCards.innerHTML = `
+      <div class="progress-card">
+        <div class="progress-icon">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="progress-info">
+          <h3>${completedModules}</h3>
+          <p>Modules Completed</p>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div class="progress-info">
+          <h3>${totalXP.toLocaleString()}</h3>
+          <p>XP Earned</p>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div class="progress-info">
+          <h3>${streak}</h3>
+          <p>Day Streak</p>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-icon">
+          <i class="fas fa-medal"></i>
+        </div>
+        <div class="progress-info">
+          <h3>${achievements}</h3>
+          <p>Achievements</p>
+        </div>
+      </div>
+    `;
+  }
+
+  renderModules() {
+    const modulesGrid = document.getElementById("modulesGrid");
+    if (!modulesGrid) return;
+
+    if (this.filteredModules.length === 0) {
+      modulesGrid.innerHTML = `
+        <div class="error-message">
+          <div class="error-icon">🔍</div>
+          <h3>No modules found</h3>
+          <p>Try adjusting your search or filter criteria.</p>
+          <button class="btn btn-primary" onclick="learnManager.clearFilters()">
+            Show All Modules
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    modulesGrid.innerHTML = this.filteredModules
+      .map((module) => this.renderModuleCard(module))
+      .join("");
+  }
+
+  renderModuleCard(module) {
+    const progress = module.user_progress || {
+      progress_percentage: 0,
+      is_started: false,
+      is_completed: false,
+    };
+    const progressPercentage = progress.progress_percentage || 0;
+
+    let actionButton = "";
+    let statusClass = "";
+
+    if (progress.is_completed) {
+      actionButton = `<button class="module-btn secondary" onclick="learnManager.viewModule('${module.slug}')">Review Module</button>`;
+      statusClass = "completed";
+    } else if (progress.is_started) {
+      actionButton = `<button class="module-btn primary" onclick="learnManager.viewModule('${module.slug}')">Continue Learning</button>`;
+      statusClass = "in-progress";
+    } else {
+      actionButton = `<button class="module-btn primary" onclick="learnManager.viewModule('${module.slug}')">Start Module</button>`;
+      statusClass = "not-started";
+    }
+
+    return `
+      <div class="module-card ${statusClass}" data-difficulty="${
+      module.difficulty
+    }" data-status="${statusClass}">
+        <div class="module-header">
+          <div class="module-icon" style="background: ${
+            module.color ||
+            "linear-gradient(135deg, var(--primary), var(--secondary))"
+          }">
+            ${module.icon || "📚"}
+          </div>
+          <div class="module-info">
+            <h3>${this.escapeHtml(module.title)}</h3>
+            <div class="module-difficulty ${module.difficulty}">
+              ${
+                module.difficulty.charAt(0).toUpperCase() +
+                module.difficulty.slice(1)
+              }
+            </div>
+          </div>
+        </div>
+        
+        <div class="module-description">
+          ${this.escapeHtml(module.description)}
+        </div>
+        
+        <div class="module-stats">
+          <div class="module-stat">
+            <i class="fas fa-book"></i>
+            <span>${module.lesson_count || 0} lessons</span>
+          </div>
+          <div class="module-stat">
+            <i class="fas fa-clock"></i>
+            <span>${module.estimated_hours || 0}h</span>
+          </div>
+          <div class="module-stat">
+            <i class="fas fa-star"></i>
+            <span>${module.total_xp || 0} XP</span>
+          </div>
+        </div>
+        
+        <div class="module-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+          </div>
+          <div class="progress-text">
+            <span>${progressPercentage}% complete</span>
+            <span>${progress.completed_lessons || 0}/${
+      module.lesson_count || 0
+    } lessons</span>
+          </div>
+        </div>
+        
+        <div class="module-actions">
+          ${actionButton}
+        </div>
+      </div>
+    `;
+  }
+
+  async viewModule(moduleSlug) {
+    try {
+      console.log(`📖 Loading module: ${moduleSlug}`);
+
+      const response = await fetch(`/api/modules/${moduleSlug}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load module");
+      }
+
+      this.showModuleDetail(result.module);
+    } catch (error) {
+      console.error("❌ Error loading module:", error);
+      this.showNotification(
+        "Failed to load module details. Please try again.",
+        "error"
+      );
+    }
+  }
+
+  showModuleDetail(module) {
+    const modulesSection = document.getElementById("modulesSection");
+    if (!modulesSection) return;
+
+    const lessons = module.lessons || [];
+    const stats = module.stats || {};
+
+    modulesSection.innerHTML = `
+      <div class="container">
+        <button class="btn btn-secondary" onclick="learnManager.showModulesList()" style="margin-bottom: 2rem;">
+          <i class="fas fa-arrow-left"></i> Back to Modules
+        </button>
+        
+        <div class="module-detail-header">
+          <div class="module-detail-icon" style="background: ${
+            module.color ||
+            "linear-gradient(135deg, var(--primary), var(--secondary))"
+          }">
+            ${module.icon || "📚"}
+          </div>
+          <div class="module-detail-info">
+            <h1>${this.escapeHtml(module.title)}</h1>
+            <p>${this.escapeHtml(module.description)}</p>
+            <div class="module-detail-stats">
+              <div class="detail-stat">
+                <i class="fas fa-book"></i>
+                <span>${lessons.length} lessons</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-clock"></i>
+                <span>${module.estimated_hours || 0} hours</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-star"></i>
+                <span>${stats.total_xp || 0} XP available</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-chart-line"></i>
+                <span>${stats.progress_percentage || 0}% complete</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="lessons-grid">
+          ${lessons
+            .map((lesson) => this.renderLessonCard(lesson, module.slug))
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  renderLessonCard(lesson, moduleSlug) {
+    const completedClass = lesson.is_completed ? "completed" : "";
+    const xpText = lesson.is_completed
+      ? `${lesson.earned_xp} XP earned`
+      : `${lesson.xp_reward} XP available`;
+
+    return `
+      <div class="lesson-card ${completedClass}" onclick="learnManager.startLesson('${
+      lesson.slug
+    }', '${moduleSlug}')">
+        <div class="lesson-header">
+          <div>
+            <div class="lesson-title">${this.escapeHtml(lesson.title)}</div>
+            <div class="lesson-difficulty ${lesson.difficulty}">
+              ${
+                lesson.difficulty.charAt(0).toUpperCase() +
+                lesson.difficulty.slice(1)
+              }
+            </div>
+          </div>
+          <div class="lesson-duration">${lesson.duration_minutes || 0} min</div>
+        </div>
+        
+        <div class="lesson-description">
+          ${this.escapeHtml(lesson.description || "")}
+        </div>
+        
+        <div class="lesson-footer">
+          <div class="lesson-xp">${xpText}</div>
+          ${
+            lesson.is_completed
+              ? '<i class="fas fa-check-circle" style="color: #22c55e;"></i>'
+              : ""
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  async startLesson(lessonSlug, moduleSlug) {
+    try {
+      console.log(`🎯 Starting lesson: ${lessonSlug}`);
+
+      const response = await fetch(`/api/lessons/${lessonSlug}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load lesson");
+      }
+
+      // Store lesson data for the editor
+      localStorage.setItem(
+        "codequest_lesson",
+        JSON.stringify({
+          id: result.lesson.id,
+          slug: result.lesson.slug,
+          title: result.lesson.title,
+          description: result.lesson.description,
+          module_slug: moduleSlug,
+          starter_code: result.lesson.starter_code,
+          test_spec: result.lesson.test_spec_json,
+          xp_reward: result.lesson.xp_reward,
+        })
+      );
+
+      // Redirect to editor
+      window.location.href = "editor.html";
+    } catch (error) {
+      console.error("❌ Error starting lesson:", error);
+      this.showNotification(
+        "Failed to start lesson. Please try again.",
+        "error"
+      );
+    }
+  }
+
+  showModulesList() {
+    const modulesSection = document.getElementById("modulesSection");
+    if (!modulesSection) return;
+
+    modulesSection.innerHTML = `
+      <div class="container">
+        <div class="section-header">
+          <h2>Learning Modules</h2>
+          <p>Explore structured courses designed to build your skills progressively</p>
+        </div>
+
+        <div class="modules-filter" id="modulesFilter">
+          <button class="filter-btn active" data-filter="all">All Modules</button>
+          <button class="filter-btn" data-filter="beginner">Beginner</button>
+          <button class="filter-btn" data-filter="intermediate">Intermediate</button>
+          <button class="filter-btn" data-filter="advanced">Advanced</button>
+          <button class="filter-btn" data-filter="in-progress">In Progress</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn" data-filter="not-started">Not Started</button>
+        </div>
+
+        <div class="modules-grid" id="modulesGrid">
+          <!-- Modules will be rendered here -->
+        </div>
+      </div>
+    `;
+
+    this.setupFilterListeners();
+    this.renderModules();
+  }
+
+  setupEventListeners() {
+    // Search functionality
+    const searchInput = document.getElementById("moduleSearch");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        this.searchTerm = e.target.value.toLowerCase();
+        this.applyFilters();
+      });
+
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          this.searchModules();
+        }
+      });
+    }
+
+    // Filter buttons
+    this.setupFilterListeners();
+
+    // Auth state changes
+    if (window.AuthManager && window.AuthManager.onAuthStateChange) {
+      window.AuthManager.onAuthStateChange((user) => {
+        console.log(
+          "🔄 Auth state changed:",
+          user ? "Logged in" : "Logged out"
+        );
+
+        if (user && !this.isAuthenticated) {
+          // User just logged in
+          console.log("👤 User logged in, updating UI...");
+          this.isAuthenticated = true;
+          this.currentUser = user;
+          this.hideAuthPrompt();
+          // Reload the page to show authenticated content
+          window.location.reload();
+        } else if (!user && this.isAuthenticated) {
+          // User just logged out
+          console.log("👋 User logged out, showing auth prompt...");
+          this.isAuthenticated = false;
+          this.currentUser = null;
+          this.userProgress = null;
+          this.showAuthPrompt();
+        }
+      });
+    }
+
+    // Update activity on user interaction
+    document.addEventListener("click", () => {
+      if (window.AuthManager && this.isAuthenticated) {
+        window.AuthManager.updateLastActivity();
+      }
+    });
+
+    document.addEventListener("keypress", () => {
+      if (window.AuthManager && this.isAuthenticated) {
+        window.AuthManager.updateLastActivity();
+      }
+    });
+  }
+
+  setupFilterListeners() {
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        // Update active state
+        filterButtons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        // Apply filter
+        this.currentFilter = button.dataset.filter;
+        this.applyFilters();
+      });
+    });
+  }
+
+  applyFilters() {
+    let filtered = [...this.modules];
+
+    // Apply search filter
+    if (this.searchTerm) {
+      filtered = filtered.filter(
+        (module) =>
+          module.title.toLowerCase().includes(this.searchTerm) ||
+          module.description.toLowerCase().includes(this.searchTerm) ||
+          module.category.toLowerCase().includes(this.searchTerm)
+      );
+    }
+
+    // Apply category filter
+    if (this.currentFilter !== "all") {
+      filtered = filtered.filter((module) => {
+        switch (this.currentFilter) {
+          case "beginner":
+          case "intermediate":
+          case "advanced":
+            return module.difficulty === this.currentFilter;
+          case "in-progress":
+            return (
+              module.user_progress &&
+              module.user_progress.is_started &&
+              !module.user_progress.is_completed
+            );
+          case "completed":
+            return module.user_progress && module.user_progress.is_completed;
+          case "not-started":
+            return !module.user_progress || !module.user_progress.is_started;
+          default:
+            return true;
+        }
+      });
+    }
+
+    this.filteredModules = filtered;
+    this.renderModules();
+  }
+
+  searchModules() {
+    this.applyFilters();
+  }
+
+  clearFilters() {
+    this.currentFilter = "all";
+    this.searchTerm = "";
+
+    const searchInput = document.getElementById("moduleSearch");
+    if (searchInput) searchInput.value = "";
+
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach((btn) => btn.classList.remove("active"));
+
+    const allButton = document.querySelector('.filter-btn[data-filter="all"]');
+    if (allButton) allButton.classList.add("active");
+
+    this.applyFilters();
+  }
+
+  showModulesError(message) {
+    const modulesGrid = document.getElementById("modulesGrid");
+    if (!modulesGrid) return;
+
+    modulesGrid.innerHTML = `
+      <div class="error-message">
+        <div class="error-icon">⚠️</div>
+        <h3>Oops! Something went wrong</h3>
+        <p>${message}</p>
+        <button class="btn btn-primary" onclick="learnManager.loadModules()">
+          Try Again
+        </button>
+      </div>
+    `;
+  }
+
+  showError(message) {
+    this.showNotification(message, "error");
+  }
+
+  showNotification(message, type = "info") {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll(".notification");
+    existingNotifications.forEach((notification) => notification.remove());
+
+    const notification = document.createElement("div");
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+
+    // Add styles
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${
+        type === "error"
+          ? "#ef4444"
+          : type === "success"
+          ? "#22c55e"
+          : "#3b82f6"
+      };
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 10000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      max-width: 400px;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+      notification.style.transform = "translateX(0)";
+    }, 100);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.transform = "translateX(100%)";
+        setTimeout(() => notification.remove(), 300);
+      }
+    }, 5000);
+  }
+
+  escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async handlePathAction(pathId, status) {
+    try {
+      if (status === "not_started") {
+        // Try to enroll in path
+        await this.enrollInPath(pathId);
+      } else {
+        // Show notification for continuing users
+        this.showNotification("Navigating to learning path...", "info");
+        // You can implement path-specific navigation here
+      }
+    } catch (error) {
+      console.error("Error handling path action:", error);
+      this.showNotification("Action completed (offline mode)", "info");
+    }
+  }
+
+  async enrollInPath(pathId) {
+    try {
+      // Try different API URLs
+      const apiUrls = [
+        "/api/learning-paths/enroll",
+        "./api/learning-paths/enroll",
+        "api/learning-paths.php",
+      ];
+
+      let response = null;
+      let lastError = null;
+
+      for (const url of apiUrls) {
+        try {
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ path_id: pathId }),
+          });
+
+          if (response.ok) {
+            break;
+          } else {
+            lastError = new Error(
+              `HTTP ${response.status}: ${response.statusText}`
+            );
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw lastError || new Error("Failed to enroll in path");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        this.showNotification(
+          "Successfully enrolled in learning path!",
+          "success"
+        );
+        // Reload paths to show updated progress
+        await this.loadLearningPaths();
+      } else {
+        throw new Error(result.error || "Enrollment failed");
+      }
+    } catch (error) {
+      console.error("Error enrolling in path:", error);
+      // Show success message anyway for demo purposes
+      this.showNotification(
+        "Enrolled in learning path (offline mode)",
+        "success"
+      );
+
+      // Update the button to show enrolled state
+      const pathCard = document.querySelector(`[data-path-id="${pathId}"]`);
+      if (pathCard) {
+        const button = pathCard.querySelector(".btn");
+        if (button) {
+          button.textContent = "Continue Path";
+          button.className = "btn btn-primary";
+        }
+      }
+    }
+  }
+
+  async handlePathAction(pathId, status) {
+    try {
+      if (status === "not_started") {
+        // Enroll in path and show modules
+        await this.enrollInPath(pathId);
+      } else {
+        // Show path modules for continuing users
+        await this.showPathModules(pathId);
+      }
+    } catch (error) {
+      console.error("Error handling path action:", error);
+      this.showNotification("Failed to update learning path", "error");
+    }
+  }
+
+  async enrollInPath(pathId) {
+    try {
+      const response = await fetch("/api/learning-paths/enroll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ path_id: pathId }),
+      });
+
+      if (response.ok) {
+        this.showNotification(
+          "Successfully enrolled in learning path!",
+          "success"
+        );
+        // Show modules for this path
+        await this.showPathModules(pathId);
+      } else {
+        throw new Error("Failed to enroll in path");
+      }
+    } catch (error) {
+      console.error("Error enrolling in path:", error);
+      this.showNotification("Failed to enroll in learning path", "error");
+    }
+  }
+
+  async showPathModules(pathId) {
+    try {
+      console.log(`📖 Loading modules for path: ${pathId}`);
+
+      // Get path details and modules
+      const response = await fetch(`/api/learning-paths/${pathId}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to load path modules");
+      }
+
+      this.currentPath = result.path;
+      this.showPathDetailView(result.path);
+    } catch (error) {
+      console.error("❌ Error loading path modules:", error);
+      // Fallback to showing modules by category
+      this.showModulesByCategory(pathId);
+    }
+  }
+
+  showPathDetailView(path) {
+    const modulesSection = document.getElementById("modulesSection");
+    if (!modulesSection) return;
+
+    const pathModules =
+      path.modules || this.getModulesByPathCategory(path.slug);
+
+    modulesSection.innerHTML = `
+      <div class="container">
+        <button class="btn btn-secondary path-back-btn" onclick="learnManager.showPathsList()" style="margin-bottom: 2rem;">
+          <i class="fas fa-arrow-left"></i> Back to Learning Paths
+        </button>
+        
+        <div class="path-detail-header">
+          <div class="path-detail-icon" style="background: ${
+            path.color ||
+            "linear-gradient(135deg, var(--primary), var(--secondary))"
+          }">
+            <i class="${path.icon || "fas fa-code"}"></i>
+          </div>
+          <div class="path-detail-info">
+            <h1>${this.escapeHtml(path.title)}</h1>
+            <p>${this.escapeHtml(path.description)}</p>
+            <div class="path-detail-stats">
+              <div class="detail-stat">
+                <i class="fas fa-graduation-cap"></i>
+                <span>${pathModules.length} modules</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-clock"></i>
+                <span>${path.estimated_hours || 0} hours</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-chart-line"></i>
+                <span>${Math.round(
+                  path.progress_percentage || 0
+                )}% complete</span>
+              </div>
+              <div class="detail-stat">
+                <i class="fas fa-star"></i>
+                <span>${path.xp_earned || 0} XP earned</span>
+              </div>
+            </div>
+            ${
+              path.progress_percentage > 0
+                ? `
+              <div class="path-progress-detail">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${
+                    path.progress_percentage
+                  }%"></div>
+                </div>
+                <span>${Math.round(path.progress_percentage)}% complete (${
+                    path.completed_modules
+                  }/${path.total_modules} modules)</span>
+              </div>
+            `
+                : ""
+            }
+          </div>
+        </div>
+        
+        <div class="path-modules-grid">
+          ${pathModules
+            .map((module, index) =>
+              this.renderPathModuleCard(module, index + 1)
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
+
+    // Hide learning paths section
+    const pathsSection = document.querySelector(".learning-paths-section");
+    if (pathsSection) pathsSection.style.display = "none";
+  }
+
+  renderPathModuleCard(module, order) {
+    const progress = module.user_progress || {
+      progress_percentage: 0,
+      is_started: false,
+      is_completed: false,
+    };
+    const progressPercentage = progress.progress_percentage || 0;
+
+    let actionButton = "";
+    let statusClass = "";
+    let statusIcon = "";
+
+    if (progress.is_completed) {
+      actionButton = `<button class="module-btn completed" onclick="learnManager.viewModule('${module.slug}')">
+        <i class="fas fa-check-circle"></i> Review Module
+      </button>`;
+      statusClass = "completed";
+      statusIcon =
+        '<i class="fas fa-check-circle module-status-icon completed"></i>';
+    } else if (progress.is_started) {
+      actionButton = `<button class="module-btn primary" onclick="learnManager.viewModule('${module.slug}')">
+        <i class="fas fa-play"></i> Continue Learning
+      </button>`;
+      statusClass = "in-progress";
+      statusIcon =
+        '<i class="fas fa-play-circle module-status-icon in-progress"></i>';
+    } else {
+      actionButton = `<button class="module-btn primary" onclick="learnManager.viewModule('${module.slug}')">
+        <i class="fas fa-rocket"></i> Start Module
+      </button>`;
+      statusClass = "not-started";
+      statusIcon = '<i class="fas fa-lock module-status-icon locked"></i>';
+    }
+
+    return `
+      <div class="path-module-card ${statusClass}" data-module-id="${
+      module.id
+    }">
+        <div class="module-order">${order}</div>
+        ${statusIcon}
+        
+        <div class="module-header">
+          <div class="module-icon" style="background: ${
+            module.color ||
+            "linear-gradient(135deg, var(--primary), var(--secondary))"
+          }">
+            ${module.icon || "📚"}
+          </div>
+          <div class="module-info">
+            <h3>${this.escapeHtml(module.title)}</h3>
+            <div class="module-difficulty ${module.difficulty}">
+              ${
+                module.difficulty.charAt(0).toUpperCase() +
+                module.difficulty.slice(1)
+              }
+            </div>
+          </div>
+        </div>
+        
+        <div class="module-description">
+          ${this.escapeHtml(module.description)}
+        </div>
+        
+        <div class="module-stats">
+          <div class="module-stat">
+            <i class="fas fa-book"></i>
+            <span>${module.lesson_count || 0} lessons</span>
+          </div>
+          <div class="module-stat">
+            <i class="fas fa-clock"></i>
+            <span>${module.estimated_hours || 0}h</span>
+          </div>
+          <div class="module-stat">
+            <i class="fas fa-star"></i>
+            <span>${module.total_xp || 0} XP</span>
+          </div>
+        </div>
+        
+        ${
+          progressPercentage > 0
+            ? `
+          <div class="module-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+            </div>
+            <div class="progress-text">
+              <span>${progressPercentage}% complete</span>
+              <span>${progress.completed_lessons || 0}/${
+                module.lesson_count || 0
+              } lessons</span>
+            </div>
+          </div>
+        `
+            : ""
+        }
+        
+        <div class="module-actions">
+          ${actionButton}
+        </div>
+      </div>
+    `;
+  }
+
+  getModulesByPathCategory(pathSlug) {
+    // Fallback method to get modules by category when API fails
+    let categoryFilter = [];
+
+    switch (pathSlug) {
+      case "frontend-development":
+        categoryFilter = ["html", "css", "javascript"];
+        break;
+      case "backend-development":
+        categoryFilter = ["javascript", "projects"];
+        break;
+      case "fullstack-mastery":
+        categoryFilter = ["html", "css", "javascript", "projects"];
+        break;
+      default:
+        categoryFilter = ["html"];
+    }
+
+    return this.modules
+      .filter((module) => categoryFilter.includes(module.category))
+      .slice(0, 8); // Limit to 8 modules for demo
+  }
+
+  showModulesByCategory(pathId) {
+    // Fallback implementation using existing modules
+    const pathModules = this.getModulesByPathCategory(pathId);
+
+    const pathInfo = {
+      id: pathId,
+      title: this.getPathTitle(pathId),
+      description: this.getPathDescription(pathId),
+      icon: this.getPathIcon(pathId),
+      estimated_hours: pathModules.reduce(
+        (sum, m) => sum + (m.estimated_hours || 1),
+        0
+      ),
+      progress_percentage: this.calculatePathProgressFromModules(pathModules),
+      modules: pathModules,
+    };
+
+    this.showPathDetailView(pathInfo);
+  }
+
+  getPathTitle(pathId) {
+    const titles = {
+      "frontend-development": "Frontend Development",
+      "backend-development": "Backend Development",
+      "fullstack-mastery": "Full Stack Mastery",
+    };
+    return titles[pathId] || "Learning Path";
+  }
+
+  getPathDescription(pathId) {
+    const descriptions = {
+      "frontend-development":
+        "Master HTML, CSS, JavaScript and modern frameworks to build beautiful, interactive websites.",
+      "backend-development":
+        "Learn server-side programming, databases, APIs and authentication to power your applications.",
+      "fullstack-mastery":
+        "Combine frontend and backend skills to build complete, production-ready web applications.",
+    };
+    return (
+      descriptions[pathId] ||
+      "Complete this learning path to master new skills."
+    );
+  }
+
+  getPathIcon(pathId) {
+    const icons = {
+      "frontend-development": "fas fa-paint-brush",
+      "backend-development": "fas fa-server",
+      "fullstack-mastery": "fas fa-code",
+    };
+    return icons[pathId] || "fas fa-graduation-cap";
+  }
+
+  calculatePathProgressFromModules(modules) {
+    if (!modules.length) return 0;
+
+    const completedModules = modules.filter(
+      (m) => m.user_progress && m.user_progress.is_completed
+    ).length;
+
+    return Math.round((completedModules / modules.length) * 100);
+  }
+
+  showPathsList() {
+    // Show learning paths section again
+    const pathsSection = document.querySelector(".learning-paths-section");
+    if (pathsSection) pathsSection.style.display = "block";
+
+    // Reset modules section to show all modules
+    this.showModulesList();
+  }
+
+  async updateModuleProgress(moduleId, lessonId) {
+    try {
+      // Update lesson completion
+      const response = await fetch("/api/lessons/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lesson_id: lessonId,
+          module_id: moduleId,
+        }),
+      });
+
+      if (response.ok) {
+        // Update path progress
+        if (this.currentPath) {
+          await this.updatePathProgress(this.currentPath.id);
+        }
+
+        // Refresh the current view
+        if (this.currentPath) {
+          await this.showPathModules(this.currentPath.id);
+        }
+
+        this.showNotification("Progress updated!", "success");
+      }
+    } catch (error) {
+      console.error("Error updating progress:", error);
+    }
+  }
+
+  async updatePathProgress(pathId) {
+    try {
+      const response = await fetch("/api/learning-paths/progress", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ path_id: pathId }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Path progress updated:", result.progress);
+      }
+    } catch (error) {
+      console.error("Error updating path progress:", error);
+    }
   }
 }
 
+// Global instance
+let learnManager;
+
+// Initialize when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  // Wait a bit for AuthManager to initialize
+  setTimeout(() => {
+    learnManager = new LearnManager();
+    window.learnManager = learnManager;
+  }, 100);
+});
+
 // Global functions for onclick handlers
+window.learnManager = null;
+
+// Enhanced Modal Functions for Learn Page
+function showLogin() {
+  const modal = document.getElementById("loginModal");
+  if (modal) {
+    document.body.classList.add("modal-open");
+    modal.classList.add("show");
+    modal.style.display = "block";
+
+    // Focus on first input
+    setTimeout(() => {
+      const firstInput = modal.querySelector("input");
+      if (firstInput) firstInput.focus();
+    }, 100);
+
+    // Setup form handler
+    setupLoginForm();
+  }
+}
+
+function showSignup() {
+  const modal = document.getElementById("signupModal");
+  if (modal) {
+    document.body.classList.add("modal-open");
+    modal.classList.add("show");
+    modal.style.display = "block";
+
+    // Focus on first input
+    setTimeout(() => {
+      const firstInput = modal.querySelector("input");
+      if (firstInput) firstInput.focus();
+    }, 100);
+
+    // Setup form handler
+    setupSignupForm();
+  }
+}
+
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
-    modal.style.display = "none";
+    modal.classList.add("hide");
+    document.body.classList.remove("modal-open");
+    setTimeout(() => {
+      modal.style.display = "none";
+      modal.classList.remove("show", "hide");
+      clearFormErrors(modal);
+    }, 300);
   }
 }
 
 function switchToSignup() {
   closeModal("loginModal");
-  document.getElementById("signupModal").style.display = "block";
+  setTimeout(() => showSignup(), 350);
 }
 
 function switchToLogin() {
   closeModal("signupModal");
-  document.getElementById("loginModal").style.display = "block";
+  setTimeout(() => showLogin(), 350);
 }
 
-function showLogin() {
-  document.getElementById("loginModal").style.display = "block";
+function setupLoginForm() {
+  const form = document.getElementById("loginForm");
+  if (!form) return;
+
+  // Remove existing listeners
+  const newForm = form.cloneNode(true);
+  form.parentNode.replaceChild(newForm, form);
+
+  newForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const submitBtn = newForm.querySelector('button[type="submit"]');
+
+    if (!email || !password) {
+      showFormError(newForm, "Please fill in all fields");
+      return;
+    }
+
+    try {
+      // Show loading state
+      setButtonLoading(submitBtn, true);
+      clearFormErrors(newForm);
+
+      // Attempt login
+      const result = await window.AuthManager.login(email, password);
+
+      if (result.success) {
+        showFormSuccess(newForm, "Login successful! Loading content...");
+        closeModal("loginModal");
+
+        // Update learn manager state
+        if (window.learnManager) {
+          window.learnManager.isAuthenticated = true;
+          window.learnManager.currentUser = result.user;
+          window.learnManager.hideAuthPrompt();
+          await window.learnManager.init();
+        } else {
+          // Fallback: refresh page
+          window.location.reload();
+        }
+      } else {
+        showFormError(
+          newForm,
+          result.error || "Login failed. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      showFormError(
+        newForm,
+        "Login failed. Please check your credentials and try again."
+      );
+    } finally {
+      setButtonLoading(submitBtn, false);
+    }
+  });
 }
 
-function showSignup() {
-  document.getElementById("signupModal").style.display = "block";
+function setupSignupForm() {
+  const form = document.getElementById("signupForm");
+  if (!form) return;
+
+  // Remove existing listeners
+  const newForm = form.cloneNode(true);
+  form.parentNode.replaceChild(newForm, form);
+
+  newForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+    const submitBtn = newForm.querySelector('button[type="submit"]');
+
+    if (!name || !email || !password) {
+      showFormError(newForm, "Please fill in all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      showFormError(newForm, "Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      // Show loading state
+      setButtonLoading(submitBtn, true);
+      clearFormErrors(newForm);
+
+      // Attempt signup
+      const result = await window.AuthManager.register(name, email, password);
+
+      if (result.success) {
+        showFormSuccess(
+          newForm,
+          "Account created successfully! Loading content..."
+        );
+        closeModal("signupModal");
+
+        // Update learn manager state
+        if (window.learnManager) {
+          window.learnManager.isAuthenticated = true;
+          window.learnManager.currentUser = result.user;
+          window.learnManager.hideAuthPrompt();
+          await window.learnManager.init();
+        } else {
+          // Fallback: refresh page
+          window.location.reload();
+        }
+      } else {
+        showFormError(
+          newForm,
+          result.error || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      showFormError(newForm, "Registration failed. Please try again.");
+    } finally {
+      setButtonLoading(submitBtn, false);
+    }
+  });
 }
 
-// Initialize the learn page when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  window.learnPage = new LearnPage();
+function showFormError(form, message) {
+  clearFormErrors(form);
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "form-error";
+  errorDiv.textContent = message;
+  form.insertBefore(errorDiv, form.firstChild);
+}
+
+function showFormSuccess(form, message) {
+  clearFormErrors(form);
+  const successDiv = document.createElement("div");
+  successDiv.className = "form-success";
+  successDiv.textContent = message;
+  form.insertBefore(successDiv, form.firstChild);
+}
+
+function clearFormErrors(form) {
+  const errors = form.querySelectorAll(".form-error, .form-success");
+  errors.forEach((error) => error.remove());
+}
+
+function setButtonLoading(button, loading) {
+  if (loading) {
+    button.classList.add("loading");
+    button.disabled = true;
+  } else {
+    button.classList.remove("loading");
+    button.disabled = false;
+  }
+}
+
+function googleLogin() {
+  learnManager.showNotification(
+    "Google login integration coming soon!",
+    "info"
+  );
+}
+
+function googleSignup() {
+  learnManager.showNotification(
+    "Google signup integration coming soon!",
+    "info"
+  );
+}
+
+// Close modal when clicking outside
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("modal")) {
+    const modalId = e.target.id;
+    closeModal(modalId);
+  }
 });
+
+// Close modal with Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const openModals = document.querySelectorAll(".modal.show");
+    openModals.forEach((modal) => closeModal(modal.id));
+  }
+});
+
+// Make functions globally available
+window.showLogin = showLogin;
+window.showSignup = showSignup;
+window.closeModal = closeModal;
+window.switchToSignup = switchToSignup;
+window.switchToLogin = switchToLogin;
+window.googleLogin = googleLogin;
+window.googleSignup = googleSignup;

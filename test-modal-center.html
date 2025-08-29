@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal Centering Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .test-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .test-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .test-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .status {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        z-index: 20000;
+      }
+
+      .test-info {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Override any conflicting styles */
+      .modal {
+        display: none !important;
+      }
+
+      .modal.show {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status" id="status">Ready to test</div>
+
+    <div class="test-container">
+      <h1><i class="fas fa-crosshairs"></i> Modal Centering Test</h1>
+
+      <div class="test-info">
+        <h3>Testing Perfect Modal Centering</h3>
+        <p>
+          This test verifies that modals appear exactly in the center of the
+          screen on all devices.
+        </p>
+        <ul style="text-align: left; max-width: 500px; margin: 0 auto">
+          <li>✅ Vertical and horizontal centering</li>
+          <li>✅ Responsive on all screen sizes</li>
+          <li>✅ Scrollable content when needed</li>
+          <li>✅ No double scrolling issues</li>
+        </ul>
+      </div>
+
+      <div>
+        <button class="test-btn" onclick="testShortModal()">
+          <i class="fas fa-window-restore"></i> Test Short Modal
+        </button>
+        <button class="test-btn" onclick="testLongModal()">
+          <i class="fas fa-scroll"></i> Test Long Modal
+        </button>
+        <button class="test-btn" onclick="testFormModal()">
+          <i class="fas fa-edit"></i> Test Form Modal
+        </button>
+      </div>
+
+      <div class="test-info">
+        <h3>What to Check:</h3>
+        <p>
+          Each modal should appear perfectly centered both horizontally and
+          vertically.
+        </p>
+        <p>
+          Try resizing your browser window and testing on different devices.
+        </p>
+      </div>
+    </div>
+
+    <!-- Test Modals -->
+    <div id="shortModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('shortModal')">
+          &times;
+        </button>
+        <h2>✅ Perfect Centering</h2>
+        <p>This modal should be perfectly centered on your screen.</p>
+        <div style="padding: 2rem; text-align: center">
+          <p>Check that it's centered both horizontally and vertically.</p>
+          <button class="test-btn" onclick="closeModal('shortModal')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="longModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('longModal')">&times;</button>
+        <h2>📜 Scrollable Content Test</h2>
+        <p>This modal has long content to test scrolling behavior.</p>
+
+        <div style="padding: 2rem">
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Section 1</h3>
+            <p>
+              The modal should remain centered while you scroll through this
+              content. There should be no double scrolling - only the modal
+              content should scroll, not the background.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Section 2</h3>
+            <p>
+              This is more content to test the scrolling behavior. The modal
+              should maintain its centered position.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Section 3</h3>
+            <p>
+              Even more content here. The scrolling should be smooth and the
+              modal should stay properly positioned.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Section 4</h3>
+            <p>
+              Additional content to ensure we have enough to scroll. The modal
+              centering should remain perfect.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Section 5</h3>
+            <p>
+              More test content for scrolling. Check that the modal doesn't jump
+              or move unexpectedly.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 2rem;
+              padding: 1rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 0.5rem;
+            "
+          >
+            <h3>Final Section</h3>
+            <p>
+              This is the last section. The close button should always be
+              accessible.
+            </p>
+            <button class="test-btn" onclick="closeModal('longModal')">
+              Close Long Modal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="formModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('formModal')">&times;</button>
+        <h2>📝 Form Modal Test</h2>
+        <p>Test form modal with proper centering</p>
+
+        <form style="padding: 2rem" onsubmit="return false;">
+          <div style="margin-bottom: 1rem">
+            <label
+              style="display: block; margin-bottom: 0.5rem; color: var(--light)"
+              >Name</label
+            >
+            <input
+              type="text"
+              style="
+                width: 100%;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light);
+              "
+            />
+          </div>
+
+          <div style="margin-bottom: 1rem">
+            <label
+              style="display: block; margin-bottom: 0.5rem; color: var(--light)"
+              >Email</label
+            >
+            <input
+              type="email"
+              style="
+                width: 100%;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light);
+              "
+            />
+          </div>
+
+          <div style="margin-bottom: 1rem">
+            <label
+              style="display: block; margin-bottom: 0.5rem; color: var(--light)"
+              >Message</label
+            >
+            <textarea
+              style="
+                width: 100%;
+                height: 100px;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light);
+                resize: vertical;
+              "
+            ></textarea>
+          </div>
+
+          <div style="text-align: center">
+            <button
+              type="button"
+              class="test-btn"
+              onclick="closeModal('formModal')"
+            >
+              Close Form
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function updateStatus(message) {
+        document.getElementById("status").textContent = message;
+      }
+
+      function testShortModal() {
+        updateStatus("Testing short modal centering...");
+        showModal("shortModal");
+      }
+
+      function testLongModal() {
+        updateStatus("Testing long modal with scrolling...");
+        showModal("longModal");
+      }
+
+      function testFormModal() {
+        updateStatus("Testing form modal centering...");
+        showModal("formModal");
+      }
+
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add("show");
+          modal.style.display = "flex";
+
+          // Focus first input if it exists
+          setTimeout(() => {
+            const firstInput = modal.querySelector("input, textarea");
+            if (firstInput) firstInput.focus();
+          }, 100);
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add("hide");
+          setTimeout(() => {
+            modal.style.display = "none";
+            modal.classList.remove("show", "hide");
+            updateStatus("Modal closed - Ready to test");
+          }, 300);
+        }
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("modal")) {
+          const modalId = e.target.id;
+          closeModal(modalId);
+        }
+      });
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const openModals = document.querySelectorAll(".modal.show");
+          openModals.forEach((modal) => closeModal(modal.id));
+        }
+      });
+
+      // Test on window resize
+      window.addEventListener("resize", () => {
+        updateStatus(`Screen: ${window.innerWidth}x${window.innerHeight}`);
+      });
+
+      // Initial status
+      updateStatus(
+        `Ready - Screen: ${window.innerWidth}x${window.innerHeight}`
+      );
+    </script>
+  </body>
+</html>

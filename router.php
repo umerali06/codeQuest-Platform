@@ -1,84 +1,48 @@
 <?php
 /**
- * Router for CodeQuest Platform
- * This script handles both public files and API routes
+ * Router for PHP built-in development server
  */
 
-// Get the request URI
 $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
 
-// Remove leading slash
-$path = ltrim($path, '/');
+// Handle API requests
+if (strpos($path, '/api/') === 0) {
+    // Set the PATH_INFO for the API
+    $_SERVER['PATH_INFO'] = substr($path, 4); // Remove '/api' prefix
+    require_once __DIR__ . '/api/index.php';
+    return true;
+}
 
-// Check if it's an API request
-if (strpos($path, 'api/') === 0) {
-    // API request - route to api/index.php
-    $apiPath = __DIR__ . '/api/index.php';
-    if (file_exists($apiPath)) {
-        // Set the path info for the API
-        $_SERVER['PATH_INFO'] = '/' . substr($path, 4); // Remove 'api' prefix
-        
-        // Change to the project root directory to ensure proper file paths
-        chdir(__DIR__);
-        
-        // Include the API file
-        include $apiPath;
-        exit;
+// Handle static files in public directory
+$publicFile = __DIR__ . '/public' . $path;
+if (file_exists($publicFile) && is_file($publicFile)) {
+    return false; // Let PHP serve the file
+}
+
+// Handle root request
+if ($path === '/') {
+    require_once __DIR__ . '/public/index.html';
+    return true;
+}
+
+// Try to serve from public directory
+$publicPath = __DIR__ . '/public' . $path;
+if (file_exists($publicPath)) {
+    if (is_dir($publicPath)) {
+        // Try index.html in directory
+        $indexFile = $publicPath . '/index.html';
+        if (file_exists($indexFile)) {
+            require_once $indexFile;
+            return true;
+        }
     } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'API not found']);
-        exit;
+        return false; // Let PHP serve the file
     }
 }
 
-// Public file request - check if file exists in public directory
-$publicPath = __DIR__ . '/public/' . $path;
-
-if (file_exists($publicPath) && is_file($publicPath)) {
-    // Serve the file directly
-    $extension = pathinfo($publicPath, PATHINFO_EXTENSION);
-    
-    // Set appropriate content type
-    switch ($extension) {
-        case 'html':
-            header('Content-Type: text/html');
-            break;
-        case 'css':
-            header('Content-Type: text/css');
-            break;
-        case 'js':
-            header('Content-Type: application/javascript');
-            break;
-        case 'png':
-            header('Content-Type: image/png');
-            break;
-        case 'jpg':
-        case 'jpeg':
-            header('Content-Type: image/jpeg');
-            break;
-        case 'svg':
-            header('Content-Type: image/svg+xml');
-            break;
-        case 'ico':
-            header('Content-Type: image/x-icon');
-            break;
-        default:
-            header('Content-Type: text/plain');
-    }
-    
-    readfile($publicPath);
-    exit;
-}
-
-// If no file found, serve index.html for SPA routing
-if (file_exists(__DIR__ . '/public/index.html')) {
-    header('Content-Type: text/html');
-    readfile(__DIR__ . '/public/index.html');
-    exit;
-}
-
-// 404 - File not found
+// Default to 404
 http_response_code(404);
-echo "File not found: $path";
+echo "404 Not Found";
+return true;
 ?>

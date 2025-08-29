@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Learning Paths Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .test-header {
+        background: rgba(99, 102, 241, 0.1);
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .api-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-left: 1rem;
+      }
+      .api-online {
+        background: #22c55e;
+        color: white;
+      }
+      .api-offline {
+        background: #ef4444;
+        color: white;
+      }
+      .api-testing {
+        background: #f59e0b;
+        color: white;
+      }
+      .test-controls {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .test-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        margin: 0.25rem;
+        font-size: 0.9rem;
+      }
+      .test-btn:hover {
+        background: var(--primary-dark);
+      }
+      .debug-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+        max-width: 300px;
+        z-index: 10000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-header">
+      <h1>Learning Paths Complete Test</h1>
+      <p>
+        Testing responsive design, API integration, and fallback functionality
+      </p>
+      <span id="apiStatus" class="api-status api-testing">Testing API...</span>
+    </div>
+
+    <div class="test-controls">
+      <button class="test-btn" onclick="testAPI()">Test API Connection</button>
+      <button class="test-btn" onclick="forceOfflineMode()">
+        Force Offline Mode
+      </button>
+      <button class="test-btn" onclick="reloadPaths()">Reload Paths</button>
+      <button class="test-btn" onclick="simulateEnrollment()">
+        Simulate Enrollment
+      </button>
+    </div>
+
+    <!-- Main Learn Page Content -->
+    <main class="learn-main">
+      <!-- Progress Overview -->
+      <section class="progress-overview">
+        <div class="container">
+          <div class="progress-cards">
+            <div class="progress-card">
+              <div class="progress-icon">
+                <i class="fas fa-book-open"></i>
+              </div>
+              <div class="progress-info">
+                <h3>3</h3>
+                <p>Modules Completed</p>
+              </div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div class="progress-info">
+                <h3>1,250</h3>
+                <p>XP Earned</p>
+              </div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="progress-info">
+                <h3>5</h3>
+                <p>Day Streak</p>
+              </div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-icon">
+                <i class="fas fa-medal"></i>
+              </div>
+              <div class="progress-info">
+                <h3>2</h3>
+                <p>Achievements</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learning Paths -->
+      <section class="learning-paths-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Learning Paths</h2>
+            <p>Structured roadmaps to guide your learning journey</p>
+          </div>
+          <div class="paths-container" id="pathsContainer">
+            <!-- Loading state -->
+            <div
+              class="loading-state"
+              style="grid-column: 1 / -1; text-align: center; padding: 2rem"
+            >
+              <div
+                class="loading-spinner"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  border: 3px solid rgba(255, 255, 255, 0.1);
+                  border-top: 3px solid var(--primary);
+                  border-radius: 50%;
+                  animation: spin 1s linear infinite;
+                  margin: 0 auto 1rem;
+                "
+              ></div>
+              <p>Loading learning paths...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="debug-info" id="debugInfo">
+      <strong>Debug Info:</strong><br />
+      <span id="debugContent">Initializing...</span>
+    </div>
+
+    <!-- Mock AuthManager for testing -->
+    <script>
+      // Mock AuthManager for testing
+      window.AuthManager = {
+        isLoggedIn: () => true,
+        getCurrentUser: () => ({
+          name: "Test User",
+          email: "test@example.com",
+        }),
+        onAuthStateChange: (callback) => {},
+        updateLastActivity: () => {},
+      };
+
+      // Mock LearnManager
+      class TestLearnManager {
+        constructor() {
+          this.learningPaths = [];
+          this.isAuthenticated = true;
+          this.currentUser = { name: "Test User" };
+          this.userProgress = {
+            statistics: {
+              html: { progress: 75 },
+              css: { progress: 60 },
+              javascript: { progress: 45 },
+            },
+          };
+          this.apiMode = "testing";
+          this.init();
+        }
+
+        async init() {
+          console.log("🚀 Initializing Test Learn Manager...");
+          await this.loadLearningPaths();
+        }
+
+        async loadLearningPaths() {
+          try {
+            this.updateDebug("Testing API connection...");
+
+            const response = await fetch("/api/learning-paths");
+
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success) {
+                this.learningPaths = result.paths || [];
+                this.apiMode = "online";
+                this.updateApiStatus(
+                  "online",
+                  `API Online - ${this.learningPaths.length} paths loaded`
+                );
+                this.updateDebug(
+                  `API Success: Loaded ${this.learningPaths.length} paths`
+                );
+              } else {
+                throw new Error(result.error);
+              }
+            } else {
+              throw new Error(`HTTP ${response.status}`);
+            }
+          } catch (error) {
+            console.log("API failed, using fallback data:", error.message);
+            this.apiMode = "offline";
+            this.updateApiStatus(
+              "offline",
+              "API Offline - Using fallback data"
+            );
+            this.updateDebug(`API Failed: ${error.message}. Using fallback.`);
+            this.loadFallbackPaths();
+          }
+
+          this.renderLearningPaths();
+        }
+
+        loadFallbackPaths() {
+          this.learningPaths = [
+            {
+              id: "frontend-development",
+              slug: "frontend-development",
+              title: "Frontend Development",
+              description:
+                "Master HTML, CSS, JavaScript and modern frameworks to build beautiful, interactive websites.",
+              icon: "fas fa-paint-brush",
+              estimated_hours: 120,
+              total_modules: 8,
+              user_progress: this.calculateFrontendProgress(),
+              status:
+                this.calculateFrontendProgress() > 0
+                  ? "in_progress"
+                  : "not_started",
+            },
+            {
+              id: "backend-development",
+              slug: "backend-development",
+              title: "Backend Development",
+              description:
+                "Learn server-side programming, databases, APIs and authentication to power your applications.",
+              icon: "fas fa-server",
+              estimated_hours: 90,
+              total_modules: 6,
+              user_progress: this.calculateBackendProgress(),
+              status:
+                this.calculateBackendProgress() > 0
+                  ? "in_progress"
+                  : "not_started",
+            },
+            {
+              id: "fullstack-mastery",
+              slug: "fullstack-mastery",
+              title: "Full Stack Mastery",
+              description:
+                "Combine frontend and backend skills to build complete, production-ready web applications.",
+              icon: "fas fa-code",
+              estimated_hours: 200,
+              total_modules: 12,
+              user_progress: 0,
+              status: "not_started",
+            },
+          ];
+        }
+
+        calculateFrontendProgress() {
+          const htmlProgress = this.userProgress.statistics.html?.progress || 0;
+          const cssProgress = this.userProgress.statistics.css?.progress || 0;
+          const jsProgress =
+            this.userProgress.statistics.javascript?.progress || 0;
+          return Math.round((htmlProgress + cssProgress + jsProgress) / 3);
+        }
+
+        calculateBackendProgress() {
+          return Math.round(
+            this.userProgress.statistics.javascript?.progress || 0
+          );
+        }
+
+        renderLearningPaths() {
+          const pathsContainer = document.getElementById("pathsContainer");
+          if (!pathsContainer) return;
+
+          pathsContainer.innerHTML = this.learningPaths
+            .map((path) => this.renderLearningPathCard(path))
+            .join("");
+        }
+
+        renderLearningPathCard(path) {
+          const progressPercentage = path.user_progress || 0;
+          const status = path.status || "not_started";
+
+          let buttonText = "Start Path";
+          let buttonClass = "btn-secondary";
+
+          if (status === "completed") {
+            buttonText = "Review Path";
+            buttonClass = "btn-success";
+          } else if (status === "in_progress") {
+            buttonText = "Continue Path";
+            buttonClass = "btn-primary";
+          }
+
+          return `
+                    <div class="path-card ${path.slug}" data-path-id="${
+            path.id
+          }">
+                        <div class="path-header">
+                            <div class="path-icon">
+                                <i class="${path.icon}"></i>
+                            </div>
+                            <h3>${path.title}</h3>
+                        </div>
+                        <p>${path.description}</p>
+                        <div class="path-stats">
+                            <span><i class="fas fa-clock"></i> ${
+                              path.estimated_hours
+                            } hours</span>
+                            <span><i class="fas fa-graduation-cap"></i> ${
+                              path.total_modules
+                            } modules</span>
+                        </div>
+                        ${
+                          progressPercentage > 0
+                            ? `
+                            <div class="path-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                                </div>
+                                <span>${progressPercentage}% complete</span>
+                            </div>
+                        `
+                            : ""
+                        }
+                        <button class="btn ${buttonClass}" onclick="testLearnManager.handlePathAction('${
+            path.id
+          }', '${status}')">
+                            ${buttonText}
+                        </button>
+                    </div>
+                `;
+        }
+
+        async handlePathAction(pathId, status) {
+          if (status === "not_started") {
+            await this.enrollInPath(pathId);
+          } else {
+            this.showNotification("Navigating to learning path...", "info");
+          }
+        }
+
+        async enrollInPath(pathId) {
+          try {
+            this.updateDebug(`Enrolling in path: ${pathId}`);
+
+            if (this.apiMode === "online") {
+              const response = await fetch("/api/learning-paths/enroll", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ path_id: pathId }),
+              });
+
+              if (response.ok) {
+                this.showNotification(
+                  "Successfully enrolled in learning path!",
+                  "success"
+                );
+                await this.loadLearningPaths();
+                return;
+              }
+            }
+
+            // Fallback enrollment
+            this.showNotification(
+              "Enrolled in learning path (offline mode)",
+              "success"
+            );
+            this.updatePathStatus(pathId, "in_progress", 25);
+          } catch (error) {
+            console.error("Enrollment error:", error);
+            this.showNotification(
+              "Enrolled in learning path (offline mode)",
+              "success"
+            );
+            this.updatePathStatus(pathId, "in_progress", 25);
+          }
+        }
+
+        updatePathStatus(pathId, status, progress = 0) {
+          const pathCard = document.querySelector(`[data-path-id="${pathId}"]`);
+          if (!pathCard) return;
+
+          const button = pathCard.querySelector(".btn");
+          if (button) {
+            if (status === "in_progress") {
+              button.textContent = "Continue Path";
+              button.className = "btn btn-primary";
+
+              // Add progress bar if not exists
+              if (!pathCard.querySelector(".path-progress") && progress > 0) {
+                const progressHtml = `
+                                <div class="path-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${progress}%"></div>
+                                    </div>
+                                    <span>${progress}% complete</span>
+                                </div>
+                            `;
+                button.insertAdjacentHTML("beforebegin", progressHtml);
+              }
+            }
+          }
+        }
+
+        showNotification(message, type = "info") {
+          const notification = document.createElement("div");
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${
+                      type === "error"
+                        ? "#ef4444"
+                        : type === "success"
+                        ? "#22c55e"
+                        : "#3b82f6"
+                    };
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+          notification.textContent = message;
+          document.body.appendChild(notification);
+
+          setTimeout(() => notification.remove(), 3000);
+        }
+
+        updateApiStatus(status, message) {
+          const statusEl = document.getElementById("apiStatus");
+          statusEl.className = `api-status api-${status}`;
+          statusEl.textContent = message;
+        }
+
+        updateDebug(message) {
+          document.getElementById("debugContent").innerHTML = `
+                    Mode: ${this.apiMode}<br>
+                    Paths: ${this.learningPaths.length}<br>
+                    Status: ${message}
+                `;
+        }
+      }
+
+      // Global test functions
+      async function testAPI() {
+        testLearnManager.updateDebug("Manual API test...");
+        await testLearnManager.loadLearningPaths();
+      }
+
+      function forceOfflineMode() {
+        testLearnManager.apiMode = "offline";
+        testLearnManager.updateApiStatus("offline", "Forced Offline Mode");
+        testLearnManager.loadFallbackPaths();
+        testLearnManager.renderLearningPaths();
+        testLearnManager.updateDebug("Forced offline mode activated");
+      }
+
+      function reloadPaths() {
+        testLearnManager.loadLearningPaths();
+      }
+
+      function simulateEnrollment() {
+        const firstPath = testLearnManager.learningPaths[0];
+        if (firstPath) {
+          testLearnManager.handlePathAction(firstPath.id, "not_started");
+        }
+      }
+
+      // Initialize
+      let testLearnManager;
+      document.addEventListener("DOMContentLoaded", () => {
+        testLearnManager = new TestLearnManager();
+        window.testLearnManager = testLearnManager;
+      });
+
+      // Add CSS animations
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

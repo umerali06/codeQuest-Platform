@@ -56,49 +56,42 @@ function initializeAuth() {
 // Setup Authentication State Listener
 function setupAuthStateListener() {
   // Listen for auth state changes from AuthManager
-  if (window.AuthManager) {
-    // Override the updateAuthUI method to also update our local state
-    const originalUpdateAuthUI = window.AuthManager.updateAuthUI;
-    window.AuthManager.updateAuthUI = function () {
-      // Call original method
-      originalUpdateAuthUI.call(this);
-
+  if (window.AuthManager && window.AuthManager.onAuthStateChange) {
+    window.AuthManager.onAuthStateChange((user) => {
       // Sync our local state
-      currentUser = this.currentUser;
-      if (this.currentUser) {
-        localStorage.setItem(
-          "codequest_user",
-          JSON.stringify(this.currentUser)
-        );
+      currentUser = user;
+      if (user) {
+        localStorage.setItem("codequest_user", JSON.stringify(user));
       } else {
         localStorage.removeItem("codequest_user");
       }
-    };
+
+      // Update local UI
+      updateLocalAuthUI();
+    });
   }
 }
 
 // Update Authentication UI
 function updateAuthUI() {
-  // Use AuthManager if available, otherwise fall back to basic logic
-  if (
-    typeof window.AuthManager !== "undefined" &&
-    window.AuthManager.updateAuthUI
-  ) {
-    window.AuthManager.updateAuthUI();
-  } else {
-    // Fallback UI update logic
-    const authButtons = document.getElementById("authButtons");
-    const userMenu = document.getElementById("userMenu");
-    const userGreeting = document.getElementById("userGreeting");
+  updateLocalAuthUI();
+}
 
-    if (currentUser && authButtons && userMenu && userGreeting) {
-      authButtons.style.display = "none";
-      userMenu.style.display = "inline-flex";
-      userGreeting.textContent = `Welcome, ${currentUser.username}!`;
-    } else if (authButtons && userMenu) {
-      authButtons.style.display = "inline-flex";
-      userMenu.style.display = "none";
-    }
+// Update local auth UI without calling AuthManager to prevent recursion
+function updateLocalAuthUI() {
+  const authButtons = document.getElementById("authButtons");
+  const userMenu = document.getElementById("userMenu");
+  const userGreeting = document.getElementById("userGreeting");
+
+  if (currentUser && authButtons && userMenu && userGreeting) {
+    authButtons.style.display = "none";
+    userMenu.style.display = "inline-flex";
+    userGreeting.textContent = `Welcome, ${
+      currentUser.username || currentUser.name || "User"
+    }!`;
+  } else if (authButtons && userMenu) {
+    authButtons.style.display = "inline-flex";
+    userMenu.style.display = "none";
   }
 }
 

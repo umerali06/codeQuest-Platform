@@ -3,6 +3,113 @@
  * Enhanced Lessons API endpoints
  */
 
+// Include utility functions if not already loaded
+if (!function_exists('sendResponse')) {
+    function sendResponse($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        echo json_encode($data);
+        exit();
+    }
+}
+
+if (!function_exists('getRequestBody')) {
+    function getRequestBody() {
+        return json_decode(file_get_contents('php://input'), true) ?? [];
+    }
+}
+
+if (!function_exists('validateRequired')) {
+    function validateRequired($data, $fields) {
+        $missing = [];
+        foreach ($fields as $field) {
+            if (!isset($data[$field]) || empty($data[$field])) {
+                $missing[] = $field;
+            }
+        }
+        
+        if (!empty($missing)) {
+            sendResponse([
+                'error' => 'Missing required fields',
+                'fields' => $missing
+            ], 400);
+        }
+    }
+}
+
+if (!function_exists('generateUuid')) {
+    function generateUuid() {
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+        );
+    }
+}
+
+if (!function_exists('getUserIdFromSession')) {
+    function getUserIdFromSession() {
+        // For development, return the actual test user ID from database
+        // In production, this would validate JWT tokens or session data
+        
+        // Method 1: Check session
+        if (isset($_SESSION['user_id'])) {
+            return $_SESSION['user_id'];
+        }
+        
+        // Method 2: Check for Authorization header
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        if (isset($headers['Authorization'])) {
+            // Parse JWT or session token here
+            // For now, return the test user
+            return '68ad2f3400028ae2b8e5_user_1';
+        }
+        
+        // Method 3: For development, return the test user ID
+        return '68ad2f3400028ae2b8e5_user_1';
+    }
+}
+
+if (!function_exists('getAuthenticatedUser')) {
+    function getAuthenticatedUser($pdo) {
+        // Handle CLI mode (for testing)
+        if (php_sapi_name() === 'cli') {
+            return null;
+        }
+        
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            // For development, return a test user
+            if (($_ENV['NODE_ENV'] ?? 'development') === 'development') {
+                $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+                $stmt->execute(['68ad2f3400028ae2b8e5_user_1']);
+                return $stmt->fetch();
+            }
+            return null;
+        }
+        
+        $token = substr($authHeader, 7);
+        
+        // For development, we'll use a simple token validation
+        // In production, this should validate JWT tokens from Appwrite
+        if (($_ENV['NODE_ENV'] ?? 'development') === 'development') {
+            // Simple token validation for development
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+            $stmt->execute([$token]);
+            return $stmt->fetch();
+        }
+        
+        // Implement proper JWT validation with Appwrite
+        // For development, allow access without authentication
+        // In production, this should validate JWT tokens
+        return null;
+    }
+}
+
 $lessonSlug = $pathParts[1] ?? '';
 
 switch ($requestMethod) {
@@ -31,7 +138,9 @@ switch ($requestMethod) {
 function handleGetLessons($pdo) {
     try {
         $moduleSlug = $_GET['module'] ?? '';
-        $user = getAuthenticatedUser($pdo);
+        
+        // Get user ID for progress tracking
+        $userId = getUserIdFromSession();
         
         $sql = "
             SELECT 
@@ -54,7 +163,7 @@ function handleGetLessons($pdo) {
             WHERE l.is_active = TRUE
         ";
         
-        $params = [$user ? $user['id'] : null];
+        $params = [$userId];
         
         if ($moduleSlug) {
             $sql .= " AND m.slug = ?";
@@ -105,7 +214,7 @@ function handleGetLessons($pdo) {
         sendResponse([
             'success' => true,
             'lessons' => $groupedLessons,
-            'user_authenticated' => $user !== null
+            'user_authenticated' => $userId !== null
         ]);
         
     } catch (Exception $e) {
@@ -114,9 +223,14 @@ function handleGetLessons($pdo) {
     }
 }
 
-function handleGetLesson($pdo, $lessonSlug) {
+function handleGetLesson($pdo, $lessonIdentifier) {
     try {
-        $user = getAuthenticatedUser($pdo);
+        $userId = getUserIdFromSession();
+        
+        // Check if identifier is UUID (contains hyphens) or slug
+        $isUuid = strpos($lessonIdentifier, '-') !== false;
+        
+        $whereClause = $isUuid ? "l.id = ?" : "l.slug = ?";
         
         $stmt = $pdo->prepare("
             SELECT 
@@ -136,9 +250,9 @@ function handleGetLesson($pdo, $lessonSlug) {
             JOIN modules m ON l.module_id = m.id
             LEFT JOIN user_lesson_completions ulc ON l.id = ulc.lesson_id 
                 AND ulc.user_id = ?
-            WHERE l.slug = ? AND l.is_active = TRUE
+            WHERE {$whereClause} AND l.is_active = TRUE
         ");
-        $stmt->execute([$user ? $user['id'] : null, $lessonSlug]);
+        $stmt->execute([$userId, $lessonIdentifier]);
         $lesson = $stmt->fetch();
         
         if (!$lesson) {
@@ -162,7 +276,7 @@ function handleGetLesson($pdo, $lessonSlug) {
             ORDER BY c.difficulty, c.created_at
             LIMIT 3
         ");
-        $challengesStmt->execute([$user ? $user['id'] : null, $lesson['category']]);
+        $challengesStmt->execute([$userId, $lesson['category']]);
         $challenges = $challengesStmt->fetchAll();
         
         $formattedChallenges = [];
@@ -210,7 +324,7 @@ function handleGetLesson($pdo, $lessonSlug) {
                 'earned_xp' => $isCompleted ? (int)$lesson['earned_xp'] : 0,
                 'challenges' => $formattedChallenges
             ],
-            'user_authenticated' => $user !== null
+            'user_authenticated' => $userId !== null
         ]);
         
     } catch (Exception $e) {

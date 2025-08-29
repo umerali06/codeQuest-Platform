@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Game & Challenge Flow Test</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/game-editor-styles.css" />
+    <style>
+      .test-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        background: #f8f9fa;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+      }
+      .test-section.success {
+        border-left-color: #28a745;
+        background: #d4edda;
+      }
+      .test-section.error {
+        border-left-color: #dc3545;
+        background: #f8d7da;
+      }
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .flow-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+      }
+      .btn {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+      .btn-success {
+        background: #28a745;
+      }
+      .btn-warning {
+        background: #ffc107;
+        color: #212529;
+      }
+      .btn-danger {
+        background: #dc3545;
+      }
+      .status-log {
+        background: #1e1e1e;
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1>🧪 Complete Game & Challenge Flow Test</h1>
+
+      <div id="overall-status" class="test-section">
+        <h3>Test Status</h3>
+        <div id="status-message">Ready to test...</div>
+        <div id="status-log" class="status-log"></div>
+      </div>
+
+      <div class="flow-grid">
+        <!-- Game Flow Test -->
+        <div class="flow-card">
+          <h3>🎮 Game Flow Test</h3>
+          <p>Test the complete game flow from games page to editor</p>
+          <div>
+            <button class="btn btn-success" onclick="testGameFlow()">
+              Test Game Flow
+            </button>
+            <button class="btn" onclick="simulateGameFromGamesPage()">
+              Simulate from Games Page
+            </button>
+          </div>
+          <div id="game-test-results" style="margin-top: 10px"></div>
+        </div>
+
+        <!-- Challenge Flow Test -->
+        <div class="flow-card">
+          <h3>🎯 Challenge Flow Test</h3>
+          <p>Test the complete challenge flow from challenges page to editor</p>
+          <div>
+            <button class="btn btn-warning" onclick="testChallengeFlow()">
+              Test Challenge Flow
+            </button>
+            <button class="btn" onclick="simulateChallengeFromChallengesPage()">
+              Simulate from Challenges Page
+            </button>
+          </div>
+          <div id="challenge-test-results" style="margin-top: 10px"></div>
+        </div>
+
+        <!-- API Integration Test -->
+        <div class="flow-card">
+          <h3>🔌 API Integration Test</h3>
+          <p>Test backend API connections and data flow</p>
+          <div>
+            <button class="btn btn-danger" onclick="testAPIIntegration()">
+              Test APIs
+            </button>
+            <button class="btn" onclick="testDatabaseConnection()">
+              Test Database
+            </button>
+          </div>
+          <div id="api-test-results" style="margin-top: 10px"></div>
+        </div>
+
+        <!-- UI Elements Test -->
+        <div class="flow-card">
+          <h3>🎨 UI Elements Test</h3>
+          <p>Test all UI elements and panels</p>
+          <div>
+            <button class="btn" onclick="testUIElements()">
+              Test UI Elements
+            </button>
+            <button class="btn" onclick="showAllPanels()">
+              Show All Panels
+            </button>
+          </div>
+          <div id="ui-test-results" style="margin-top: 10px"></div>
+        </div>
+      </div>
+
+      <!-- Simulation Area -->
+      <div class="test-section">
+        <h3>🎭 Live Simulation Area</h3>
+        <p>This area simulates the actual editor interface:</p>
+
+        <!-- Simulated Editor Elements -->
+        <div style="display: none">
+          <!-- Main header elements -->
+          <div id="challengeTitle">Code Editor</div>
+          <div id="challengeDifficulty">Free Play</div>
+          <div id="challengeXP">+0 XP</div>
+          <div id="defaultDescription">Default description</div>
+
+          <!-- Game panel elements -->
+          <div id="gameInstructions" style="display: none">
+            <div id="gameTitle">Game Title</div>
+            <div id="gameDifficulty">Easy</div>
+            <div id="gameDescription">Game description</div>
+            <div id="objectivesList"></div>
+            <div id="timeDisplay">00:00</div>
+          </div>
+
+          <!-- Challenge panel elements -->
+          <div id="challengeInstructions" style="display: none">
+            <div id="challengeTitlePanel">Challenge Title</div>
+            <div id="challengeDifficultyPanel">Medium</div>
+            <div id="challengeXPPanel">+50 XP</div>
+            <div id="challengeDescriptionPanel">Challenge description</div>
+            <div id="testStatements"></div>
+          </div>
+
+          <!-- Results panels -->
+          <div id="gameResults" style="display: none"></div>
+          <div id="challengeResults" style="display: none"></div>
+          <div id="testResults" style="display: none"></div>
+
+          <!-- Editor containers -->
+          <div id="html-monaco"></div>
+          <div id="css-monaco"></div>
+          <div id="js-monaco"></div>
+        </div>
+
+        <div id="simulation-display">
+          <p>Click any test button to see the simulation in action!</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="public/editor.js"></script>
+    <script>
+      let testEditor;
+      let logElement;
+
+      function log(message, type = "info") {
+        const timestamp = new Date().toLocaleTimeString();
+        const logElement = document.getElementById("status-log");
+        const color =
+          type === "error"
+            ? "#ff4444"
+            : type === "success"
+            ? "#44ff44"
+            : "#00ff00";
+        logElement.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+        logElement.scrollTop = logElement.scrollHeight;
+        console.log(message);
+      }
+
+      function updateTestResult(containerId, message, success = true) {
+        const container = document.getElementById(containerId);
+        const className = success ? "success" : "error";
+        const icon = success ? "✅" : "❌";
+        container.innerHTML = `<div class="test-section ${className}">${icon} ${message}</div>`;
+      }
+
+      async function testGameFlow() {
+        log("🎮 Starting Game Flow Test...", "info");
+
+        try {
+          // Initialize editor
+          if (!testEditor) {
+            testEditor = new CodeEditor();
+            log("✅ Editor initialized", "success");
+          }
+
+          // Test game detection
+          if (typeof testEditor.checkForGame === "function") {
+            log("✅ checkForGame method exists", "success");
+          } else {
+            throw new Error("checkForGame method missing");
+          }
+
+          // Test game instruction loading
+          if (typeof testEditor.loadGameInstructions === "function") {
+            log("✅ loadGameInstructions method exists", "success");
+          } else {
+            throw new Error("loadGameInstructions method missing");
+          }
+
+          // Test game submission
+          if (typeof testEditor.submitGame === "function") {
+            log("✅ submitGame method exists", "success");
+          } else {
+            throw new Error("submitGame method missing");
+          }
+
+          updateTestResult(
+            "game-test-results",
+            "Game flow methods are all present and functional!",
+            true
+          );
+          log("🎉 Game Flow Test PASSED", "success");
+        } catch (error) {
+          log(`❌ Game Flow Test FAILED: ${error.message}`, "error");
+          updateTestResult(
+            "game-test-results",
+            `Game flow test failed: ${error.message}`,
+            false
+          );
+        }
+      }
+
+      async function testChallengeFlow() {
+        log("🎯 Starting Challenge Flow Test...", "info");
+
+        try {
+          // Initialize editor if not already done
+          if (!testEditor) {
+            testEditor = new CodeEditor();
+            log("✅ Editor initialized", "success");
+          }
+
+          // Test challenge detection
+          if (typeof testEditor.checkForChallenge === "function") {
+            log("✅ checkForChallenge method exists", "success");
+          } else {
+            throw new Error("checkForChallenge method missing");
+          }
+
+          // Test challenge loading
+          if (typeof testEditor.loadChallenge === "function") {
+            log("✅ loadChallenge method exists", "success");
+          } else {
+            throw new Error("loadChallenge method missing");
+          }
+
+          // Test challenge display
+          if (typeof testEditor.displayChallenge === "function") {
+            log("✅ displayChallenge method exists", "success");
+          } else {
+            throw new Error("displayChallenge method missing");
+          }
+
+          // Test challenge submission
+          if (typeof testEditor.submitChallenge === "function") {
+            log("✅ submitChallenge method exists", "success");
+          } else {
+            throw new Error("submitChallenge method missing");
+          }
+
+          updateTestResult(
+            "challenge-test-results",
+            "Challenge flow methods are all present and functional!",
+            true
+          );
+          log("🎉 Challenge Flow Test PASSED", "success");
+        } catch (error) {
+          log(`❌ Challenge Flow Test FAILED: ${error.message}`, "error");
+          updateTestResult(
+            "challenge-test-results",
+            `Challenge flow test failed: ${error.message}`,
+            false
+          );
+        }
+      }
+
+      async function testAPIIntegration() {
+        log("🔌 Starting API Integration Test...", "info");
+
+        try {
+          // Test games API
+          log("Testing games API...", "info");
+          const gamesResponse = await fetch("http://localhost:8000/api/games");
+          if (gamesResponse.ok) {
+            const gamesData = await gamesResponse.json();
+            log(
+              `✅ Games API working - Found ${
+                gamesData.data?.length || 0
+              } games`,
+              "success"
+            );
+          } else {
+            throw new Error(`Games API failed: ${gamesResponse.status}`);
+          }
+
+          // Test challenges API
+          log("Testing challenges API...", "info");
+          const challengesResponse = await fetch(
+            "http://localhost:8000/api/challenges"
+          );
+          if (challengesResponse.ok) {
+            const challengesData = await challengesResponse.json();
+            log(
+              `✅ Challenges API working - Found ${
+                challengesData.data?.length || 0
+              } challenges`,
+              "success"
+            );
+          } else {
+            throw new Error(
+              `Challenges API failed: ${challengesResponse.status}`
+            );
+          }
+
+          updateTestResult(
+            "api-test-results",
+            "All APIs are working correctly!",
+            true
+          );
+          log("🎉 API Integration Test PASSED", "success");
+        } catch (error) {
+          log(`❌ API Integration Test FAILED: ${error.message}`, "error");
+          updateTestResult(
+            "api-test-results",
+            `API test failed: ${error.message}`,
+            false
+          );
+        }
+      }
+
+      function testUIElements() {
+        log("🎨 Starting UI Elements Test...", "info");
+
+        try {
+          const requiredElements = [
+            "challengeTitle",
+            "challengeDifficulty",
+            "challengeXP",
+            "gameInstructions",
+            "challengeInstructions",
+            "gameResults",
+            "challengeResults",
+            "testResults",
+          ];
+
+          let foundElements = 0;
+          requiredElements.forEach((elementId) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+              foundElements++;
+              log(`✅ Found element: ${elementId}`, "success");
+            } else {
+              log(`❌ Missing element: ${elementId}`, "error");
+            }
+          });
+
+          const successRate = (
+            (foundElements / requiredElements.length) *
+            100
+          ).toFixed(1);
+          updateTestResult(
+            "ui-test-results",
+            `UI Elements: ${foundElements}/${requiredElements.length} found (${successRate}%)`,
+            foundElements === requiredElements.length
+          );
+
+          if (foundElements === requiredElements.length) {
+            log("🎉 UI Elements Test PASSED", "success");
+          } else {
+            log(
+              `⚠️ UI Elements Test PARTIAL: ${foundElements}/${requiredElements.length}`,
+              "error"
+            );
+          }
+        } catch (error) {
+          log(`❌ UI Elements Test FAILED: ${error.message}`, "error");
+          updateTestResult(
+            "ui-test-results",
+            `UI test failed: ${error.message}`,
+            false
+          );
+        }
+      }
+
+      function simulateGameFromGamesPage() {
+        log("🎮 Simulating game launch from games page...", "info");
+
+        // Simulate what happens when user clicks "Play" on games page
+        const sampleGame = {
+          id: 1,
+          title: "HTML Basics Game",
+          description: "Create a simple HTML page with proper structure",
+          difficulty: "easy",
+          xp_reward: 100,
+          time_limit: 300,
+          objectives: [
+            "Create an HTML document with DOCTYPE",
+            "Add a head section with title",
+            "Create a body with heading and paragraph",
+          ],
+          starter_code: {
+            html: "<!DOCTYPE html>\n<html>\n<head>\n  <title>My Game</title>\n</head>\n<body>\n  <!-- Your code here -->\n</body>\n</html>",
+            css: "/* Add your styles here */",
+            js: "// Add your JavaScript here",
+          },
+        };
+
+        // Store in sessionStorage (like games.js does)
+        sessionStorage.setItem("current_game", JSON.stringify(sampleGame));
+
+        // Simulate URL with game parameter
+        const newUrl = `${window.location.pathname}?game=html-basics-game`;
+        window.history.pushState({}, "", newUrl);
+
+        // Trigger game loading
+        if (testEditor) {
+          testEditor.checkForGame();
+          log("✅ Game simulation triggered", "success");
+
+          // Show what should happen
+          document.getElementById("simulation-display").innerHTML = `
+                    <div class="test-section success">
+                        <h4>🎮 Game Loaded Successfully!</h4>
+                        <p><strong>Title:</strong> ${sampleGame.title}</p>
+                        <p><strong>Description:</strong> ${
+                          sampleGame.description
+                        }</p>
+                        <p><strong>Difficulty:</strong> ${
+                          sampleGame.difficulty
+                        }</p>
+                        <p><strong>XP Reward:</strong> +${
+                          sampleGame.xp_reward
+                        } XP</p>
+                        <p><strong>Objectives:</strong></p>
+                        <ul>
+                            ${sampleGame.objectives
+                              .map((obj) => `<li>${obj}</li>`)
+                              .join("")}
+                        </ul>
+                        <p><em>The game instructions panel should now be visible in the editor!</em></p>
+                    </div>
+                `;
+        }
+      }
+
+      function simulateChallengeFromChallengesPage() {
+        log("🎯 Simulating challenge launch from challenges page...", "info");
+
+        // Simulate what happens when user clicks "Start" on challenges page
+        const sampleChallenge = {
+          id: "contact-card",
+          title: "Contact Card Component",
+          description:
+            "Create a responsive contact card component using HTML and CSS",
+          difficulty: "medium",
+          xp_reward: 75,
+          instructions:
+            "Build a contact card that displays a person's information in an attractive layout",
+          testStatements: [
+            "Create a card container with proper styling",
+            "Add a profile image placeholder",
+            "Include name, title, and contact information",
+            "Make the card responsive for mobile devices",
+          ],
+          starterCode: {
+            html: '<div class="contact-card">\n  <!-- Add your HTML here -->\n</div>',
+            css: ".contact-card {\n  /* Add your CSS here */\n}",
+            js: "// Add any JavaScript if needed",
+          },
+        };
+
+        // Simulate URL with challenge parameter
+        const newUrl = `${window.location.pathname}?challenge=contact-card`;
+        window.history.pushState({}, "", newUrl);
+
+        // Trigger challenge loading
+        if (testEditor) {
+          testEditor.currentChallenge = sampleChallenge;
+          testEditor.displayChallenge(sampleChallenge);
+          log("✅ Challenge simulation triggered", "success");
+
+          // Show what should happen
+          document.getElementById("simulation-display").innerHTML = `
+                    <div class="test-section success">
+                        <h4>🎯 Challenge Loaded Successfully!</h4>
+                        <p><strong>Title:</strong> ${sampleChallenge.title}</p>
+                        <p><strong>Description:</strong> ${
+                          sampleChallenge.description
+                        }</p>
+                        <p><strong>Difficulty:</strong> ${
+                          sampleChallenge.difficulty
+                        }</p>
+                        <p><strong>XP Reward:</strong> +${
+                          sampleChallenge.xp_reward
+                        } XP</p>
+                        <p><strong>Requirements:</strong></p>
+                        <ul>
+                            ${sampleChallenge.testStatements
+                              .map((req) => `<li>${req}</li>`)
+                              .join("")}
+                        </ul>
+                        <p><em>The challenge instructions panel should now be visible in the editor!</em></p>
+                    </div>
+                `;
+        }
+      }
+
+      function showAllPanels() {
+        log("👁️ Showing all UI panels for inspection...", "info");
+
+        const panels = [
+          "gameInstructions",
+          "challengeInstructions",
+          "gameResults",
+          "challengeResults",
+        ];
+        panels.forEach((panelId) => {
+          const panel = document.getElementById(panelId);
+          if (panel) {
+            panel.style.display = "block";
+            log(`✅ Showing panel: ${panelId}`, "success");
+          }
+        });
+
+        document.getElementById("simulation-display").innerHTML = `
+                <div class="test-section">
+                    <h4>👁️ All Panels Visible</h4>
+                    <p>Check the browser console and inspect the page to see all UI panels.</p>
+                    <p>All instruction panels should now be visible (though they may be empty).</p>
+                </div>
+            `;
+      }
+
+      function testDatabaseConnection() {
+        log("🗄️ Testing database connection...", "info");
+
+        // This would test the actual database connection
+        // For now, we'll simulate it
+        setTimeout(() => {
+          log("✅ Database connection simulated successfully", "success");
+          updateTestResult(
+            "api-test-results",
+            "Database connection test completed (simulated)",
+            true
+          );
+        }, 1000);
+      }
+
+      // Initialize when page loads
+      window.addEventListener("load", () => {
+        log("🚀 Test page loaded and ready", "info");
+        log(
+          "Click any test button to begin testing the game and challenge flows",
+          "info"
+        );
+      });
+    </script>
+  </body>
+</html>

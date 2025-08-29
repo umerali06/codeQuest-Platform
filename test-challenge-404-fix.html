@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Challenge 404 Fix</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+      }
+      .success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+      }
+      .error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+      }
+      .info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 10px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Challenge 404 Error Fix Test</h1>
+
+    <div class="test-section info">
+      <h2>Issue Summary</h2>
+      <p>
+        <strong>Problem:</strong> Editor was trying to load challenge "Style
+        Your HTML" which doesn't exist
+      </p>
+      <p>
+        <strong>Root Cause:</strong> Hardcoded challenge name in challenges.html
+      </p>
+      <p>
+        <strong>Fix:</strong> Updated to use correct challenge slug
+        "responsive-nav"
+      </p>
+    </div>
+
+    <div class="test-section">
+      <h2>1. Test Available Challenges</h2>
+      <button onclick="testAvailableChallenges()">
+        Check Available Challenges
+      </button>
+      <div id="challengesResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>2. Test Specific Challenge Loading</h2>
+      <button onclick="testChallengeLoad('responsive-nav')">
+        Test responsive-nav
+      </button>
+      <button onclick="testChallengeLoad('contact-card')">
+        Test contact-card
+      </button>
+      <button onclick="testChallengeLoad('todo-app')">Test todo-app</button>
+      <button onclick="testChallengeLoad('Style Your HTML')">
+        Test "Style Your HTML" (Should Fail)
+      </button>
+      <div id="challengeLoadResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>3. Test Editor Integration</h2>
+      <button onclick="testEditorWithChallenge('responsive-nav')">
+        Open Editor with responsive-nav
+      </button>
+      <button onclick="testEditorWithChallenge('contact-card')">
+        Open Editor with contact-card
+      </button>
+      <div id="editorResult"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>4. Test Challenges Page</h2>
+      <button onclick="testChallengesPage()">Open Challenges Page</button>
+      <div id="challengesPageResult"></div>
+    </div>
+
+    <script>
+      async function testAvailableChallenges() {
+        const resultDiv = document.getElementById("challengesResult");
+        resultDiv.innerHTML = "<p>Loading...</p>";
+
+        try {
+          const response = await fetch("/api/challenges");
+          const data = await response.json();
+
+          if (data.success) {
+            const challenges = data.data;
+            let html = `<div class="success">
+                        <h3>✅ Success! Found ${challenges.length} challenges:</h3>
+                        <ul>`;
+
+            challenges.forEach((challenge) => {
+              html += `<li><strong>${challenge.slug}</strong> - ${challenge.title} (${challenge.difficulty})</li>`;
+            });
+
+            html += "</ul></div>";
+            resultDiv.innerHTML = html;
+          } else {
+            resultDiv.innerHTML = `<div class="error"><h3>❌ API Error:</h3><p>${data.message}</p></div>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<div class="error"><h3>❌ Network Error:</h3><p>${error.message}</p></div>`;
+        }
+      }
+
+      async function testChallengeLoad(challengeSlug) {
+        const resultDiv = document.getElementById("challengeLoadResult");
+        resultDiv.innerHTML =
+          "<p>Testing challenge: " + challengeSlug + "...</p>";
+
+        try {
+          const response = await fetch(
+            `/api/challenges/${encodeURIComponent(challengeSlug)}`
+          );
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            resultDiv.innerHTML = `<div class="success">
+                        <h3>✅ Challenge "${challengeSlug}" loaded successfully!</h3>
+                        <p><strong>Title:</strong> ${data.data.title}</p>
+                        <p><strong>Description:</strong> ${data.data.description}</p>
+                        <p><strong>Difficulty:</strong> ${data.data.difficulty}</p>
+                        <p><strong>XP Reward:</strong> ${data.data.xpReward}</p>
+                    </div>`;
+          } else {
+            resultDiv.innerHTML = `<div class="error">
+                        <h3>❌ Challenge "${challengeSlug}" failed to load</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${
+                          data.message || "Unknown error"
+                        }</p>
+                    </div>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<div class="error">
+                    <h3>❌ Network Error for "${challengeSlug}":</h3>
+                    <p>${error.message}</p>
+                </div>`;
+        }
+      }
+
+      function testEditorWithChallenge(challengeSlug) {
+        const resultDiv = document.getElementById("editorResult");
+        resultDiv.innerHTML = `<div class="info">
+                <h3>🔗 Opening editor with challenge: ${challengeSlug}</h3>
+                <p>Check the browser console for any 404 errors.</p>
+                <p><a href="editor.html?challenge=${encodeURIComponent(
+                  challengeSlug
+                )}" target="_blank">
+                    Open Editor with ${challengeSlug} →
+                </a></p>
+            </div>`;
+      }
+
+      function testChallengesPage() {
+        const resultDiv = document.getElementById("challengesPageResult");
+        resultDiv.innerHTML = `<div class="info">
+                <h3>🔗 Opening challenges page</h3>
+                <p>Check that the featured challenge button works correctly.</p>
+                <p><a href="challenges.html" target="_blank">Open Challenges Page →</a></p>
+            </div>`;
+      }
+
+      // Auto-run the first test
+      window.addEventListener("load", () => {
+        testAvailableChallenges();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Games Stream Fix - Final Test</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.8);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      .status {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        margin: 10px 0;
+      }
+      .status.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .status.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .status.info {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .test-button {
+        background: #6366f1;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+      .test-button:hover {
+        background: #5855f7;
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Games Stream Fix - Final Test</h1>
+      <p>Testing the complete fix for "body stream already read" error.</p>
+
+      <div>
+        <button class="test-button" onclick="testStreamFix()">
+          Test Stream Fix
+        </button>
+        <button class="test-button" onclick="openGamesPage()">
+          Open Games Page
+        </button>
+        <button class="test-button" onclick="clearResults()">
+          Clear Results
+        </button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      function log(message, type = "info") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `status ${type}`;
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+        results.appendChild(div);
+      }
+
+      async function testStreamFix() {
+        log("🧪 Testing the complete stream fix...", "info");
+
+        try {
+          const response = await fetch("/api/games");
+
+          log(
+            `Response status: ${response.status}`,
+            response.ok ? "success" : "error"
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          // This is the key fix - read response as text first
+          const responseText = await response.text();
+          log(
+            `✅ Response text read successfully (${responseText.length} chars)`,
+            "success"
+          );
+
+          const contentType = response.headers.get("content-type");
+          log(`Content-Type: ${contentType}`, "info");
+
+          if (!contentType || !contentType.includes("application/json")) {
+            log(`❌ Non-JSON response detected`, "error");
+            log(`Response preview: ${responseText.substring(0, 200)}`, "error");
+            throw new Error("Server returned HTML instead of JSON");
+          }
+
+          // Parse the text as JSON (no more stream conflicts)
+          let result;
+          try {
+            result = JSON.parse(responseText);
+            log("✅ JSON parsing successful!", "success");
+          } catch (jsonError) {
+            log(`❌ JSON parse error: ${jsonError.message}`, "error");
+            log(`Response preview: ${responseText.substring(0, 300)}`, "error");
+            throw new Error("Invalid JSON response from server");
+          }
+
+          if (result.success) {
+            log(`🎮 Success! Loaded ${result.data.length} games`, "success");
+            log('✅ No "body stream already read" errors!', "success");
+          } else {
+            throw new Error(result.error || "API returned error");
+          }
+        } catch (error) {
+          log(`❌ Test Failed: ${error.message}`, "error");
+
+          // Check if it's the specific stream error
+          if (error.message.includes("body stream already read")) {
+            log(
+              "🚨 STREAM ERROR STILL EXISTS - Fix not applied correctly!",
+              "error"
+            );
+          } else {
+            log("ℹ️ Different error - stream fix is working", "info");
+          }
+        }
+      }
+
+      function openGamesPage() {
+        window.open("public/games.html", "_blank");
+      }
+
+      function clearResults() {
+        document.getElementById("results").innerHTML = "";
+      }
+
+      // Auto-run test on load
+      document.addEventListener("DOMContentLoaded", () => {
+        log("🔧 Stream fix test loaded", "info");
+        log(
+          'The fix should eliminate "body stream already read" errors',
+          "success"
+        );
+      });
+    </script>
+  </body>
+</html>

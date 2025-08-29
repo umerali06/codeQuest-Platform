@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Games Auth Integration Test</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.8);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      .status {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        margin: 10px 0;
+      }
+      .status.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .status.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .status.info {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .status.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .test-button {
+        background: #6366f1;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+      .test-button:hover {
+        background: #5855f7;
+        transform: translateY(-1px);
+      }
+      .test-button.success {
+        background: #10b981;
+      }
+      .test-button.success:hover {
+        background: #059669;
+      }
+      .fix-summary {
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .code-block {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin: 10px 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Games Auth Integration Test</h1>
+      <p>Testing the integration between games page and main auth system.</p>
+
+      <div class="fix-summary">
+        <h3>🎯 Integration Fixes Applied:</h3>
+        <ul>
+          <li>
+            ✅ <strong>AuthManager Integration:</strong> Games check
+            window.AuthManager.currentUser
+          </li>
+          <li>
+            ✅ <strong>Storage Sync:</strong> Listen to localStorage changes for
+            cross-tab sync
+          </li>
+          <li>
+            ✅ <strong>Global Variable:</strong> Check window.currentUser from
+            main.js
+          </li>
+          <li>
+            ✅ <strong>Auth State Listener:</strong> Real-time sync with auth
+            state changes
+          </li>
+          <li>
+            ✅ <strong>Multiple Fallbacks:</strong> Multiple ways to detect
+            authenticated user
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <button class="test-button" onclick="checkAllAuthSources()">
+          🔍 Check All Auth Sources
+        </button>
+        <button class="test-button" onclick="simulateAppwriteUser()">
+          👤 Simulate Appwrite User
+        </button>
+        <button class="test-button" onclick="simulateMainAppUser()">
+          🏠 Simulate Main App User
+        </button>
+        <button class="test-button" onclick="testAuthStateSync()">
+          🔄 Test Auth State Sync
+        </button>
+        <button class="test-button success" onclick="openGamesPage()">
+          🎯 Open Games Page
+        </button>
+        <button class="test-button" onclick="clearResults()">
+          🗑️ Clear Results
+        </button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      function log(message, type = "info") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `status ${type}`;
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+        results.appendChild(div);
+      }
+
+      function showCode(data, title = "Data") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${title}:</strong>`;
+        results.appendChild(div);
+
+        const codeDiv = document.createElement("div");
+        codeDiv.className = "code-block";
+        codeDiv.textContent =
+          typeof data === "string" ? data : JSON.stringify(data, null, 2);
+        results.appendChild(codeDiv);
+      }
+
+      function checkAllAuthSources() {
+        log("🔍 Checking all authentication sources...", "info");
+
+        // Check AuthManager
+        if (window.AuthManager) {
+          if (window.AuthManager.currentUser) {
+            const user = window.AuthManager.currentUser;
+            log(
+              `✅ AuthManager.currentUser: ${user.name || user.email}`,
+              "success"
+            );
+            showCode(user, "AuthManager.currentUser");
+          } else {
+            log("❌ AuthManager.currentUser is null", "error");
+          }
+        } else {
+          log("❌ window.AuthManager not available", "error");
+        }
+
+        // Check localStorage
+        const codequestUser = localStorage.getItem("codequest_user");
+        if (codequestUser) {
+          try {
+            const user = JSON.parse(codequestUser);
+            log(
+              `✅ localStorage codequest_user: ${user.name || user.email}`,
+              "success"
+            );
+            showCode(user, "localStorage codequest_user");
+          } catch (e) {
+            log("❌ Invalid JSON in codequest_user", "error");
+          }
+        } else {
+          log("❌ No codequest_user in localStorage", "error");
+        }
+
+        // Check global currentUser
+        if (window.currentUser) {
+          log(
+            `✅ window.currentUser: ${
+              window.currentUser.username || window.currentUser.email
+            }`,
+            "success"
+          );
+          showCode(window.currentUser, "window.currentUser");
+        } else {
+          log("❌ window.currentUser is null/undefined", "error");
+        }
+
+        // Summary
+        const hasAuth =
+          (window.AuthManager && window.AuthManager.currentUser) ||
+          codequestUser ||
+          window.currentUser;
+
+        if (hasAuth) {
+          log("🎉 User authentication detected! Games should work.", "success");
+        } else {
+          log(
+            "❌ No authentication found. Games will show login required.",
+            "error"
+          );
+        }
+      }
+
+      function simulateAppwriteUser() {
+        log("👤 Simulating Appwrite user...", "info");
+
+        const appwriteUser = {
+          $id: "appwrite_user_123",
+          name: "Appwrite User",
+          email: "appwrite@example.com",
+          emailVerification: true,
+          status: true,
+          registration: new Date().toISOString(),
+          sessionExpiry: new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toISOString(), // 24 hours
+        };
+
+        // Simulate AuthManager
+        if (!window.AuthManager) {
+          window.AuthManager = {};
+        }
+        window.AuthManager.currentUser = appwriteUser;
+
+        // Also store in localStorage for consistency
+        localStorage.setItem("codequest_user", JSON.stringify(appwriteUser));
+
+        log(`✅ Created Appwrite user: ${appwriteUser.name}`, "success");
+        showCode(appwriteUser, "Simulated Appwrite User");
+      }
+
+      function simulateMainAppUser() {
+        log("🏠 Simulating main app user...", "info");
+
+        const mainAppUser = {
+          id: "main_user_456",
+          username: "MainAppUser",
+          email: "mainapp@example.com",
+          name: "Main App User",
+          avatar: null,
+          created_at: new Date().toISOString(),
+          sessionExpiry: new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toISOString(),
+        };
+
+        // Set global currentUser (like main.js does)
+        window.currentUser = mainAppUser;
+
+        // Also store in localStorage
+        localStorage.setItem("codequest_user", JSON.stringify(mainAppUser));
+
+        log(`✅ Created main app user: ${mainAppUser.username}`, "success");
+        showCode(mainAppUser, "Simulated Main App User");
+      }
+
+      function testAuthStateSync() {
+        log("🔄 Testing auth state synchronization...", "info");
+
+        // Test localStorage event
+        log("📡 Triggering localStorage change event...", "info");
+
+        const testUser = {
+          id: "sync_test_789",
+          name: "Sync Test User",
+          email: "sync@example.com",
+          sessionExpiry: new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toISOString(),
+        };
+
+        // This should trigger the storage event listener
+        localStorage.setItem("codequest_user", JSON.stringify(testUser));
+
+        log(
+          "✅ Storage event triggered. Games page should detect this change.",
+          "success"
+        );
+
+        // Test clearing
+        setTimeout(() => {
+          log("🗑️ Testing auth clear...", "info");
+          localStorage.removeItem("codequest_user");
+          window.currentUser = null;
+          if (window.AuthManager) {
+            window.AuthManager.currentUser = null;
+          }
+          log(
+            "✅ Auth cleared. Games page should show login required.",
+            "success"
+          );
+        }, 2000);
+      }
+
+      function openGamesPage() {
+        log("🎯 Opening games page for live testing...", "info");
+        window.open("public/games.html", "_blank");
+      }
+
+      function clearResults() {
+        document.getElementById("results").innerHTML = "";
+      }
+
+      // Auto-run on load
+      document.addEventListener("DOMContentLoaded", () => {
+        log("🔧 Games auth integration test loaded", "info");
+        checkAllAuthSources();
+      });
+    </script>
+  </body>
+</html>

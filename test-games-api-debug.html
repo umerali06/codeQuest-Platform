@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Games API Debug</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.8);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      .test-button {
+        background: #6366f1;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 10px;
+        font-weight: 500;
+      }
+      .test-button:hover {
+        background: #5855f7;
+      }
+      .result {
+        background: #1f2937;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-family: monospace;
+        white-space: pre-wrap;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .success {
+        border-left: 4px solid #10b981;
+      }
+      .error {
+        border-left: 4px solid #ef4444;
+      }
+      .info {
+        border-left: 4px solid #3b82f6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Games API Debug Tool</h1>
+      <p>Debug the games API to identify and fix issues.</p>
+
+      <div>
+        <button class="test-button" onclick="testDirectAPI()">
+          Test Direct API
+        </button>
+        <button class="test-button" onclick="testWithRouter()">
+          Test With Router
+        </button>
+        <button class="test-button" onclick="testDatabaseConnection()">
+          Test Database
+        </button>
+        <button class="test-button" onclick="clearResults()">
+          Clear Results
+        </button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      function log(message, type = "info") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `result ${type}`;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        results.appendChild(div);
+      }
+
+      async function testDirectAPI() {
+        log("Testing direct API access...", "info");
+
+        try {
+          // Test different API URLs
+          const urls = [
+            "/api/games",
+            "/api/index.php/games",
+            "api/games.php",
+            "api/index.php?endpoint=games",
+          ];
+
+          for (const url of urls) {
+            try {
+              log(`Trying URL: ${url}`, "info");
+              const response = await fetch(url);
+              const contentType = response.headers.get("content-type");
+
+              log(
+                `Response: ${response.status} ${response.statusText}`,
+                response.ok ? "success" : "error"
+              );
+              log(`Content-Type: ${contentType}`, "info");
+
+              if (response.ok) {
+                if (contentType && contentType.includes("application/json")) {
+                  const data = await response.json();
+                  log(
+                    `JSON Response: ${JSON.stringify(data, null, 2)}`,
+                    "success"
+                  );
+                  return; // Success, stop testing other URLs
+                } else {
+                  const text = await response.text();
+                  log(
+                    `HTML Response (first 500 chars): ${text.substring(
+                      0,
+                      500
+                    )}`,
+                    "error"
+                  );
+                }
+              }
+            } catch (error) {
+              log(`Error with ${url}: ${error.message}`, "error");
+            }
+          }
+        } catch (error) {
+          log(`Test failed: ${error.message}`, "error");
+        }
+      }
+
+      async function testWithRouter() {
+        log("Testing with router configuration...", "info");
+
+        try {
+          // Check if .htaccess is working
+          const response = await fetch("/api/health");
+          const contentType = response.headers.get("content-type");
+
+          log(
+            `Health check: ${response.status} ${response.statusText}`,
+            response.ok ? "success" : "error"
+          );
+          log(`Content-Type: ${contentType}`, "info");
+
+          if (
+            response.ok &&
+            contentType &&
+            contentType.includes("application/json")
+          ) {
+            const data = await response.json();
+            log(`Health Response: ${JSON.stringify(data, null, 2)}`, "success");
+          } else {
+            const text = await response.text();
+            log(`Non-JSON Response: ${text.substring(0, 300)}`, "error");
+          }
+        } catch (error) {
+          log(`Router test failed: ${error.message}`, "error");
+        }
+      }
+
+      async function testDatabaseConnection() {
+        log("Testing database connection via API...", "info");
+
+        try {
+          const response = await fetch("/api/health");
+          if (response.ok) {
+            log("API is accessible, database should be connected", "success");
+          } else {
+            log("API not accessible, check server configuration", "error");
+          }
+        } catch (error) {
+          log(`Database test failed: ${error.message}`, "error");
+        }
+      }
+
+      function clearResults() {
+        document.getElementById("results").innerHTML = "";
+      }
+
+      // Auto-run basic test on load
+      document.addEventListener("DOMContentLoaded", () => {
+        log("Games API Debug Tool loaded", "info");
+        log("Click buttons above to test different aspects of the API", "info");
+      });
+    </script>
+  </body>
+</html>

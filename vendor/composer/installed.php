@@ -3,7 +3,7 @@
         'name' => 'codequest/platform',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'efa36bb8e6c8d5fee395cfa59c6ce9315c6af044',
+        'reference' => '08d8562d5cbf763cc4cc500521b148cfd93f19b0',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'codequest/platform' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'efa36bb8e6c8d5fee395cfa59c6ce9315c6af044',
+            'reference' => '08d8562d5cbf763cc4cc500521b148cfd93f19b0',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

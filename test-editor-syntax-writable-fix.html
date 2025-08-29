@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Editor Syntax & Writable Fix</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #1a1a1a;
+        color: white;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background-color: #2a2a2a;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #2d5a2d;
+        color: #90ee90;
+      }
+      .error {
+        background-color: #5a2d2d;
+        color: #ffcccb;
+      }
+      .info {
+        background-color: #2d4a5a;
+        color: #87ceeb;
+      }
+
+      /* Test editor styles */
+      .test-editor-container {
+        margin: 20px 0;
+      }
+
+      .test-tabs {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .test-tab {
+        padding: 10px 20px;
+        background-color: #333;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5px;
+      }
+
+      .test-tab.active {
+        background-color: #007acc;
+      }
+
+      .test-editor-content {
+        position: relative;
+      }
+
+      .test-monaco {
+        display: none;
+        height: 300px;
+      }
+
+      .test-monaco.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Editor Syntax & Writable Fix Test</h1>
+
+    <div class="test-section">
+      <h2>📋 Test Results</h2>
+      <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>🎯 Test Editor Functionality</h2>
+      <p>
+        This tests if the editor creates writable textareas and has no syntax
+        errors.
+      </p>
+
+      <div class="test-editor-container">
+        <div class="test-tabs">
+          <button class="test-tab active" onclick="switchTestTab('html')">
+            HTML
+          </button>
+          <button class="test-tab" onclick="switchTestTab('css')">CSS</button>
+          <button class="test-tab" onclick="switchTestTab('js')">
+            JavaScript
+          </button>
+        </div>
+
+        <div class="test-editor-content">
+          <div id="html-monaco" class="test-monaco active"></div>
+          <div id="css-monaco" class="test-monaco"></div>
+          <div id="js-monaco" class="test-monaco"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <button onclick="testFormatCode()" class="btn btn-primary">
+          🎨 Test Format Code
+        </button>
+        <button onclick="testToggleFullscreen()" class="btn btn-secondary">
+          🔍 Test Fullscreen
+        </button>
+        <button onclick="testWritability()" class="btn btn-success">
+          ✍️ Test Writability
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let testResults = [];
+
+      function addTestResult(test, status, message) {
+        testResults.push({ test, status, message });
+        updateTestDisplay();
+      }
+
+      function updateTestDisplay() {
+        const container = document.getElementById("testResults");
+        container.innerHTML = testResults
+          .map(
+            (result) =>
+              `<div class="status ${result.status}">
+                    <strong>${result.test}:</strong> ${result.message}
+                </div>`
+          )
+          .join("");
+      }
+
+      function switchTestTab(tab) {
+        // Update tab buttons
+        document
+          .querySelectorAll(".test-tab")
+          .forEach((btn) => btn.classList.remove("active"));
+        event.target.classList.add("active");
+
+        // Update content
+        document
+          .querySelectorAll(".test-monaco")
+          .forEach((div) => div.classList.remove("active"));
+        document.getElementById(`${tab}-monaco`).classList.add("active");
+      }
+
+      function testFormatCode() {
+        try {
+          if (
+            window.codeEditor &&
+            typeof window.codeEditor.formatCode === "function"
+          ) {
+            window.codeEditor.formatCode("html");
+            addTestResult(
+              "Format Code",
+              "success",
+              "formatCode method exists and can be called"
+            );
+          } else {
+            addTestResult(
+              "Format Code",
+              "error",
+              "formatCode method not found or not a function"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            "Format Code",
+            "error",
+            `Error calling formatCode: ${error.message}`
+          );
+        }
+      }
+
+      function testToggleFullscreen() {
+        try {
+          if (
+            window.codeEditor &&
+            typeof window.codeEditor.toggleFullscreen === "function"
+          ) {
+            window.codeEditor.toggleFullscreen();
+            addTestResult(
+              "Toggle Fullscreen",
+              "success",
+              "toggleFullscreen method exists and can be called"
+            );
+          } else {
+            addTestResult(
+              "Toggle Fullscreen",
+              "error",
+              "toggleFullscreen method not found or not a function"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            "Toggle Fullscreen",
+            "error",
+            `Error calling toggleFullscreen: ${error.message}`
+          );
+        }
+      }
+
+      function testWritability() {
+        const htmlEditor = document.getElementById("html-textarea-editor");
+        const cssEditor = document.getElementById("css-textarea-editor");
+        const jsEditor = document.getElementById("js-textarea-editor");
+
+        let writableCount = 0;
+        let totalCount = 0;
+
+        [htmlEditor, cssEditor, jsEditor].forEach((editor, index) => {
+          const type = ["HTML", "CSS", "JS"][index];
+          totalCount++;
+
+          if (editor) {
+            if (!editor.disabled && !editor.readOnly) {
+              writableCount++;
+              addTestResult(
+                `${type} Editor Writable`,
+                "success",
+                `${type} editor is writable`
+              );
+
+              // Test actual writing
+              const originalValue = editor.value;
+              const testText = `/* Test write ${Date.now()} */`;
+              editor.value = testText;
+
+              if (editor.value === testText) {
+                addTestResult(
+                  `${type} Editor Write Test`,
+                  "success",
+                  `Successfully wrote to ${type} editor`
+                );
+                editor.value = originalValue; // Restore original value
+              } else {
+                addTestResult(
+                  `${type} Editor Write Test`,
+                  "error",
+                  `Failed to write to ${type} editor`
+                );
+              }
+            } else {
+              addTestResult(
+                `${type} Editor Writable`,
+                "error",
+                `${type} editor is disabled or readonly`
+              );
+            }
+          } else {
+            addTestResult(
+              `${type} Editor Exists`,
+              "error",
+              `${type} editor not found`
+            );
+          }
+        });
+
+        addTestResult(
+          "Overall Writability",
+          writableCount === totalCount ? "success" : "error",
+          `${writableCount}/${totalCount} editors are writable`
+        );
+      }
+
+      // Test syntax errors
+      function testSyntaxErrors() {
+        try {
+          // Test if CodeEditor class can be instantiated
+          if (typeof CodeEditor !== "undefined") {
+            addTestResult(
+              "CodeEditor Class",
+              "success",
+              "CodeEditor class is defined"
+            );
+          } else {
+            addTestResult(
+              "CodeEditor Class",
+              "error",
+              "CodeEditor class is not defined"
+            );
+          }
+
+          // Test if window.codeEditor exists
+          if (window.codeEditor) {
+            addTestResult(
+              "CodeEditor Instance",
+              "success",
+              "window.codeEditor instance exists"
+            );
+
+            // Test if methods exist
+            const methods = [
+              "checkForGame",
+              "formatCode",
+              "toggleFullscreen",
+              "updatePreview",
+            ];
+            methods.forEach((method) => {
+              if (typeof window.codeEditor[method] === "function") {
+                addTestResult(
+                  `Method ${method}`,
+                  "success",
+                  `${method} method exists`
+                );
+              } else {
+                addTestResult(
+                  `Method ${method}`,
+                  "error",
+                  `${method} method not found`
+                );
+              }
+            });
+          } else {
+            addTestResult(
+              "CodeEditor Instance",
+              "error",
+              "window.codeEditor instance not found"
+            );
+          }
+        } catch (error) {
+          addTestResult(
+            "Syntax Check",
+            "error",
+            `Syntax error detected: ${error.message}`
+          );
+        }
+      }
+
+      // Run tests when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        addTestResult("Page Load", "info", "Starting tests...");
+
+        // Wait a bit for editor to initialize
+        setTimeout(() => {
+          testSyntaxErrors();
+
+          // Wait a bit more for editor initialization
+          setTimeout(() => {
+            testWritability();
+          }, 1000);
+        }, 500);
+      });
+
+      // Listen for errors
+      window.addEventListener("error", function (event) {
+        addTestResult(
+          "JavaScript Error",
+          "error",
+          `${event.message} at ${event.filename}:${event.lineno}`
+        );
+      });
+    </script>
+
+    <!-- Load the editor script -->
+    <script src="public/editor.js"></script>
+  </body>
+</html>

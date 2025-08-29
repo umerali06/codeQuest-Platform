@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Complete Editor Fix</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #1a1a1a;
+        color: white;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background-color: #2a2a2a;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #2d5a2d;
+        color: #90ee90;
+      }
+      .error {
+        background-color: #5a2d2d;
+        color: #ffcccb;
+      }
+      .info {
+        background-color: #2d4a5a;
+        color: #87ceeb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Complete Editor Fix Test</h1>
+
+    <div class="test-section">
+      <h2>📋 Test Results</h2>
+      <div id="testResults"></div>
+    </div>
+
+    <!-- Replicate the exact structure from editor.html -->
+    <div class="test-section">
+      <h2>🎯 Editor Test</h2>
+
+      <!-- Tab Container (exact copy from editor.html) -->
+      <div class="tab-container">
+        <div class="tab-header">
+          <button class="tab-btn active" data-tab="html">
+            <i class="tab-icon fas fa-globe"></i>
+            HTML
+          </button>
+          <button class="tab-btn" data-tab="css">
+            <i class="tab-icon fas fa-palette"></i>
+            CSS
+          </button>
+          <button class="tab-btn" data-tab="js">
+            <i class="tab-icon fas fa-bolt"></i>
+            JavaScript
+          </button>
+          <button class="tab-btn" data-tab="preview">
+            <i class="tab-icon fas fa-eye"></i>
+            Preview
+          </button>
+        </div>
+
+        <!-- HTML Editor Pane -->
+        <div id="html-editor" class="editor-pane active">
+          <div class="editor-header">
+            <span>HTML Editor</span>
+            <div class="editor-actions">
+              <button
+                class="btn-icon"
+                onclick="testFormatCode('html')"
+                title="Format HTML"
+              >
+                <i class="fas fa-magic"></i>
+              </button>
+            </div>
+          </div>
+          <div id="html-monaco" class="monaco-editor">
+            <!-- Will be replaced with textarea -->
+          </div>
+        </div>
+
+        <!-- CSS Editor Pane -->
+        <div id="css-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>CSS Editor</span>
+            <div class="editor-actions">
+              <button
+                class="btn-icon"
+                onclick="testFormatCode('css')"
+                title="Format CSS"
+              >
+                <i class="fas fa-magic"></i>
+              </button>
+            </div>
+          </div>
+          <div id="css-monaco" class="monaco-editor">
+            <!-- Will be replaced with textarea -->
+          </div>
+        </div>
+
+        <!-- JavaScript Editor Pane -->
+        <div id="js-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>JavaScript Editor</span>
+            <div class="editor-actions">
+              <button
+                class="btn-icon"
+                onclick="testFormatCode('js')"
+                title="Format JavaScript"
+              >
+                <i class="fas fa-magic"></i>
+              </button>
+            </div>
+          </div>
+          <div id="js-monaco" class="monaco-editor">
+            <!-- Will be replaced with textarea -->
+          </div>
+        </div>
+
+        <!-- Preview Pane -->
+        <div id="preview-editor" class="editor-pane">
+          <div class="editor-header">
+            <span>Live Preview</span>
+            <div class="preview-actions">
+              <button
+                class="btn-icon"
+                onclick="testUpdatePreview()"
+                title="Refresh Preview"
+              >
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="preview-container">
+            <iframe id="preview-frame" sandbox="allow-scripts"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <button onclick="testTabSwitching()" class="btn btn-primary">
+          🔄 Test Tab Switching
+        </button>
+        <button onclick="testTextareaWriting()" class="btn btn-success">
+          ✍️ Test Writing
+        </button>
+        <button onclick="reinitializeEditor()" class="btn btn-warning">
+          🔄 Reinitialize Editor
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let testResults = [];
+
+      function addTestResult(test, status, message) {
+        testResults.push({ test, status, message });
+        updateTestDisplay();
+      }
+
+      function updateTestDisplay() {
+        const container = document.getElementById("testResults");
+        container.innerHTML = testResults
+          .map(
+            (result) =>
+              `<div class="status ${result.status}">
+                    <strong>${result.test}:</strong> ${result.message}
+                </div>`
+          )
+          .join("");
+      }
+
+      function testTabSwitching() {
+        const tabs = ["html", "css", "js", "preview"];
+        let successCount = 0;
+
+        tabs.forEach((tab) => {
+          try {
+            // Simulate tab click
+            const tabBtn = document.querySelector(`[data-tab="${tab}"]`);
+            const editorPane = document.getElementById(`${tab}-editor`);
+
+            if (tabBtn && editorPane) {
+              // Test manual tab switching
+              document
+                .querySelectorAll(".tab-btn")
+                .forEach((btn) => btn.classList.remove("active"));
+              document
+                .querySelectorAll(".editor-pane")
+                .forEach((pane) => pane.classList.remove("active"));
+
+              tabBtn.classList.add("active");
+              editorPane.classList.add("active");
+
+              // Check if it worked
+              if (
+                tabBtn.classList.contains("active") &&
+                editorPane.classList.contains("active")
+              ) {
+                successCount++;
+                addTestResult(
+                  `${tab.toUpperCase()} Tab`,
+                  "success",
+                  `Tab switching works`
+                );
+              } else {
+                addTestResult(
+                  `${tab.toUpperCase()} Tab`,
+                  "error",
+                  `Tab switching failed`
+                );
+              }
+            } else {
+              addTestResult(
+                `${tab.toUpperCase()} Tab`,
+                "error",
+                `Tab button or pane not found`
+              );
+            }
+          } catch (error) {
+            addTestResult(
+              `${tab.toUpperCase()} Tab`,
+              "error",
+              `Error: ${error.message}`
+            );
+          }
+        });
+
+        addTestResult(
+          "Tab Switching Overall",
+          successCount === tabs.length ? "success" : "error",
+          `${successCount}/${tabs.length} tabs working`
+        );
+      }
+
+      function testTextareaWriting() {
+        const editors = ["html", "css", "js"];
+        let successCount = 0;
+
+        editors.forEach((type) => {
+          const textarea = document.getElementById(`${type}-textarea-editor`);
+          if (textarea) {
+            try {
+              const testText = `/* Test ${type} ${Date.now()} */`;
+              const originalValue = textarea.value;
+
+              // Test writing
+              textarea.value = testText;
+              textarea.focus();
+
+              if (textarea.value === testText) {
+                successCount++;
+                addTestResult(
+                  `${type.toUpperCase()} Writing`,
+                  "success",
+                  `Textarea is writable`
+                );
+
+                // Test if it's actually editable by user
+                if (!textarea.disabled && !textarea.readOnly) {
+                  addTestResult(
+                    `${type.toUpperCase()} Editable`,
+                    "success",
+                    `Textarea is editable`
+                  );
+                } else {
+                  addTestResult(
+                    `${type.toUpperCase()} Editable`,
+                    "error",
+                    `Textarea is disabled or readonly`
+                  );
+                }
+              } else {
+                addTestResult(
+                  `${type.toUpperCase()} Writing`,
+                  "error",
+                  `Failed to write to textarea`
+                );
+              }
+
+              // Restore original value
+              textarea.value = originalValue;
+            } catch (error) {
+              addTestResult(
+                `${type.toUpperCase()} Writing`,
+                "error",
+                `Error: ${error.message}`
+              );
+            }
+          } else {
+            addTestResult(
+              `${type.toUpperCase()} Textarea`,
+              "error",
+              `Textarea not found`
+            );
+          }
+        });
+
+        addTestResult(
+          "Writing Overall",
+          successCount === editors.length ? "success" : "error",
+          `${successCount}/${editors.length} textareas writable`
+        );
+      }
+
+      function testFormatCode(type) {
+        if (
+          window.codeEditor &&
+          typeof window.codeEditor.formatCode === "function"
+        ) {
+          try {
+            window.codeEditor.formatCode(type);
+            addTestResult(
+              `Format ${type.toUpperCase()}`,
+              "success",
+              `Format function called successfully`
+            );
+          } catch (error) {
+            addTestResult(
+              `Format ${type.toUpperCase()}`,
+              "error",
+              `Error: ${error.message}`
+            );
+          }
+        } else {
+          addTestResult(
+            `Format ${type.toUpperCase()}`,
+            "error",
+            `formatCode method not available`
+          );
+        }
+      }
+
+      function testUpdatePreview() {
+        if (
+          window.codeEditor &&
+          typeof window.codeEditor.updatePreview === "function"
+        ) {
+          try {
+            window.codeEditor.updatePreview();
+            addTestResult(
+              "Update Preview",
+              "success",
+              `Preview update called successfully`
+            );
+          } catch (error) {
+            addTestResult("Update Preview", "error", `Error: ${error.message}`);
+          }
+        } else {
+          addTestResult(
+            "Update Preview",
+            "error",
+            `updatePreview method not available`
+          );
+        }
+      }
+
+      function reinitializeEditor() {
+        if (
+          window.codeEditor &&
+          typeof window.codeEditor.initializeSimpleEditor === "function"
+        ) {
+          try {
+            window.codeEditor.initializeSimpleEditor();
+            addTestResult("Reinitialize", "success", `Editor reinitialized`);
+
+            // Test again after reinitializing
+            setTimeout(() => {
+              testTextareaWriting();
+            }, 500);
+          } catch (error) {
+            addTestResult("Reinitialize", "error", `Error: ${error.message}`);
+          }
+        } else {
+          addTestResult(
+            "Reinitialize",
+            "error",
+            `initializeSimpleEditor method not available`
+          );
+        }
+      }
+
+      // Setup manual tab switching for testing
+      document.addEventListener("DOMContentLoaded", function () {
+        addTestResult("Page Load", "info", "Starting tests...");
+
+        // Setup tab click handlers for testing
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const tab = btn.getAttribute("data-tab");
+
+            // Manual tab switching
+            document
+              .querySelectorAll(".tab-btn")
+              .forEach((b) => b.classList.remove("active"));
+            document
+              .querySelectorAll(".editor-pane")
+              .forEach((p) => p.classList.remove("active"));
+
+            btn.classList.add("active");
+            const pane = document.getElementById(`${tab}-editor`);
+            if (pane) {
+              pane.classList.add("active");
+            }
+
+            addTestResult("Manual Tab Click", "info", `Switched to ${tab} tab`);
+          });
+        });
+
+        // Wait for editor to initialize
+        setTimeout(() => {
+          if (window.codeEditor) {
+            addTestResult(
+              "CodeEditor Instance",
+              "success",
+              "CodeEditor instance found"
+            );
+            testTabSwitching();
+            setTimeout(() => testTextareaWriting(), 1000);
+          } else {
+            addTestResult(
+              "CodeEditor Instance",
+              "error",
+              "CodeEditor instance not found"
+            );
+          }
+        }, 1000);
+      });
+
+      // Listen for errors
+      window.addEventListener("error", function (event) {
+        addTestResult(
+          "JavaScript Error",
+          "error",
+          `${event.message} at ${event.filename}:${event.lineno}`
+        );
+      });
+    </script>
+
+    <!-- Load Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Load the editor script -->
+    <script src="public/editor.js"></script>
+  </body>
+</html>

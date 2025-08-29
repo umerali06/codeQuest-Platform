@@ -133,8 +133,10 @@ function startChallenge(challengeId) {
 
   // Add a small delay for smooth transition effect
   setTimeout(() => {
-    // Redirect to the editor page
-    window.location.href = "editor.html";
+    // Redirect to the editor page with challenge parameter
+    window.location.href = `editor.html?challenge=${encodeURIComponent(
+      challengeId
+    )}`;
   }, 300);
 }
 
@@ -188,7 +190,7 @@ function displayChallengesFromAPI() {
         <span>✅ New</span>
       </div>
       <button class="btn btn-primary" onclick="startChallenge('${
-        challenge.slug || challenge.title
+        challenge.slug || challenge.id || challenge.title
       }')">Start</button>
     </div>
   `
@@ -302,7 +304,7 @@ function displayFilteredChallenges(filteredChallenges) {
         <span>✅ New</span>
       </div>
       <button class="btn btn-primary" onclick="startChallenge('${
-        challenge.title
+        challenge.slug || challenge.id || challenge.title
       }')">Start</button>
     </div>
   `
@@ -478,7 +480,10 @@ function updateProgressStats() {
 
   if (stats[0])
     stats[0].textContent = challengeState.completedChallenges.length;
-  if (stats[1]) stats[1].textContent = Object.keys(challengesData).length; // Total available
+  if (stats[1])
+    stats[1].textContent = Array.isArray(challengesData)
+      ? challengesData.length
+      : 0; // Total available
   if (stats[2]) stats[2].textContent = calculateTotalXP();
   if (stats[3]) stats[3].textContent = getCurrentStreak();
 }
@@ -487,10 +492,19 @@ function updateProgressStats() {
 function calculateTotalXP() {
   let totalXP = 0;
 
+  if (!Array.isArray(challengesData)) {
+    return totalXP;
+  }
+
   challengeState.completedChallenges.forEach((challengeId) => {
-    const challenge = challengesData[challengeId];
+    const challenge = challengesData.find(
+      (c) =>
+        c.id === challengeId ||
+        c.slug === challengeId ||
+        c.title === challengeId
+    );
     if (challenge) {
-      totalXP += challenge.xp;
+      totalXP += challenge.xpReward || challenge.xp_reward || 0;
     }
   });
 
@@ -500,8 +514,8 @@ function calculateTotalXP() {
 // Get Current Streak
 function getCurrentStreak() {
   const user = window.AuthManager?.currentUser;
-  if (user) {
-    return window.AuthManager.userProgress.streak;
+  if (user && window.AuthManager.userProgress) {
+    return window.AuthManager.userProgress.streak || 0;
   }
   return 0;
 }

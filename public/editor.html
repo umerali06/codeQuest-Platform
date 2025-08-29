@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="animations.css" />
     <link rel="stylesheet" href="editor-styles.css" />
+    <link rel="stylesheet" href="game-editor-styles.css" />
+    <link rel="stylesheet" href="ai-assistant.css" />
+    <link rel="stylesheet" href="enhanced-editor-styles.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -79,14 +82,14 @@
                 <div class="challenge-actions">
                   <button
                     class="btn btn-primary"
-                    onclick="editor.loadChallengeList()"
+                    onclick="window.codeEditor && window.codeEditor.loadChallengeList()"
                   >
                     <i class="fas fa-list"></i>
                     Browse Challenges
                   </button>
                   <button
                     class="btn btn-secondary"
-                    onclick="editor.loadRandomChallenge()"
+                    onclick="window.codeEditor && window.codeEditor.loadRandomChallenge()"
                   >
                     <i class="fas fa-random"></i>
                     Random Challenge
@@ -109,7 +112,7 @@
             </button>
             <button
               class="btn btn-secondary"
-              onclick="editor.loadRandomChallenge()"
+              onclick="window.codeEditor && window.codeEditor.loadRandomChallenge()"
             >
               <i class="fas fa-graduation-cap"></i>
               Practice Mode
@@ -134,12 +137,88 @@
         </button>
       </div>
 
-      <!-- Challenge Test Statements -->
+      <!-- Game Instructions Panel -->
+      <div id="gameInstructions" class="game-panel" style="display: none">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-gamepad"></i>
+            <span id="gameTitle">Game Instructions</span>
+          </h3>
+          <div class="game-meta">
+            <span class="game-timer"
+              >Time: <span id="timeDisplay">00:00</span></span
+            >
+            <span class="game-difficulty" id="gameDifficulty">Easy</span>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div id="gameDescription" class="game-description">
+            <!-- Game description will be populated here -->
+          </div>
+          <div id="gameObjectives" class="game-objectives">
+            <h4><i class="fas fa-target"></i> Objectives:</h4>
+            <ul id="objectivesList">
+              <!-- Objectives will be populated here -->
+            </ul>
+          </div>
+          <div class="game-actions">
+            <button id="submitGameBtn" class="btn btn-primary">
+              <i class="fas fa-trophy"></i> Submit Game
+            </button>
+            <button id="resetGameBtn" class="btn btn-secondary">
+              <i class="fas fa-refresh"></i> Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Challenge Instructions Panel -->
+      <div
+        id="challengeInstructions"
+        class="challenge-panel"
+        style="display: none"
+      >
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-trophy"></i>
+            <span id="challengeTitlePanel">Challenge</span>
+          </h3>
+          <div class="challenge-meta">
+            <span
+              class="challenge-difficulty-badge"
+              id="challengeDifficultyPanel"
+              >Medium</span
+            >
+            <span class="challenge-xp-badge" id="challengeXPPanel">+50 XP</span>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div id="challengeDescriptionPanel" class="challenge-description">
+            <!-- Challenge description will be populated here -->
+          </div>
+          <div id="challengeRequirements" class="challenge-requirements">
+            <h4><i class="fas fa-list-check"></i> Requirements:</h4>
+            <ul id="testStatements">
+              <!-- Requirements will be populated here -->
+            </ul>
+          </div>
+          <div class="challenge-actions">
+            <button id="submitChallengeBtn" class="btn btn-primary">
+              <i class="fas fa-check"></i> Submit Challenge
+            </button>
+            <button id="runTestsBtn" class="btn btn-secondary">
+              <i class="fas fa-play"></i> Run Tests
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legacy Challenge Test Statements (for compatibility) -->
       <div id="challengeTests" class="challenge-tests" style="display: none">
         <div class="tests-header">
           <h3><i class="fas fa-list-check"></i> Challenge Requirements</h3>
         </div>
-        <div id="testStatements" class="test-statements">
+        <div id="testStatementsLegacy" class="test-statements">
           <!-- Test statements will be populated here -->
         </div>
       </div>
@@ -172,7 +251,7 @@
             <div class="editor-actions">
               <button
                 class="btn-icon"
-                onclick="editor.formatCode('html')"
+                onclick="window.codeEditor && window.codeEditor.formatCode('html')"
                 title="Format HTML"
               >
                 <i class="fas fa-magic"></i>
@@ -191,7 +270,7 @@
             <div class="editor-actions">
               <button
                 class="btn-icon"
-                onclick="editor.formatCode('css')"
+                onclick="window.codeEditor && window.codeEditor.formatCode('css')"
                 title="Format CSS"
               >
                 <i class="fas fa-magic"></i>
@@ -210,7 +289,7 @@
             <div class="editor-actions">
               <button
                 class="btn-icon"
-                onclick="editor.formatCode('js')"
+                onclick="window.codeEditor && window.codeEditor.formatCode('js')"
                 title="Format JavaScript"
               >
                 <i class="fas fa-magic"></i>
@@ -229,14 +308,14 @@
             <div class="preview-actions">
               <button
                 class="btn-icon"
-                onclick="editor.refreshPreview()"
+                onclick="window.codeEditor && window.codeEditor.updatePreview()"
                 title="Refresh Preview"
               >
                 <i class="fas fa-sync-alt"></i>
               </button>
               <button
                 class="btn-icon"
-                onclick="editor.toggleFullscreen()"
+                onclick="window.codeEditor && window.codeEditor.toggleFullscreen()"
                 title="Fullscreen"
               >
                 <i class="fas fa-expand"></i>
@@ -261,6 +340,46 @@
           <div class="test-placeholder">
             <p>Click "Run Tests" to see your results</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Game Results Panel -->
+      <div
+        id="gameResults"
+        class="results-panel game-results"
+        style="display: none"
+      >
+        <div class="results-header">
+          <h3><i class="fas fa-trophy"></i> Game Results</h3>
+          <button
+            class="close-btn"
+            onclick="this.parentElement.parentElement.style.display='none'"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="results-content" id="gameResultsContent">
+          <!-- Game results will be populated here -->
+        </div>
+      </div>
+
+      <!-- Challenge Results Panel -->
+      <div
+        id="challengeResults"
+        class="results-panel challenge-results"
+        style="display: none"
+      >
+        <div class="results-header">
+          <h3><i class="fas fa-check-circle"></i> Challenge Results</h3>
+          <button
+            class="close-btn"
+            onclick="this.parentElement.parentElement.style.display='none'"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="results-content" id="challengeResultsContent">
+          <!-- Challenge results will be populated here -->
         </div>
       </div>
     </div>
@@ -360,6 +479,7 @@
     <script src="auth.js"></script>
     <script src="ai-assistant.js"></script>
     <script src="main.js"></script>
+    <script src="instruction-loader.js"></script>
     <script src="editor.js"></script>
   </body>
 </html>

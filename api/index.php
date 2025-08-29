@@ -15,12 +15,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Load dependencies
-require_once __DIR__ . '/../vendor/autoload.php';
+// Load dependencies (optional)
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
 
-// Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+// Load environment variables manually (fallback if Dotenv not available)
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos($line, '=') !== false && !str_starts_with($line, '#')) {
+            list($key, $value) = explode('=', $line, 2);
+            $_ENV[trim($key)] = trim($value);
+        }
+    }
+}
 
 // Database configuration
 $dbConfig = [
@@ -55,7 +65,7 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 
 // Remove /api prefix if present
 $apiPath = preg_replace('#^/api#', '', $requestPath);
-$pathParts = array_filter(explode('/', $apiPath));
+$pathParts = array_values(array_filter(explode('/', $apiPath)));
 
 // Route requests
 try {
@@ -106,6 +116,11 @@ try {
             require_once __DIR__ . '/statistics.php';
             break;
             
+        case 'learning-paths':
+        case 'paths':
+            require_once __DIR__ . '/learning-paths.php';
+            break;
+            
         case 'health':
             echo json_encode([
                 'status' => 'ok',
@@ -131,8 +146,13 @@ try {
  * Utility function to get authenticated user
  */
 function getAuthenticatedUser($pdo) {
-    $headers = getallheaders();
-    $authHeader = $headers['Authorization'] ?? '';
+    // Handle CLI mode (for testing)
+    if (php_sapi_name() === 'cli') {
+        return null;
+    }
+    
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
+    $authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
     
     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
         return null;
@@ -142,7 +162,7 @@ function getAuthenticatedUser($pdo) {
     
     // For development, we'll use a simple token validation
     // In production, this should validate JWT tokens from Appwrite
-    if ($_ENV['NODE_ENV'] === 'development') {
+    if (($_ENV['NODE_ENV'] ?? 'development') === 'development') {
         // Simple token validation for development
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$token]);

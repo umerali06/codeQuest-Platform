@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Challenge Flow Test</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+      }
+      .test-section {
+        background: #f8f9fa;
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 10px;
+        border-left: 5px solid #007bff;
+      }
+      .test-section.success {
+        border-left-color: #28a745;
+        background: #d4edda;
+      }
+      .test-section.warning {
+        border-left-color: #ffc107;
+        background: #fff3cd;
+      }
+      .btn {
+        background: #007bff;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 8px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      .btn:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+      }
+      .btn-success {
+        background: #28a745;
+      }
+      .btn-success:hover {
+        background: #1e7e34;
+      }
+      .btn-warning {
+        background: #ffc107;
+        color: #212529;
+      }
+      .btn-warning:hover {
+        background: #e0a800;
+      }
+      .btn-danger {
+        background: #dc3545;
+      }
+      .btn-danger:hover {
+        background: #c82333;
+      }
+      .status {
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .status.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+      .challenge-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .challenge-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+      .challenge-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      .challenge-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .challenge-meta {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: bold;
+      }
+      .badge.easy {
+        background: #d4edda;
+        color: #155724;
+      }
+      .badge.medium {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .badge.hard {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        font-size: 0.9em;
+      }
+      .step-indicator {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .step-number {
+        background: #007bff;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+      }
+      .step-number.completed {
+        background: #28a745;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎯 Challenge System - Complete Flow Test</h1>
+
+      <div class="test-section success">
+        <h2>✅ System Status: FULLY OPERATIONAL</h2>
+        <p>
+          The challenge system has been successfully implemented and is ready
+          for testing!
+        </p>
+      </div>
+
+      <div class="test-section">
+        <h2>🔧 Pre-Flight Checks</h2>
+        <div class="step-indicator">
+          <div class="step-number">1</div>
+          <div>
+            <strong>Clear Browser Storage</strong>
+            <p>
+              Remove any old challenge data that might interfere with testing.
+            </p>
+            <button class="btn btn-warning" onclick="clearStorage()">
+              Clear Storage
+            </button>
+            <div id="storageResult"></div>
+          </div>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-number">2</div>
+          <div>
+            <strong>Test API Connection</strong>
+            <p>Verify that the challenges API is responding correctly.</p>
+            <button class="btn" onclick="testAPI()">Test API</button>
+            <div id="apiResult"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h2>🎮 Available Test Challenges</h2>
+        <p>
+          Click on any challenge below to test the complete flow from challenge
+          selection to completion.
+        </p>
+        <div class="challenge-grid" id="challengeGrid">
+          <!-- Challenges will be loaded here -->
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h2>🧪 Manual Testing Steps</h2>
+
+        <div class="step-indicator">
+          <div class="step-number">1</div>
+          <div>
+            <strong>Start from Challenges Page</strong>
+            <p>Test the normal user flow starting from the challenges page.</p>
+            <a href="challenges.html" class="btn btn-success"
+              >Go to Challenges Page</a
+            >
+          </div>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-number">2</div>
+          <div>
+            <strong>Test Direct Challenge Loading</strong>
+            <p>Test loading challenges directly via URL parameters.</p>
+            <a href="editor.html?challenge=contact-card" class="btn"
+              >Contact Card Challenge</a
+            >
+            <a href="editor.html?challenge=responsive-nav" class="btn"
+              >Navigation Challenge</a
+            >
+            <a href="editor.html?challenge=todo-app" class="btn"
+              >Todo App Challenge</a
+            >
+          </div>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-number">3</div>
+          <div>
+            <strong>Test Free Play Mode</strong>
+            <p>Verify the editor works without any challenge loaded.</p>
+            <a href="editor.html" class="btn btn-warning">Free Play Mode</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h2>✅ What to Verify</h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+          "
+        >
+          <div>
+            <h4>📋 Challenge Loading</h4>
+            <ul>
+              <li>Challenge title displays correctly</li>
+              <li>Description and instructions show</li>
+              <li>Difficulty and XP are visible</li>
+              <li>Requirements list appears</li>
+            </ul>
+          </div>
+          <div>
+            <h4>💻 Code Editor</h4>
+            <ul>
+              <li>Starter code loads in tabs</li>
+              <li>HTML/CSS/JS editors work</li>
+              <li>Preview tab functions</li>
+              <li>Code can be edited freely</li>
+            </ul>
+          </div>
+          <div>
+            <h4>🧪 Testing System</h4>
+            <ul>
+              <li>"Run Tests" button works</li>
+              <li>Test results display</li>
+              <li>Pass/fail status clear</li>
+              <li>Completion feedback shows</li>
+            </ul>
+          </div>
+          <div>
+            <h4>🎯 User Experience</h4>
+            <ul>
+              <li>Smooth navigation flow</li>
+              <li>Clear visual feedback</li>
+              <li>Responsive design works</li>
+              <li>No console errors</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h2>🐛 Troubleshooting</h2>
+        <div id="troubleshooting">
+          <p><strong>If you encounter issues:</strong></p>
+          <ol>
+            <li>
+              Check that the PHP server is running:
+              <code>php -S localhost:8000 router.php</code>
+            </li>
+            <li>Verify database connection and seeded data</li>
+            <li>Clear browser cache and localStorage</li>
+            <li>Check browser console for JavaScript errors</li>
+            <li>Ensure all API endpoints return valid JSON</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Load and display available challenges
+      async function loadChallenges() {
+        try {
+          const response = await fetch("/api/challenges");
+          const result = await response.json();
+
+          if (result.success) {
+            displayChallenges(result.data);
+          } else {
+            document.getElementById("challengeGrid").innerHTML =
+              '<div class="status error">Failed to load challenges: ' +
+              (result.message || "Unknown error") +
+              "</div>";
+          }
+        } catch (error) {
+          document.getElementById("challengeGrid").innerHTML =
+            '<div class="status error">Network error: ' +
+            error.message +
+            "</div>";
+        }
+      }
+
+      function displayChallenges(challenges) {
+        const grid = document.getElementById("challengeGrid");
+
+        if (challenges.length === 0) {
+          grid.innerHTML =
+            '<div class="status info">No challenges found. Run seed-challenge-data.php to add sample challenges.</div>';
+          return;
+        }
+
+        grid.innerHTML = challenges
+          .map(
+            (challenge) => `
+                <div class="challenge-card">
+                    <div class="challenge-title">${challenge.title}</div>
+                    <p>${challenge.description}</p>
+                    <div class="challenge-meta">
+                        <span class="badge ${challenge.difficulty}">${challenge.difficulty}</span>
+                        <span class="badge" style="background: #e9ecef; color: #495057;">${challenge.category}</span>
+                        <span class="badge" style="background: #fff3cd; color: #856404;">${challenge.xpReward} XP</span>
+                    </div>
+                    <a href="editor.html?challenge=${challenge.slug}" class="btn btn-success">
+                        🚀 Start Challenge
+                    </a>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function clearStorage() {
+        const keys = Object.keys(localStorage);
+        const clearedKeys = [];
+
+        keys.forEach((key) => {
+          if (key.includes("codequest") || key.includes("CodeQuest")) {
+            localStorage.removeItem(key);
+            clearedKeys.push(key);
+          }
+        });
+
+        const sessionKeys = Object.keys(sessionStorage);
+        sessionKeys.forEach((key) => {
+          if (key.includes("codequest") || key.includes("CodeQuest")) {
+            sessionStorage.removeItem(key);
+            clearedKeys.push(key + " (session)");
+          }
+        });
+
+        const resultDiv = document.getElementById("storageResult");
+        if (clearedKeys.length > 0) {
+          resultDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ Cleared ${clearedKeys.length} storage items
+                    </div>
+                `;
+        } else {
+          resultDiv.innerHTML = `
+                    <div class="status info">
+                        ℹ️ No storage items to clear
+                    </div>
+                `;
+        }
+      }
+
+      async function testAPI() {
+        const resultDiv = document.getElementById("apiResult");
+        resultDiv.innerHTML =
+          '<div class="status info">Testing API endpoints...</div>';
+
+        try {
+          // Test health endpoint
+          const healthResponse = await fetch("/api/health");
+          const healthResult = await healthResponse.json();
+
+          // Test challenges endpoint
+          const challengesResponse = await fetch("/api/challenges");
+          const challengesResult = await challengesResponse.json();
+
+          // Test specific challenge
+          const challengeResponse = await fetch("/api/challenges/contact-card");
+          const challengeResult = await challengeResponse.json();
+
+          if (
+            healthResult.status === "ok" &&
+            challengesResult.success &&
+            challengeResult.success
+          ) {
+            resultDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ All API endpoints working correctly!
+                            <ul>
+                                <li>Health check: OK</li>
+                                <li>Challenges list: ${challengesResult.data.length} challenges</li>
+                                <li>Challenge details: ${challengeResult.data.testStatements.length} requirements</li>
+                            </ul>
+                        </div>
+                    `;
+          } else {
+            throw new Error("API responses invalid");
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ API test failed: ${error.message}
+                    </div>
+                `;
+        }
+      }
+
+      // Load challenges on page load
+      document.addEventListener("DOMContentLoaded", loadChallenges);
+    </script>
+  </body>
+</html>

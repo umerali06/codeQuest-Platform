@@ -1,7 +1,15 @@
 <?php
 /**
  * Modules API endpoints
+ * This file is included by api/index.php and has access to $pdo, $requestMethod, $pathParts
  */
+
+// Ensure we have required variables from index.php
+if (!isset($pdo) || !isset($requestMethod) || !isset($pathParts)) {
+    http_response_code(500);
+    echo json_encode(['error' => 'API routing error']);
+    exit();
+}
 
 $moduleSlug = $pathParts[1] ?? '';
 

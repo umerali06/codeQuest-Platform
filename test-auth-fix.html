@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth Fix Test - CodeQuest</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/learn-styles.css" />
+    <link rel="stylesheet" href="public/modal-animations.css" />
+    <style>
+      body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: "Inter", sans-serif;
+      }
+      .test-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+      }
+      .test-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+      .status-logged-in {
+        background: #22c55e;
+      }
+      .status-logged-out {
+        background: #ef4444;
+      }
+      .test-button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+      }
+      .test-button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .auth-status {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1>Authentication Fix Test</h1>
+
+      <div class="test-section">
+        <h2>Current Authentication Status</h2>
+        <div class="auth-status" id="authStatus">
+          <span class="status-indicator status-logged-out"></span>
+          Checking authentication...
+        </div>
+        <div id="userInfo"></div>
+        <button class="test-button" onclick="checkAuth()">
+          Refresh Auth Status
+        </button>
+      </div>
+
+      <div class="test-section">
+        <h2>Test Authentication</h2>
+        <button class="test-button" onclick="testLogin()">Test Login</button>
+        <button class="test-button" onclick="testSignup()">Test Signup</button>
+        <button class="test-button" onclick="testLogout()">Test Logout</button>
+      </div>
+
+      <div class="test-section">
+        <h2>Test Learn Page Behavior</h2>
+        <button class="test-button" onclick="simulateLearnPage()">
+          Simulate Learn Page Load
+        </button>
+        <button class="test-button" onclick="toggleAuthPrompt()">
+          Toggle Auth Prompt
+        </button>
+        <div id="learnPageStatus"></div>
+      </div>
+
+      <div class="test-section">
+        <h2>Storage Debug</h2>
+        <button class="test-button" onclick="showStorageInfo()">
+          Show Storage Info
+        </button>
+        <button class="test-button" onclick="clearStorage()">
+          Clear Storage
+        </button>
+        <div id="storageInfo"></div>
+      </div>
+    </div>
+
+    <!-- Auth Check Modal (simulated) -->
+    <div id="authCheck" class="auth-check" style="display: none">
+      <div class="container">
+        <div class="auth-prompt">
+          <div class="auth-icon">🔒</div>
+          <h2>Login Required</h2>
+          <p>
+            Please log in to access learning modules and track your progress.
+          </p>
+          <div class="auth-actions">
+            <button class="btn btn-primary" onclick="showLogin()">Login</button>
+            <button class="btn btn-secondary" onclick="showSignup()">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Test Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              value="test@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              value="password123"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Test Signup</h2>
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" value="Test User" required />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              value="test@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input
+              type="password"
+              id="signupPassword"
+              value="password123"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="public/auth.js"></script>
+    <script>
+      // Test functions
+      function checkAuth() {
+        const authStatus = document.getElementById("authStatus");
+        const userInfo = document.getElementById("userInfo");
+
+        if (window.AuthManager) {
+          const isLoggedIn = window.AuthManager.isLoggedIn();
+          const currentUser = window.AuthManager.getCurrentUser();
+
+          authStatus.innerHTML = `
+                    <span class="status-indicator ${
+                      isLoggedIn ? "status-logged-in" : "status-logged-out"
+                    }"></span>
+                    ${isLoggedIn ? "Logged In" : "Not Logged In"}
+                `;
+
+          if (isLoggedIn && currentUser) {
+            userInfo.innerHTML = `
+                        <p><strong>User:</strong> ${
+                          currentUser.name || currentUser.email
+                        }</p>
+                        <p><strong>Email:</strong> ${currentUser.email}</p>
+                        <p><strong>Session Expiry:</strong> ${
+                          currentUser.sessionExpiry || "N/A"
+                        }</p>
+                    `;
+          } else {
+            userInfo.innerHTML = "<p>No user data available</p>";
+          }
+        } else {
+          authStatus.innerHTML = `
+                    <span class="status-indicator status-logged-out"></span>
+                    AuthManager not available
+                `;
+        }
+      }
+
+      function testLogin() {
+        showLogin();
+      }
+
+      function testSignup() {
+        showSignup();
+      }
+
+      async function testLogout() {
+        if (window.AuthManager) {
+          await window.AuthManager.logout();
+          checkAuth();
+        }
+      }
+
+      function simulateLearnPage() {
+        const status = document.getElementById("learnPageStatus");
+        const isLoggedIn =
+          window.AuthManager && window.AuthManager.isLoggedIn();
+
+        if (isLoggedIn) {
+          status.innerHTML =
+            '<p style="color: #22c55e;">✅ Learn page would show content</p>';
+          hideAuthPrompt();
+        } else {
+          status.innerHTML =
+            '<p style="color: #ef4444;">❌ Learn page would show auth prompt</p>';
+          showAuthPrompt();
+        }
+      }
+
+      function toggleAuthPrompt() {
+        const authCheck = document.getElementById("authCheck");
+        if (authCheck.style.display === "none" || !authCheck.style.display) {
+          showAuthPrompt();
+        } else {
+          hideAuthPrompt();
+        }
+      }
+
+      function showAuthPrompt() {
+        const authCheck = document.getElementById("authCheck");
+        document.body.style.overflow = "hidden";
+        document.body.classList.add("modal-open");
+        authCheck.style.display = "flex";
+      }
+
+      function hideAuthPrompt() {
+        const authCheck = document.getElementById("authCheck");
+        document.body.style.overflow = "";
+        document.body.classList.remove("modal-open");
+        authCheck.style.display = "none";
+      }
+
+      function showStorageInfo() {
+        const storageInfo = document.getElementById("storageInfo");
+        const userData = localStorage.getItem("codequest_user");
+        const progressData = localStorage.getItem("codequest_progress");
+
+        storageInfo.innerHTML = `
+                <h4>LocalStorage Contents:</h4>
+                <p><strong>User Data:</strong> ${
+                  userData ? "Present" : "Not found"
+                }</p>
+                <p><strong>Progress Data:</strong> ${
+                  progressData ? "Present" : "Not found"
+                }</p>
+                ${
+                  userData
+                    ? `<pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">${JSON.stringify(
+                        JSON.parse(userData),
+                        null,
+                        2
+                      )}</pre>`
+                    : ""
+                }
+            `;
+      }
+
+      function clearStorage() {
+        localStorage.removeItem("codequest_user");
+        localStorage.removeItem("codequest_progress");
+        localStorage.removeItem("codequest_users");
+        checkAuth();
+        showStorageInfo();
+      }
+
+      // Modal functions
+      function showLogin() {
+        const modal = document.getElementById("loginModal");
+        modal.style.display = "flex";
+        setTimeout(() => modal.classList.add("show"), 10);
+      }
+
+      function showSignup() {
+        const modal = document.getElementById("signupModal");
+        modal.style.display = "flex";
+        setTimeout(() => modal.classList.add("show"), 10);
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove("show");
+        setTimeout(() => (modal.style.display = "none"), 300);
+      }
+
+      // Setup form handlers
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check auth on load
+        setTimeout(checkAuth, 1000);
+
+        // Login form
+        document
+          .getElementById("loginForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            try {
+              const result = await window.AuthManager.login(email, password);
+              if (result.success) {
+                closeModal("loginModal");
+                checkAuth();
+                simulateLearnPage();
+              }
+            } catch (error) {
+              alert("Login failed: " + error.message);
+            }
+          });
+
+        // Signup form
+        document
+          .getElementById("signupForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const name = document.getElementById("signupName").value;
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            try {
+              const result = await window.AuthManager.register(
+                name,
+                email,
+                password
+              );
+              if (result.success) {
+                closeModal("signupModal");
+                checkAuth();
+                simulateLearnPage();
+              }
+            } catch (error) {
+              alert("Signup failed: " + error.message);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Assistant UI Test</title>
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="stylesheet" href="public/ai-assistant.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .success {
+        border-color: #4ade80;
+        background: rgba(74, 222, 128, 0.1);
+      }
+      .error {
+        border-color: #f87171;
+        background: rgba(248, 113, 113, 0.1);
+      }
+      .info {
+        border-color: #60a5fa;
+        background: rgba(96, 165, 250, 0.1);
+      }
+
+      button {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 5px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+      }
+      .result {
+        margin: 15px 0;
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .highlight {
+        background: rgba(255, 255, 0, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🤖 AI Assistant UI Visibility Test</h1>
+      <p>
+        This page tests the AI assistant UI components to ensure proper
+        visibility and styling.
+      </p>
+
+      <div class="test-section info">
+        <h2>🎯 What to Look For</h2>
+        <ul>
+          <li>
+            <span class="highlight">AI Button</span>: Floating button in
+            bottom-right corner
+          </li>
+          <li>
+            <span class="highlight">Proper Colors</span>: All text should be
+            clearly readable
+          </li>
+          <li>
+            <span class="highlight">Responsive Design</span>: Should work on
+            mobile and desktop
+          </li>
+          <li>
+            <span class="highlight">Smooth Animations</span>: Button hover
+            effects and chat window transitions
+          </li>
+        </ul>
+      </div>
+
+      <div class="test-section">
+        <h2>🧪 Interactive Tests</h2>
+        <button onclick="testAIButton()">Test AI Button Visibility</button>
+        <button onclick="testAIChat()">Test AI Chat Window</button>
+        <button onclick="testAIResponse()">Test AI Response</button>
+        <button onclick="testMobileView()">Test Mobile View</button>
+        <div id="testResults"></div>
+      </div>
+
+      <div class="test-section success">
+        <h2>✅ Expected Results</h2>
+        <p>
+          <strong>AI Button:</strong> Should appear as a purple gradient button
+          with "🤖 AI Assistant" text
+        </p>
+        <p>
+          <strong>Chat Window:</strong> Clean white window with proper text
+          contrast
+        </p>
+        <p>
+          <strong>Messages:</strong> User messages in purple, AI messages in
+          white with dark text
+        </p>
+        <p>
+          <strong>Mobile:</strong> Responsive design that adapts to smaller
+          screens
+        </p>
+      </div>
+
+      <div class="test-section">
+        <h2>🔧 Manual Test Instructions</h2>
+        <ol>
+          <li>
+            <strong>Look for AI Button:</strong> Check bottom-right corner for
+            floating AI button
+          </li>
+          <li>
+            <strong>Click AI Button:</strong> Should open a chat window with
+            smooth animation
+          </li>
+          <li>
+            <strong>Type a Message:</strong> Try "How do I center a div?" and
+            send
+          </li>
+          <li>
+            <strong>Check Response:</strong> AI should respond with helpful CSS
+            information
+          </li>
+          <li>
+            <strong>Test Visibility:</strong> All text should be clearly
+            readable
+          </li>
+          <li>
+            <strong>Test Mobile:</strong> Resize window to test responsive
+            behavior
+          </li>
+        </ol>
+      </div>
+
+      <div class="test-section info">
+        <h2>🐛 Common Issues Fixed</h2>
+        <ul>
+          <li>
+            ✅ <strong>Black Text Issue:</strong> Fixed with proper color
+            inheritance
+          </li>
+          <li>
+            ✅ <strong>JSON Parsing Error:</strong> Fixed with robust API error
+            handling
+          </li>
+          <li>
+            ✅ <strong>Missing CSS:</strong> Added ai-assistant.css to all pages
+          </li>
+          <li>
+            ✅ <strong>Responsive Design:</strong> Mobile-optimized chat
+            interface
+          </li>
+          <li>
+            ✅ <strong>Cross-Browser:</strong> Compatible with modern browsers
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI Assistant will be injected here -->
+    <script src="public/ai-assistant.js"></script>
+
+    <script>
+      function testAIButton() {
+        const resultDiv = document.getElementById("testResults");
+        const aiButton = document.querySelector(".ai-toggle-button");
+
+        if (aiButton) {
+          const styles = window.getComputedStyle(aiButton);
+          resultDiv.innerHTML = `<div class="result success">
+                    <h3>✅ AI Button Found!</h3>
+                    <p><strong>Background:</strong> ${styles.background}</p>
+                    <p><strong>Color:</strong> ${styles.color}</p>
+                    <p><strong>Position:</strong> ${styles.position}</p>
+                    <p><strong>Z-Index:</strong> ${styles.zIndex}</p>
+                    <p>The AI button is properly styled and positioned!</p>
+                </div>`;
+        } else {
+          resultDiv.innerHTML = `<div class="result error">
+                    <h3>❌ AI Button Not Found</h3>
+                    <p>The AI button is not visible. Check console for errors.</p>
+                </div>`;
+        }
+      }
+
+      function testAIChat() {
+        const resultDiv = document.getElementById("testResults");
+        const aiWindow = document.querySelector(".ai-chat-window");
+
+        if (aiWindow) {
+          const styles = window.getComputedStyle(aiWindow);
+          resultDiv.innerHTML = `<div class="result success">
+                    <h3>✅ AI Chat Window Found!</h3>
+                    <p><strong>Background:</strong> ${styles.background}</p>
+                    <p><strong>Border Radius:</strong> ${styles.borderRadius}</p>
+                    <p><strong>Box Shadow:</strong> ${styles.boxShadow}</p>
+                    <p>Try clicking the AI button to open the chat!</p>
+                </div>`;
+        } else {
+          resultDiv.innerHTML = `<div class="result error">
+                    <h3>❌ AI Chat Window Not Found</h3>
+                    <p>The AI chat window element is missing.</p>
+                </div>`;
+        }
+      }
+
+      async function testAIResponse() {
+        const resultDiv = document.getElementById("testResults");
+        resultDiv.innerHTML = `<div class="result info">
+                <h3>🔄 Testing AI Response...</h3>
+                <p>Sending test message to AI API...</p>
+            </div>`;
+
+        try {
+          const response = await fetch("/api/ai", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: "Test message for UI visibility",
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            resultDiv.innerHTML = `<div class="result success">
+                        <h3>✅ AI API Working!</h3>
+                        <p><strong>Status:</strong> ${response.status} OK</p>
+                        <p><strong>Response Length:</strong> ${data.response.length} characters</p>
+                        <p><strong>Source:</strong> ${data.source}</p>
+                        <p>The AI is responding properly with helpful content!</p>
+                    </div>`;
+          } else {
+            resultDiv.innerHTML = `<div class="result error">
+                        <h3>❌ AI API Error</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Error:</strong> ${
+                          data.error || "Unknown error"
+                        }</p>
+                    </div>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<div class="result error">
+                    <h3>❌ Network Error</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Check if the server is running on localhost:8000</p>
+                </div>`;
+        }
+      }
+
+      function testMobileView() {
+        const resultDiv = document.getElementById("testResults");
+        const viewport = window.innerWidth;
+
+        resultDiv.innerHTML = `<div class="result info">
+                <h3>📱 Mobile View Test</h3>
+                <p><strong>Current Viewport:</strong> ${viewport}px wide</p>
+                <p><strong>Mobile Breakpoint:</strong> 768px</p>
+                <p><strong>Status:</strong> ${
+                  viewport <= 768 ? "Mobile View" : "Desktop View"
+                }</p>
+                <p>Try resizing your browser window to test responsive behavior!</p>
+                <p><em>On mobile, the AI button should show only the icon, and the chat should be full-width.</em></p>
+            </div>`;
+      }
+
+      // Auto-run basic tests when page loads
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          testAIButton();
+        }, 1000);
+      });
+
+      // Add some visual feedback
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("🤖 AI Assistant UI Test Page Loaded");
+        console.log("✅ AI Assistant CSS should be loaded");
+        console.log("✅ AI Assistant JS should be loaded");
+        console.log("👀 Look for the AI button in the bottom-right corner!");
+      });
+    </script>
+  </body>
+</html>
