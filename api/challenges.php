@@ -216,6 +216,9 @@ function handleGetChallenge($pdo, $challengeSlug) {
 }
 
 function handleSubmitChallenge($pdo) {
+    // Include code evaluator
+    require_once __DIR__ . '/code-evaluator.php';
+    
     // Try to get authenticated user, but don't require it for challenge testing
     $user = getAuthenticatedUser($pdo);
     
@@ -241,15 +244,19 @@ function handleSubmitChallenge($pdo) {
         sendResponse(['error' => 'Challenge not found'], 404);
     }
     
-    // Run tests (simplified for now)
-    $tests = json_decode($challenge['tests'] ?? '[]', true);
-    $testResults = runChallengeTests($code, $tests);
+    // Run tests using proper code evaluator
+    $testCases = json_decode($challenge['test_cases'] ?? '[]', true);
+    $solutionCode = json_decode($challenge['solution_code'] ?? '{}', true);
     
+    $evaluation = CodeEvaluator::evaluateCode($code, $testCases, $solutionCode);
+    
+    $testResults = $evaluation['testResults'];
     $testsPassed = count(array_filter($testResults, function($result) {
         return $result['passed'];
     }));
-    $totalTests = count($tests);
-    $isCompleted = $testsPassed === $totalTests && $totalTests > 0;
+    $totalTests = count($testResults);
+    $isCompleted = $evaluation['score'] >= 70; // 70% or higher to complete
+    $score = $evaluation['score'];
     
     $xpEarned = 0;
     $existingAttempt = null;
@@ -334,7 +341,12 @@ function handleSubmitChallenge($pdo) {
             'isCompleted' => $isCompleted,
             'testsPassed' => $testsPassed,
             'totalTests' => $totalTests,
+            'score' => $score,
             'testResults' => $testResults,
+            'feedback' => $evaluation['feedback'],
+            'codeAnalysis' => $evaluation['codeAnalysis'],
+            'earnedPoints' => $evaluation['earnedPoints'],
+            'totalPoints' => $evaluation['totalPoints'],
             'xpEarned' => $xpEarned,
             'authenticated' => $user !== null,
             'message' => $user ? 'Challenge submitted and progress saved' : 'Challenge tested (login to save progress)'

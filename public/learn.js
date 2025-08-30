@@ -258,6 +258,8 @@ class LearnManager {
       console.log(`✅ Loaded ${this.modules.length} modules`);
 
       this.renderModules();
+      this.addLessonLaunchButtons(); // Add lesson launch functionality
+      this.addQuickLessonLauncher(); // Add quick lesson launcher
     } catch (error) {
       console.error("❌ Error loading modules:", error);
       this.showModulesError(
@@ -687,6 +689,13 @@ class LearnManager {
         
         <div class="module-actions">
           ${actionButton}
+          <button class="module-btn launch-btn" onclick="learnManager.launchModuleInEditor('${
+            module.slug
+          }', '${this.escapeHtml(module.title)}', '${this.escapeHtml(
+      module.description
+    )}')">
+            ✏️ Practice in Editor
+          </button>
         </div>
       </div>
     `;
@@ -814,35 +823,77 @@ class LearnManager {
     try {
       console.log(`🎯 Starting lesson: ${lessonSlug}`);
 
-      const response = await fetch(`/api/lessons/${lessonSlug}`);
+      let lessonData = null;
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      // Try API first
+      try {
+        const response = await fetch(`/api/lessons/${lessonSlug}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.lesson) {
+            lessonData = result.lesson;
+            console.log("✅ Lesson loaded from API");
+          }
+        }
+      } catch (apiError) {
+        console.log("⚠️ API failed, using fallback lesson...");
       }
 
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to load lesson");
+      // Create fallback lesson if API failed
+      if (!lessonData) {
+        lessonData = this.createFallbackLesson(lessonSlug, moduleSlug);
+        console.log("📚 Created fallback lesson:", lessonData.title);
       }
 
-      // Store lesson data for the editor
+      // Store lesson data for the editor using our new format
+      const editorLessonData = {
+        id: lessonData.id || `lesson-${lessonSlug}-${Date.now()}`,
+        title: lessonData.title,
+        description: lessonData.description,
+        slug: lessonSlug,
+        difficulty: lessonData.difficulty || "beginner",
+        estimated_time: lessonData.estimated_time || 30,
+        category: this.detectLessonCategory(lessonData.title),
+        lesson_type: "interactive",
+        learning_objectives:
+          lessonData.learning_objectives ||
+          this.generateLearningObjectives(lessonData.title),
+        content:
+          lessonData.content ||
+          this.generateLessonContent(lessonData.title, lessonData.description),
+        starter_code:
+          lessonData.starter_code || this.generateStarterCode(lessonData.title),
+        exercises:
+          lessonData.exercises || this.generateExercises(lessonData.title),
+      };
+
+      // Store in both formats for compatibility
+      sessionStorage.setItem(
+        "current_lesson",
+        JSON.stringify(editorLessonData)
+      );
       localStorage.setItem(
         "codequest_lesson",
         JSON.stringify({
-          id: result.lesson.id,
-          slug: result.lesson.slug,
-          title: result.lesson.title,
-          description: result.lesson.description,
+          id: editorLessonData.id,
+          slug: lessonSlug,
+          title: editorLessonData.title,
+          description: editorLessonData.description,
           module_slug: moduleSlug,
-          starter_code: result.lesson.starter_code,
-          test_spec: result.lesson.test_spec_json,
-          xp_reward: result.lesson.xp_reward,
+          starter_code: editorLessonData.starter_code,
+          xp_reward: lessonData.xp_reward || 100,
         })
       );
 
-      // Redirect to editor
-      window.location.href = "editor.html";
+      // Show success message
+      this.showNotification(
+        `🚀 Launching lesson: ${lessonData.title}`,
+        "success"
+      );
+
+      // Redirect to editor with lesson parameters
+      const editorUrl = `editor.html?lesson=${lessonSlug}&lesson_id=${editorLessonData.id}`;
+      window.location.href = editorUrl;
     } catch (error) {
       console.error("❌ Error starting lesson:", error);
       this.showNotification(
@@ -850,6 +901,88 @@ class LearnManager {
         "error"
       );
     }
+  }
+
+  // Create fallback lesson when API is unavailable
+  createFallbackLesson(lessonSlug, moduleSlug) {
+    const lessonTypes = {
+      "html-introduction": {
+        title: "HTML Introduction",
+        description: "Learn the basics of HTML structure and elements",
+        category: "html",
+      },
+      "html-basics": {
+        title: "HTML Basics",
+        description: "Master fundamental HTML concepts and structure",
+        category: "html",
+      },
+      "css-fundamentals": {
+        title: "CSS Fundamentals",
+        description: "Learn CSS styling and layout techniques",
+        category: "css",
+      },
+      "css-styling": {
+        title: "CSS Styling",
+        description: "Master CSS properties and selectors",
+        category: "css",
+      },
+      "javascript-intro": {
+        title: "JavaScript Introduction",
+        description: "Get started with JavaScript programming",
+        category: "javascript",
+      },
+      "javascript-basics": {
+        title: "JavaScript Basics",
+        description: "Learn JavaScript fundamentals and syntax",
+        category: "javascript",
+      },
+      "responsive-design": {
+        title: "Responsive Web Design",
+        description: "Create websites that work on all devices",
+        category: "css",
+      },
+      "flexbox-layout": {
+        title: "Flexbox Layout",
+        description: "Master CSS Flexbox for modern layouts",
+        category: "css",
+      },
+      "dom-manipulation": {
+        title: "DOM Manipulation",
+        description: "Learn to interact with HTML elements using JavaScript",
+        category: "javascript",
+      },
+      "web-forms": {
+        title: "Web Forms",
+        description: "Create and validate HTML forms",
+        category: "html",
+      },
+    };
+
+    const lessonConfig = lessonTypes[lessonSlug] || {
+      title: lessonSlug
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase()),
+      description: `Learn about ${lessonSlug.replace(/-/g, " ")}`,
+      category: "html",
+    };
+
+    return {
+      id: `fallback-${lessonSlug}-${Date.now()}`,
+      title: lessonConfig.title,
+      description: lessonConfig.description,
+      difficulty: "beginner",
+      estimated_time: 30,
+      category: lessonConfig.category,
+      module_slug: moduleSlug,
+      xp_reward: 100,
+      learning_objectives: this.generateLearningObjectives(lessonConfig.title),
+      content: this.generateLessonContent(
+        lessonConfig.title,
+        lessonConfig.description
+      ),
+      starter_code: this.generateStarterCode(lessonConfig.title),
+      exercises: this.generateExercises(lessonConfig.title),
+    };
   }
 
   showModulesList() {
@@ -1577,6 +1710,583 @@ class LearnManager {
     } catch (error) {
       console.error("Error updating path progress:", error);
     }
+  }
+
+  // ===== LESSON LAUNCH FUNCTIONALITY =====
+
+  // Add lesson launch buttons to module cards
+  addLessonLaunchButtons() {
+    console.log("🚀 Adding lesson launch buttons...");
+
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      const moduleCards = document.querySelectorAll(".module-card");
+
+      moduleCards.forEach((card) => {
+        // Skip if already has launch button
+        if (card.querySelector(".launch-lesson-btn")) return;
+
+        // Extract module info
+        const title = card.querySelector("h3")?.textContent || "Unknown Module";
+        const description =
+          card.querySelector(".module-description")?.textContent ||
+          "Learn something new";
+
+        // Create module slug from title
+        const slug = title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, "")
+          .replace(/\s+/g, "-")
+          .substring(0, 50);
+
+        // Add launch button
+        const launchBtn = document.createElement("button");
+        launchBtn.className = "launch-lesson-btn btn btn-outline";
+        launchBtn.innerHTML = "✏️ Practice in Editor";
+        launchBtn.style.marginTop = "10px";
+        launchBtn.onclick = (e) => {
+          e.stopPropagation();
+          this.launchLessonInEditor(slug, title, description);
+        };
+
+        // Add to card actions
+        const cardActions = card.querySelector(".module-actions") || card;
+        cardActions.appendChild(launchBtn);
+      });
+
+      console.log("✅ Lesson launch buttons added");
+    }, 500);
+  }
+
+  // Launch lesson in editor
+  launchLessonInEditor(slug, title, description) {
+    console.log("🚀 Launching lesson in editor:", title);
+
+    // Create lesson data
+    const lessonData = {
+      id: `lesson-${slug}-${Date.now()}`,
+      title: title,
+      description: description,
+      slug: slug,
+      difficulty: "beginner",
+      estimated_time: 30,
+      category: this.detectLessonCategory(title),
+      lesson_type: "interactive",
+      learning_objectives: this.generateLearningObjectives(title),
+      content: this.generateLessonContent(title, description),
+      starter_code: this.generateStarterCode(title),
+      exercises: this.generateExercises(title),
+    };
+
+    // Store lesson data
+    sessionStorage.setItem("current_lesson", JSON.stringify(lessonData));
+
+    // Navigate to editor with lesson parameter
+    const editorUrl = `editor.html?lesson=${slug}&lesson_id=${lessonData.id}`;
+    window.location.href = editorUrl;
+  }
+
+  // Detect lesson category from title
+  detectLessonCategory(title) {
+    const titleLower = title.toLowerCase();
+
+    if (
+      titleLower.includes("html") ||
+      titleLower.includes("markup") ||
+      titleLower.includes("structure")
+    ) {
+      return "html";
+    } else if (
+      titleLower.includes("css") ||
+      titleLower.includes("style") ||
+      titleLower.includes("design") ||
+      titleLower.includes("layout")
+    ) {
+      return "css";
+    } else if (
+      titleLower.includes("javascript") ||
+      titleLower.includes("js") ||
+      titleLower.includes("script") ||
+      titleLower.includes("interactive")
+    ) {
+      return "javascript";
+    } else if (
+      titleLower.includes("responsive") ||
+      titleLower.includes("mobile") ||
+      titleLower.includes("flexbox") ||
+      titleLower.includes("grid")
+    ) {
+      return "css";
+    } else {
+      return "html"; // Default to HTML
+    }
+  }
+
+  // Generate learning objectives based on title
+  generateLearningObjectives(title) {
+    const titleLower = title.toLowerCase();
+    const objectives = [];
+
+    if (titleLower.includes("html")) {
+      objectives.push("Understand HTML structure and syntax");
+      objectives.push("Learn to use semantic HTML elements");
+      objectives.push("Create well-structured web pages");
+    } else if (titleLower.includes("css")) {
+      objectives.push("Master CSS selectors and properties");
+      objectives.push("Create attractive visual designs");
+      objectives.push("Implement responsive layouts");
+    } else if (titleLower.includes("javascript")) {
+      objectives.push("Understand JavaScript fundamentals");
+      objectives.push("Learn to manipulate the DOM");
+      objectives.push("Create interactive web features");
+    } else if (titleLower.includes("responsive")) {
+      objectives.push("Understand responsive design principles");
+      objectives.push("Use media queries effectively");
+      objectives.push("Create mobile-friendly layouts");
+    } else if (titleLower.includes("flexbox")) {
+      objectives.push("Master CSS Flexbox properties");
+      objectives.push("Create flexible layouts");
+      objectives.push("Solve common layout challenges");
+    } else {
+      objectives.push("Learn web development fundamentals");
+      objectives.push("Practice coding best practices");
+      objectives.push("Build practical projects");
+    }
+
+    return objectives;
+  }
+
+  // Generate lesson content
+  generateLessonContent(title, description) {
+    const category = this.detectLessonCategory(title);
+
+    const contentTemplates = {
+      html: `
+        <h3>HTML Fundamentals</h3>
+        <p>HTML (HyperText Markup Language) is the foundation of web development. In this lesson, you'll learn:</p>
+        <ul>
+          <li>Basic HTML structure and syntax</li>
+          <li>Common HTML elements and their purposes</li>
+          <li>How to create semantic, accessible markup</li>
+          <li>Best practices for HTML development</li>
+        </ul>
+        <p>Let's start building with HTML!</p>
+      `,
+      css: `
+        <h3>CSS Styling</h3>
+        <p>CSS (Cascading Style Sheets) brings your HTML to life with styling and layout. You'll discover:</p>
+        <ul>
+          <li>CSS selectors and how to target elements</li>
+          <li>Essential CSS properties for styling</li>
+          <li>Layout techniques and positioning</li>
+          <li>Responsive design principles</li>
+        </ul>
+        <p>Time to make your web pages beautiful!</p>
+      `,
+      javascript: `
+        <h3>JavaScript Programming</h3>
+        <p>JavaScript adds interactivity and dynamic behavior to web pages. In this lesson:</p>
+        <ul>
+          <li>JavaScript syntax and basic concepts</li>
+          <li>Working with variables and functions</li>
+          <li>DOM manipulation and event handling</li>
+          <li>Creating interactive user experiences</li>
+        </ul>
+        <p>Let's bring your web pages to life!</p>
+      `,
+    };
+
+    return contentTemplates[category] || contentTemplates.html;
+  }
+
+  // Generate starter code
+  generateStarterCode(title) {
+    const category = this.detectLessonCategory(title);
+    const titleClean = title.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+
+    const starterCodes = {
+      html: {
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${titleClean}</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to ${titleClean}</h1>
+        <p>Start building your HTML structure here...</p>
+        
+        <!-- Add your HTML content below -->
+        
+    </div>
+</body>
+</html>`,
+        css: `/* ${titleClean} - Styles */
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Add your CSS styles below */`,
+        js: `// ${titleClean} - JavaScript
+
+console.log('Starting ${titleClean}');
+
+// Add your JavaScript code below`,
+      },
+      css: {
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${titleClean}</title>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>CSS ${titleClean}</h1>
+        <div class="example-box">
+            <p>Style this content with CSS!</p>
+        </div>
+        <div class="practice-area">
+            <div class="item">Item 1</div>
+            <div class="item">Item 2</div>
+            <div class="item">Item 3</div>
+        </div>
+    </div>
+</body>
+</html>`,
+        css: `/* ${titleClean} - CSS Practice */
+
+.demo-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.example-box {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.practice-area {
+    margin-top: 30px;
+}
+
+.item {
+    background: #e3f2fd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border-left: 4px solid #2196f3;
+}
+
+/* Practice your CSS skills below */`,
+        js: `// ${titleClean} - JavaScript for CSS
+
+console.log('CSS ${titleClean} loaded');
+
+// Add interactive JavaScript if needed`,
+      },
+      javascript: {
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${titleClean}</title>
+</head>
+<body>
+    <div class="app-container">
+        <h1>JavaScript ${titleClean}</h1>
+        
+        <div class="interactive-demo">
+            <button id="demoBtn">Click Me!</button>
+            <p id="output">Output will appear here...</p>
+        </div>
+        
+        <div class="practice-section">
+            <h3>Practice Area</h3>
+            <input type="text" id="userInput" placeholder="Enter something...">
+            <button id="processBtn">Process</button>
+            <div id="result"></div>
+        </div>
+    </div>
+</body>
+</html>`,
+        css: `/* ${titleClean} - Styles */
+
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.interactive-demo {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.practice-section {
+    background: #e8f5e8;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+#output, #result {
+    margin-top: 15px;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    min-height: 20px;
+}`,
+        js: `// ${titleClean} - JavaScript Practice
+
+console.log('JavaScript ${titleClean} started');
+
+// Demo button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const demoBtn = document.getElementById('demoBtn');
+    const output = document.getElementById('output');
+    const processBtn = document.getElementById('processBtn');
+    const userInput = document.getElementById('userInput');
+    const result = document.getElementById('result');
+    
+    // Demo button click handler
+    demoBtn.addEventListener('click', function() {
+        output.textContent = 'Button clicked! Time: ' + new Date().toLocaleTimeString();
+    });
+    
+    // Process button click handler
+    processBtn.addEventListener('click', function() {
+        const inputValue = userInput.value;
+        if (inputValue.trim()) {
+            result.textContent = 'You entered: ' + inputValue;
+        } else {
+            result.textContent = 'Please enter something first!';
+        }
+    });
+});
+
+// Add your JavaScript practice code below`,
+      },
+    };
+
+    return starterCodes[category] || starterCodes.html;
+  }
+
+  // Generate exercises
+  generateExercises(title) {
+    const category = this.detectLessonCategory(title);
+
+    const exerciseTemplates = {
+      html: [
+        {
+          title: "HTML Structure Practice",
+          description:
+            "Create a well-structured HTML document with proper semantic elements",
+          requirements: [
+            "Use proper HTML5 document structure",
+            "Include semantic elements like header, main, section",
+            "Add appropriate meta tags",
+            "Use heading hierarchy correctly",
+          ],
+        },
+      ],
+      css: [
+        {
+          title: "CSS Styling Challenge",
+          description: "Style the provided HTML elements with attractive CSS",
+          requirements: [
+            "Apply colors and typography",
+            "Create responsive layouts",
+            "Use CSS selectors effectively",
+            "Add hover effects and transitions",
+          ],
+        },
+      ],
+      javascript: [
+        {
+          title: "JavaScript Interactivity",
+          description: "Add interactive functionality using JavaScript",
+          requirements: [
+            "Handle user events (clicks, input)",
+            "Manipulate DOM elements",
+            "Validate user input",
+            "Provide user feedback",
+          ],
+        },
+      ],
+    };
+
+    return exerciseTemplates[category] || exerciseTemplates.html;
+  }
+
+  // Add quick lesson launcher
+  addQuickLessonLauncher() {
+    // Skip if already exists
+    if (document.querySelector(".quick-lesson-fab")) return;
+
+    console.log("⚡ Adding quick lesson launcher...");
+
+    // Create floating action button
+    const fab = document.createElement("div");
+    fab.className = "quick-lesson-fab";
+    fab.innerHTML = `
+      <button class="fab-btn" onclick="learnManager.toggleQuickLessonMenu()">
+        <span>📚</span>
+      </button>
+      <div class="fab-menu" id="quickLessonMenu" style="display: none;">
+        <div class="fab-menu-item" onclick="learnManager.launchQuickLesson('html-basics')">
+          📄 HTML Basics
+        </div>
+        <div class="fab-menu-item" onclick="learnManager.launchQuickLesson('css-fundamentals')">
+          🎨 CSS Fundamentals
+        </div>
+        <div class="fab-menu-item" onclick="learnManager.launchQuickLesson('javascript-intro')">
+          ⚡ JavaScript Intro
+        </div>
+        <div class="fab-menu-item" onclick="learnManager.launchQuickLesson('responsive-design')">
+          📱 Responsive Design
+        </div>
+      </div>
+    `;
+
+    // Add styles
+    const fabStyles = document.createElement("style");
+    fabStyles.textContent = `
+      .quick-lesson-fab {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+      
+      .fab-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #2196f3;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+      }
+      
+      .fab-btn:hover {
+        background: #1976d2;
+        transform: scale(1.1);
+      }
+      
+      .fab-menu {
+        position: absolute;
+        bottom: 70px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        min-width: 200px;
+        overflow: hidden;
+      }
+      
+      .fab-menu-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+      }
+      
+      .fab-menu-item:hover {
+        background: #f5f5f5;
+      }
+      
+      .fab-menu-item:last-child {
+        border-bottom: none;
+      }
+      
+      .launch-lesson-btn {
+        background: #4caf50 !important;
+        color: white !important;
+        border: 1px solid #4caf50 !important;
+        font-size: 0.9em;
+      }
+      
+      .launch-lesson-btn:hover {
+        background: #45a049 !important;
+        border-color: #45a049 !important;
+      }
+    `;
+
+    document.head.appendChild(fabStyles);
+    document.body.appendChild(fab);
+
+    console.log("✅ Quick lesson launcher added");
+  }
+
+  // Toggle quick lesson menu
+  toggleQuickLessonMenu() {
+    const menu = document.getElementById("quickLessonMenu");
+    if (menu) {
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+  }
+
+  // Launch quick lesson
+  launchQuickLesson(slug) {
+    const lessons = {
+      "html-basics": "HTML Basics",
+      "css-fundamentals": "CSS Fundamentals",
+      "javascript-intro": "JavaScript Introduction",
+      "responsive-design": "Responsive Design",
+    };
+
+    this.launchLessonInEditor(
+      slug,
+      lessons[slug],
+      `Learn ${lessons[slug]} with hands-on practice`
+    );
   }
 }
 

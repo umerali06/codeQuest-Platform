@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CodeQuest Editor - Professional Code Editor</title>
+    <title>CodeQuest Editor - Clean Code Editor</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="animations.css" />
     <link rel="stylesheet" href="editor-styles.css" />
@@ -18,6 +18,35 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <style>
+      /* Explicitly prevent any lesson system styles */
+      .lesson-container,
+      .lesson-panel,
+      .lesson-header,
+      .module-item,
+      .progress-circle,
+      .lesson-toast {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      /* Ensure normal editor layout */
+      body {
+        background: #0f1419 !important;
+        color: #e6e6e6 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: auto !important;
+      }
+
+      .editor-container {
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        grid-template-columns: none !important;
+      }
+    </style>
   </head>
   <body>
     <div class="bg-animation"></div>
@@ -34,7 +63,7 @@
         <div class="nav-links" id="navLinks">
           <a href="index.html" class="nav-link">Home</a>
           <a href="learn.html" class="nav-link">Learn</a>
-          <a href="editor.html" class="nav-link active">Code Editor</a>
+          <a href="clean-editor.html" class="nav-link active">Code Editor</a>
           <a href="challenges.html" class="nav-link">Challenges</a>
           <a href="games.html" class="nav-link">Games</a>
           <a href="leaderboard.html" class="nav-link">Leaderboard</a>
@@ -62,7 +91,9 @@
       <header class="editor-header">
         <div class="challenge-info">
           <div class="challenge-main">
-            <h1 class="challenge-title" id="challengeTitle">Code Editor</h1>
+            <h1 class="challenge-title" id="challengeTitle">
+              Clean Code Editor
+            </h1>
             <div class="challenge-meta-display">
               <span class="challenge-badge difficulty" id="challengeDifficulty"
                 >Free Play</span
@@ -72,8 +103,8 @@
             <div class="challenge-description" id="challengeDescription">
               <div id="defaultDescription">
                 <p>
-                  Welcome to the CodeQuest Editor! Use this space to practice
-                  coding, experiment with ideas, or work on your own projects.
+                  Welcome to the Clean CodeQuest Editor! This is a lesson-free
+                  environment for coding practice.
                 </p>
                 <p>
                   You can switch between HTML, CSS, and JavaScript tabs to build
@@ -94,6 +125,10 @@
                     <i class="fas fa-random"></i>
                     Random Challenge
                   </button>
+                  <a href="editor.html?lesson=html-basics" class="btn btn-info">
+                    <i class="fas fa-graduation-cap"></i>
+                    Try Lesson Mode
+                  </a>
                 </div>
               </div>
               <div id="challengeDescriptionContent" style="display: none">
@@ -135,92 +170,6 @@
           <i class="fas fa-check"></i>
           Submit
         </button>
-      </div>
-
-      <!-- Game Instructions Panel -->
-      <div id="gameInstructions" class="game-panel" style="display: none">
-        <div class="panel-header">
-          <h3>
-            <i class="fas fa-gamepad"></i>
-            <span id="gameTitle">Game Instructions</span>
-          </h3>
-          <div class="game-meta">
-            <span class="game-timer"
-              >Time: <span id="timeDisplay">00:00</span></span
-            >
-            <span class="game-difficulty" id="gameDifficulty">Easy</span>
-          </div>
-        </div>
-        <div class="panel-content">
-          <div id="gameDescription" class="game-description">
-            <!-- Game description will be populated here -->
-          </div>
-          <div id="gameObjectives" class="game-objectives">
-            <h4><i class="fas fa-target"></i> Objectives:</h4>
-            <ul id="objectivesList">
-              <!-- Objectives will be populated here -->
-            </ul>
-          </div>
-          <div class="game-actions">
-            <button id="submitGameBtn" class="btn btn-primary">
-              <i class="fas fa-trophy"></i> Submit Game
-            </button>
-            <button id="resetGameBtn" class="btn btn-secondary">
-              <i class="fas fa-refresh"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Challenge Instructions Panel -->
-      <div
-        id="challengeInstructions"
-        class="challenge-panel"
-        style="display: none"
-      >
-        <div class="panel-header">
-          <h3>
-            <i class="fas fa-trophy"></i>
-            <span id="challengeTitlePanel">Challenge</span>
-          </h3>
-          <div class="challenge-meta">
-            <span
-              class="challenge-difficulty-badge"
-              id="challengeDifficultyPanel"
-              >Medium</span
-            >
-            <span class="challenge-xp-badge" id="challengeXPPanel">+50 XP</span>
-          </div>
-        </div>
-        <div class="panel-content">
-          <div id="challengeDescriptionPanel" class="challenge-description">
-            <!-- Challenge description will be populated here -->
-          </div>
-          <div id="challengeRequirements" class="challenge-requirements">
-            <h4><i class="fas fa-list-check"></i> Requirements:</h4>
-            <ul id="testStatements">
-              <!-- Requirements will be populated here -->
-            </ul>
-          </div>
-          <div class="challenge-actions">
-            <button id="submitChallengeBtn" class="btn btn-primary">
-              <i class="fas fa-check"></i> Submit Challenge
-            </button>
-            <button id="runTestsBtn" class="btn btn-secondary">
-              <i class="fas fa-play"></i> Run Tests
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Legacy Challenge Test Statements (for compatibility) -->
-      <div id="challengeTests" class="challenge-tests" style="display: none">
-        <div class="tests-header">
-          <h3><i class="fas fa-list-check"></i> Challenge Requirements</h3>
-        </div>
-        <div id="testStatementsLegacy" class="test-statements">
-          <!-- Test statements will be populated here -->
-        </div>
       </div>
 
       <!-- Enhanced Tab Container -->
@@ -342,49 +291,7 @@
           </div>
         </div>
       </div>
-
-      <!-- Game Results Panel -->
-      <div
-        id="gameResults"
-        class="results-panel game-results"
-        style="display: none"
-      >
-        <div class="results-header">
-          <h3><i class="fas fa-trophy"></i> Game Results</h3>
-          <button
-            class="close-btn"
-            onclick="this.parentElement.parentElement.style.display='none'"
-          >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="results-content" id="gameResultsContent">
-          <!-- Game results will be populated here -->
-        </div>
-      </div>
-
-      <!-- Challenge Results Panel -->
-      <div
-        id="challengeResults"
-        class="results-panel challenge-results"
-        style="display: none"
-      >
-        <div class="results-header">
-          <h3><i class="fas fa-check-circle"></i> Challenge Results</h3>
-          <button
-            class="close-btn"
-            onclick="this.parentElement.parentElement.style.display='none'"
-          >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="results-content" id="challengeResultsContent">
-          <!-- Challenge results will be populated here -->
-        </div>
-      </div>
     </div>
-
-    <!-- AI Assistant will be automatically injected by ai-assistant.js -->
 
     <!-- Enhanced Login Modal -->
     <div id="loginModal" class="modal">
@@ -475,7 +382,32 @@
       </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts - NO LESSON SYSTEM -->
+    <script>
+      // Explicitly prevent any lesson system from loading
+      console.log("🚫 Lesson system disabled - Clean editor mode");
+
+      // Block any lesson-related functions
+      window.applyCleanLessonLayout = function () {
+        console.log("🚫 Lesson layout blocked - this is clean editor mode");
+        return false;
+      };
+
+      window.loadModule = function () {
+        console.log("🚫 Module loading blocked - this is clean editor mode");
+        return false;
+      };
+
+      window.runLessonCode = function () {
+        console.log("🚫 Lesson code blocked - this is clean editor mode");
+        return false;
+      };
+
+      window.submitLessonStep = function () {
+        console.log("🚫 Lesson submission blocked - this is clean editor mode");
+        return false;
+      };
+    </script>
     <script src="auth.js"></script>
     <script src="persistent-auth-fix.js"></script>
     <script src="ai-assistant.js"></script>
@@ -483,6 +415,6 @@
     <script src="instruction-loader.js"></script>
     <script src="editor.js"></script>
 
-    <!-- Lesson system is completely separate - only loads with ?lesson= parameter -->
+    <!-- NO LESSON SCRIPTS - COMPLETELY CLEAN EDITOR -->
   </body>
 </html>

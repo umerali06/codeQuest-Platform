@@ -2342,3 +2342,482 @@ b Container and Tab Switching */
   display: flex;
   gap: 8px;
 }
+/* Ch
+allenge Completion Modal Styles */
+.challenge-completion-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.challenge-completion-modal .modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.challenge-completion-modal .modal-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  color: #333333;
+}
+
+.challenge-completion-modal .modal-header h2 {
+  margin: 0 0 24px 0;
+  color: #2d3748;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.challenge-completion-modal .completion-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 24px 0;
+  padding: 20px;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.challenge-completion-modal .stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.challenge-completion-modal .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.challenge-completion-modal .stat-value.success {
+  color: #38a169;
+}
+
+.challenge-completion-modal .stat-value.warning {
+  color: #d69e2e;
+}
+
+.challenge-completion-modal .stat-label {
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.challenge-completion-modal .completion-message {
+  margin: 24px 0;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.challenge-completion-modal .completion-message.success {
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  color: #22543d;
+}
+
+.challenge-completion-modal .completion-message.warning {
+  background: #fffbf0;
+  border: 1px solid #fbd38d;
+  color: #744210;
+}
+
+.challenge-completion-modal .completion-message h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.challenge-completion-modal .completion-message p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.challenge-completion-modal .test-results-summary {
+  margin: 24px 0;
+}
+
+.challenge-completion-modal .test-results-summary h4 {
+  margin: 0 0 16px 0;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.challenge-completion-modal .test-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.challenge-completion-modal .test-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.challenge-completion-modal .test-item.passed {
+  background: #f0fff4;
+  border-color: #9ae6b4;
+  color: #22543d;
+}
+
+.challenge-completion-modal .test-item.failed {
+  background: #fed7d7;
+  border-color: #feb2b2;
+  color: #742a2a;
+}
+
+.challenge-completion-modal .test-icon {
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.challenge-completion-modal .test-name {
+  font-weight: 500;
+  color: inherit;
+}
+
+.challenge-completion-modal .modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.challenge-completion-modal .btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.challenge-completion-modal .btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.challenge-completion-modal .btn-primary:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.challenge-completion-modal .btn-secondary {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.challenge-completion-modal .btn-secondary:hover {
+  background: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .challenge-completion-modal .modal-content {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .challenge-completion-modal .modal-header h2 {
+    color: #e2e8f0;
+  }
+  
+  .challenge-completion-modal .completion-stats {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .challenge-completion-modal .stat-value {
+    color: #e2e8f0;
+  }
+  
+  .challenge-completion-modal .stat-label {
+    color: #a0aec0;
+  }
+  
+  .challenge-completion-modal .test-item {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+  }
+  
+  .challenge-completion-modal .modal-footer {
+    border-color: #718096;
+  }
+}/* 
+Game Completion Modal Styles (same as challenge modal) */
+.game-completion-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-completion-modal .modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.game-completion-modal .modal-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  color: #333333;
+}
+
+.game-completion-modal .modal-header h2 {
+  margin: 0 0 24px 0;
+  color: #2d3748;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.game-completion-modal .completion-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 24px 0;
+  padding: 20px;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.game-completion-modal .stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.game-completion-modal .stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.game-completion-modal .stat-value.success {
+  color: #38a169;
+}
+
+.game-completion-modal .stat-value.warning {
+  color: #d69e2e;
+}
+
+.game-completion-modal .stat-label {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.game-completion-modal .perfect-score-badge {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #744210;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.game-completion-modal .completion-message {
+  margin: 24px 0;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.game-completion-modal .completion-message.success {
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  color: #22543d;
+}
+
+.game-completion-modal .completion-message.warning {
+  background: #fffbf0;
+  border: 1px solid #fbd38d;
+  color: #744210;
+}
+
+.game-completion-modal .completion-message h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.game-completion-modal .completion-message p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.game-completion-modal .test-results-summary {
+  margin: 24px 0;
+}
+
+.game-completion-modal .test-results-summary h4 {
+  margin: 0 0 16px 0;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.game-completion-modal .test-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-completion-modal .test-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.game-completion-modal .test-item.passed {
+  background: #f0fff4;
+  border-color: #9ae6b4;
+  color: #22543d;
+}
+
+.game-completion-modal .test-item.failed {
+  background: #fed7d7;
+  border-color: #feb2b2;
+  color: #742a2a;
+}
+
+.game-completion-modal .test-icon {
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.game-completion-modal .test-name {
+  font-weight: 500;
+  color: inherit;
+}
+
+.game-completion-modal .modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.game-completion-modal .btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-completion-modal .btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.game-completion-modal .btn-primary:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.game-completion-modal .btn-secondary {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.game-completion-modal .btn-secondary:hover {
+  background: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+/* Dark theme support for game modal */
+@media (prefers-color-scheme: dark) {
+  .game-completion-modal .modal-content {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .game-completion-modal .modal-header h2 {
+    color: #e2e8f0;
+  }
+  
+  .game-completion-modal .completion-stats {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .game-completion-modal .stat-value {
+    color: #e2e8f0;
+  }
+  
+  .game-completion-modal .stat-label {
+    color: #a0aec0;
+  }
+  
+  .game-completion-modal .test-item {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+  }
+  
+  .game-completion-modal .modal-footer {
+    border-color: #718096;
+  }
+}
